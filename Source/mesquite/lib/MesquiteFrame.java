@@ -164,10 +164,15 @@ public class MesquiteFrame extends Frame implements Commandable {
 		project = null;
 		windows = null;
 	}
+	static int countSMB = 0;
+	public void setMenuBar(MenuBar mbar) {
+		if (!MesquiteThread.isReadingThread())
+			super.setMenuBar(mbar);
+	}
 	public void setMenuBar(MesquiteWindow which, MenuBar mbar) {
 		if (which == frontWindow) {
 			try {
-				super.setMenuBar(mbar);
+				setMenuBar(mbar);
 				which.repaintInfoBar();
 			}
 			catch(Exception e){
@@ -204,7 +209,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	public void setResourcesState(boolean resourcesFullWindow, boolean resourcesClosedWhenMinimized, int resourcesWidth){
 		this.resourcesFullWindow = resourcesFullWindow; 
 		this.resourcesClosedWhenMinimized = resourcesClosedWhenMinimized; 
-		this.resourcesWidth = resourcesWidth;
+		if (resourcesWidth >=0)
+			this.resourcesWidth = resourcesWidth;
 		MesquiteWindow w = frontMostInLocation(RESOURCES);
 		if (w != null)
 			w.setMinimized(resourcesClosedWhenMinimized);
@@ -597,6 +603,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 	/*.................................................................................................................*/
 	public void hide(MesquiteWindow w){
 		setVisible(w, false);
+		fixFrontness();
 	}
 	public MesquiteWindow frontMostInLocation(int location){
 		for (int i=orderedWindows.size()-1; i>=0; i--){
@@ -612,7 +619,6 @@ public class MesquiteFrame extends Frame implements Commandable {
 			return;
 		MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 		if (w.getTileLocation()==RESOURCES){
-			//hide(w);
 			resourcesFullWindow = false;
 			MesquiteWindow ww = frontMostInLocation(MAIN);
 			setAsFrontWindow(ww);
@@ -769,7 +775,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 
 		}	
 		if (w != null)
-			setMenuBar(w, w.getMenuBar());
+			setMenuBar(w, w.getMenuBar(true));
 		if (tabs !=null)
 			tabs.repaint();
 	}
