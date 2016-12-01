@@ -71,7 +71,80 @@ public class StringUtil {
 		}
 		return result;
 	}
+	/* ................................................................................................................. */
+	public static String getTabbedToken(String s, int which) {
+		if (s == null)
+			return null;
+		int count = -1;
+		int startOfToken = -1;
+		int endOfToken = -1;
+		for (int i = 0; i < s.length(); i++) {
+			if (isLineBreak(s, i)) {
+				while (i < s.length() && (isLineBreak(s, i)))
+					i++;
+				if (i < s.length()) {
+					count++;
+					if (count == which)
+						startOfToken = i;
+					while (i < s.length() && (s.charAt(i) != '\t') && !isLineBreak(s, i))
+						i++;
+					if (startOfToken >= 0) {
+						endOfToken = i;
+						return s.substring(startOfToken, endOfToken);
+					}
+					// i--;
+				}
+			}
+			else {
+				count++;
+				if (count == which)
+					startOfToken = i;
+				while (i < s.length() && (s.charAt(i) != '\t') && !isLineBreak(s, i))
+					i++;
+				if (startOfToken >= 0) {
+					endOfToken = i;
+					return s.substring(startOfToken, endOfToken);
+				}
+				// i--;
+			}
+		}
+		return null;
+	}
 
+	/* ................................................................................................................. */
+	// this is modified from getTabbedToken which explains its strange style
+	public static String getNextTabbedToken(String s, MesquiteInteger pos) {
+		if (s == null)
+			return null;
+		int which = 0;
+		int count = -1;
+		int startOfToken = -1;
+		int endOfToken = -1;
+		for (int i = pos.getValue(); i < s.length(); i++) {
+			count++;
+			if (count == which)
+				startOfToken = i;
+			while (i < s.length() && (s.charAt(i) != '\t') && !isLineBreak(s, i))
+				i++;
+
+			if (startOfToken >= 0) {
+				endOfToken = i;
+				pos.setValue(i + 1);
+				if (isLineBreak(s,i) && i+1<s.length() && isLineBreak(s, i+1) && s.charAt(i) != s.charAt(i+1) && StringUtil.lineEnding().length() > 1)
+					pos.increment();
+				return s.substring(startOfToken, endOfToken);
+			}
+		}
+		pos.setValue(s.length());
+		return null;
+	}
+
+	static boolean isLineBreak(String s, int index) {
+		if (s == null || index >= s.length() || index < 0)
+			return false;
+		char c = s.charAt(index);
+		return (c == '\n' || c == '\r');
+	}
 	/*.................................................................................................................*/
 	public static String getDateDayOnly() {
 		long startupTime = System.currentTimeMillis();
@@ -166,6 +239,38 @@ public class StringUtil {
 		}
 		g.setColor(fore);
 		g.drawString(s, x,y);
+		if (c!=null) g.setColor(c);
+	}
+	public static void highlightString(Graphics g, String s, double x, double y, Color fore, Color back){
+		if (s==null)
+			return;
+		Color c = g.getColor();
+		if (back!=null)
+			g.setColor(back);
+		boolean done = false;
+		if (MesquiteTrunk.isMacOSXLeopard()){
+			int w = StringUtil.getStringDrawLength(g, s);
+			int h = StringUtil.getTextLineHeight(g);
+			FontMetrics fm = getFontMetrics(g);
+			if (fm!=null) {
+				int ascent = fm.getAscent();
+				int height = fm.getHeight();
+				GraphicsUtil.fillRect(g,x-1, y-ascent-1, w+2, height+2);
+			}
+			done = true;
+		}
+		if (!done) {
+			//g.drawString(s, x,y+1);
+			//g.drawString(s, x,y-1);
+			//g.drawString(s, x+1,y);
+			//g.drawString(s, x-1,y);
+			GraphicsUtil.drawString(g,s, x+1,y+1);
+			GraphicsUtil.drawString(g,s, x-1,y+1);
+			GraphicsUtil.drawString(g,s, x+1,y-1);
+			GraphicsUtil.drawString(g,s, x-1,y-1);
+		}
+		g.setColor(fore);
+		GraphicsUtil.drawString(g,s, x,y);
 		if (c!=null) g.setColor(c);
 	}
 
@@ -809,6 +914,18 @@ public class StringUtil {
 		return blanksToUnderline(token, null);
 	}
 	/*.................................................................................................................*/
+	public static String removeFirstCharacterIfMatch(String token, char c) {
+		String timmedString = token.trim();
+		if (token == null)
+			return "";
+		String trimmedString = token.trim();
+		int charPos = trimmedString.indexOf((int)c) ;  
+		if (charPos == 0)   // then the last none-whitespace is the character c
+			return token.substring(1);   
+		else
+			return token;
+	}
+	/*.................................................................................................................*/
 	public static String removeLastCharacterIfMatch(String token, char c) {
 		String timmedString = token.trim();
 		if (token == null)
@@ -958,31 +1075,6 @@ public class StringUtil {
 	/*.................................................................................................................*/
 	protected static boolean closingSquareBracket(char c) {
 		return (c==']');
-	}
-	/*.................................................................................................................*
-	public static int numTokens(String s, boolean useNEXUSRules) {
-		if (blank(s))
-			return 0;
-		int num=0;
-		int pos=0;
-		if (useNEXUSRules) {
-			MesquiteMessage.warnProgrammer("numTokens doesn't support NEXUS rules yet!!!");
-		}
-		else 
-			try {
-				while (pos<s.length()) {
-					if (!whitespace(s.charAt(pos),defaultWhitespace)) {// we are at start of a new token
-						num++;
-						pos++;
-						while (!whitespace(s.charAt(pos),defaultWhitespace))  // go through until we hit whitespace again
-							pos++;
-					}
-					pos++;
-				}
-			}
-			catch (Exception e) {
-			}
-		return num;
 	}
 	/*.................................................................................................................*/
 	public static boolean whitespace(char c, String whitespaceString) {
@@ -1246,7 +1338,8 @@ public class StringUtil {
 		}
 		return result;
 	}
-	/*.................................................................................................................*/
+
+	/** This encodes a string so that it can be used as part of a URL */
 	public static String encodeForURL(String s){
 		if (s==null) return null;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
@@ -1287,38 +1380,54 @@ public class StringUtil {
 		return buffer.toString();
 	}
 
-	public static String protectForWindows(String s) {  // to be used only for file paths
-		//String r = protectForUnix(s, false);
+	/** this is the old name for this method
+	 * @deprecated  */
+	public static String protectForWindows(String s) { 
+		return protectFilePathForWindows(s);
+	}
+	
+	public static String protectFilePathForWindows(String s) {  
 		return "\"" + s + "\"";
 	}
+	
+	
+	/*.................................................................................................................*/
+	public static String protectFilePathForUnix(String filePath){  
+		return protectFilePathForUnix(filePath, true);
+	}
 
-	public static String protectForUnix(String s, boolean escapeSpaces) {//This is called only for file paths, and is perhaps best left that way.  
-		//As of March 2015, it is never called directly, i.e. escapeSpaces is always true
+
+	/** protectForUnix is for filepaths that are to be inserted into a command file for execution on a UNIX platform.  
+	 * For example, it is used in formulating a batch file to be used to run an external alignment program.  
+	 * This particular version of protectForUnix (in which escapeSpaces is passed) is never called directly as of November 2016, as
+	 * in all cases that it is called, escapeSpaces is true, so protectForUnix(s) is called instead. */
+	
+	public static String protectFilePathForUnix(String filePath, boolean escapeSpaces) {
 		//As of June 2015, stripping accents turned off, because it meant the file path was no longer correct
-		if (s==null) return null;
-		StringBuffer buffer = new StringBuffer(s.length()*2);
-		for (int i=0; i<s.length(); i++) {
-			if (escapeSpaces && Character.isSpaceChar(s.charAt(i)))
+		if (filePath==null) return null;
+		StringBuffer buffer = new StringBuffer(filePath.length()*2);
+		for (int i=0; i<filePath.length(); i++) {
+			if (escapeSpaces && Character.isSpaceChar(filePath.charAt(i)))
 				buffer.append("\\ ");
-			else if (s.charAt(i)=='&')
+			else if (filePath.charAt(i)=='&')
 				buffer.append("\\&");
-			else if (s.charAt(i)=='!')
+			else if (filePath.charAt(i)=='!')
 				buffer.append("\\!");
-			else if (s.charAt(i)=='[')
+			else if (filePath.charAt(i)=='[')
 				buffer.append("\\[");
-			else if (s.charAt(i)==']')
+			else if (filePath.charAt(i)==']')
 				buffer.append("\\]");
-			else if (s.charAt(i)=='"')
+			else if (filePath.charAt(i)=='"')
 				buffer.append("\\\"");
-			else if (s.charAt(i)=='(')
+			else if (filePath.charAt(i)=='(')
 				buffer.append("\\(");
-			else if (s.charAt(i)==')')
+			else if (filePath.charAt(i)==')')
 				buffer.append("\\)");
-			else if (s.charAt(i)=='|')
+			else if (filePath.charAt(i)=='|')
 				buffer.append("\\|");
-			else if (s.charAt(i)=='\'')
+			else if (filePath.charAt(i)=='\'')
 				buffer.append("\\'");
-			else if (s.charAt(i)=='/')
+			else if (filePath.charAt(i)=='/')
 				buffer.append("\\/");
 			else if (s.charAt(i)=='“')
 				buffer.append("\\\"");
@@ -1327,7 +1436,7 @@ public class StringUtil {
 		//	else if (stripAccent(s.charAt(i))!= 0)
 		//		buffer.append(stripAccent(s.charAt(i)));
 			else
-				buffer.append(s.charAt(i));
+				buffer.append(filePath.charAt(i));
 		}
 		return buffer.toString();  		 
 	}
@@ -1413,11 +1522,6 @@ public class StringUtil {
 			return 'C';
 		return 0;
 	}
-	/*.................................................................................................................*/
-	public static String protectForUnix(String s){  //This is only called for file paths, and is perhaps best left that way
-		return protectForUnix(s, true);
-	}
-
 
 	private static String accentedCharToEscape(char a){
 		if (a=='é')
@@ -1488,6 +1592,12 @@ public class StringUtil {
 
 		else if (a=='Ø')
 			return "&Oslash;";
+	
+	/** This is the old name for protectFilePathForUnix
+	 * @deprecated */
+	 public  static String protectForUnix(String s) {
+		 return protectFilePathForUnix(s);
+		}
 
 		else if (a=='ñ')
 			return "&ntilde;";
@@ -1727,7 +1837,11 @@ public class StringUtil {
 		}
 		return sb.toString();
 	}
-	/*.................................................................................................................*/
+	
+/** This is a general method to take a string, and remove any "fancy" characters in it.  Accented characters are converted
+ * to their unaccented equivalent.  If some of the stricter variants are used (e.g., if onlyAlphaNumeric is true), then all characters 
+ * other than letters and numbers are removed (or converted to underscores if alphaNumericAndUnderscore is true).
+ * */
 	public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeric, boolean alphaNumericAndUnderscore){
 		if (s==null)
 			return null;
