@@ -1405,6 +1405,10 @@ public class StringUtil {
 	public static String protectFilePathForUnix(String filePath, boolean escapeSpaces) {
 		//As of June 2015, stripping accents turned off, because it meant the file path was no longer correct
 		if (filePath==null) return null;
+		
+		// remove fancy quotes:
+		filePath = filePath.replaceAll("[\\u201C\\u201D]", "\\\"");
+
 		StringBuffer buffer = new StringBuffer(filePath.length()*2);
 		for (int i=0; i<filePath.length(); i++) {
 			if (escapeSpaces && Character.isSpaceChar(filePath.charAt(i)))
@@ -1429,169 +1433,11 @@ public class StringUtil {
 				buffer.append("\\'");
 			else if (filePath.charAt(i)=='/')
 				buffer.append("\\/");
-			else if (s.charAt(i)=='“')
-				buffer.append("\\\"");
-			else if (s.charAt(i)=='”')
-				buffer.append("\\\"");
-		//	else if (stripAccent(s.charAt(i))!= 0)
-		//		buffer.append(stripAccent(s.charAt(i)));
 			else
 				buffer.append(filePath.charAt(i));
 		}
 		return buffer.toString();  		 
 	}
-	private static char stripAccent(char a){
-		if ((int)a==65533)
-			return '_';
-		if (a=='é')
-			return 'e';
-		else if (a=='á')
-			return 'a';
-		else if (a=='ó')
-			return 'o';
-		else if (a=='ú')
-			return 'u';
-		else if (a=='í')
-			return 'i';
-		else if (a=='É')
-			return 'E';
-		else if (a=='Á')
-			return 'A';
-		else if (a=='Í')
-			return 'I';
-		else if (a=='Ó')
-			return 'O';
-		else if (a=='Ú')
-			return 'U';
-
-		else if (a=='è')
-			return 'e';
-		else if (a=='à')
-			return 'a';
-		else if (a=='ò')
-			return 'o';
-		else if (a=='ù')
-			return 'u';
-		else if (a=='ì')
-			return 'i';
-		else if (a=='È')
-			return 'E';
-		else if (a=='À')
-			return 'A';
-		else if (a=='Ì')
-			return 'I';
-		else if (a=='Ò')
-			return 'O';
-		else if (a=='Ù')
-			return 'U';
-
-		else if (a=='ë')
-			return 'e';
-		else if (a=='ä')
-			return 'a';
-		else if (a=='ö')
-			return 'o';
-		else if (a=='ü')
-			return 'u';
-		else if (a=='ï')
-			return 'i';
-		else if (a=='Ë')
-			return 'E';
-		else if (a=='Ä')
-			return 'A';
-		else if (a=='Ï')
-			return 'I';
-		else if (a=='Ö')
-			return 'O';
-		else if (a=='Ü')
-			return 'U';
-
-		else if (a=='ø')
-			return 'o';
-
-		else if (a=='Ø')
-			return 'Ø';
-
-		else if (a=='ñ')
-			return 'n';
-		else if (a=='Ñ')
-			return 'N';
-		else if (a=='ç')
-			return 'C';
-		else if (a=='Ç')
-			return 'C';
-		return 0;
-	}
-
-	private static String accentedCharToEscape(char a){
-		if (a=='é')
-			return "&eacute;";
-		else if (a=='á')
-			return "&aacute;";
-		else if (a=='ó')
-			return "&oacute;";
-		else if (a=='ú')
-			return "&uacute;";
-		else if (a=='í')
-			return "&iacute;";
-		else if (a=='É')
-			return "&Eacute;";
-		else if (a=='Á')
-			return "&Aacute;";
-		else if (a=='Í')
-			return "&Iacute;";
-		else if (a=='Ó')
-			return "&Oacute;";
-		else if (a=='Ú')
-			return "&Uacute;";
-
-		else if (a=='è')
-			return "&egrave;";
-		else if (a=='à')
-			return "&agrave;";
-		else if (a=='ò')
-			return "&ograve;";
-		else if (a=='ù')
-			return "&ugrave;";
-		else if (a=='ì')
-			return "&igrave;";
-		else if (a=='È')
-			return "&Egrave;";
-		else if (a=='À')
-			return "&Agrave;";
-		else if (a=='Ì')
-			return "&Igrave;";
-		else if (a=='Ò')
-			return "&Ograve;";
-		else if (a=='Ù')
-			return "&Ugrave;";
-
-		else if (a=='ë')
-			return "&euml;";
-		else if (a=='ä')
-			return "&auml;";
-		else if (a=='ö')
-			return "&ouml;";
-		else if (a=='ü')
-			return "&uuml;";
-		else if (a=='ï')
-			return "&iuml;";
-		else if (a=='Ë')
-			return "&Euml;";
-		else if (a=='Ä')
-			return "&Auml;";
-		else if (a=='Ï')
-			return "&Iuml;";
-		else if (a=='Ö')
-			return "&Ouml;";
-		else if (a=='Ü')
-			return "&Uuml;";
-
-		else if (a=='ø')
-			return "&oslash;";
-
-		else if (a=='Ø')
-			return "&Oslash;";
 	
 	/** This is the old name for protectFilePathForUnix
 	 * @deprecated */
@@ -1599,16 +1445,6 @@ public class StringUtil {
 		 return protectFilePathForUnix(s);
 		}
 
-		else if (a=='ñ')
-			return "&ntilde;";
-		else if (a=='Ñ')
-			return "&Ntilde;";
-		else if (a=='ç')
-			return "&ccedil;";
-		else if (a=='Ç')
-			return "&Ccedil;";
-		return null;
-	}	/* For a description of how to write simple, one-level deep XML preferences, search for "XMLPreferencesDocumentation" in MesquiteModule */
 	/*.................................................................................................................*/
 	public static String protectForXML(String s) {
 		//TODO: finish this !!
@@ -1654,44 +1490,6 @@ public class StringUtil {
 		newString = replace(newString,"&gt;",">");
 		newString = replace(newString,"&apos;","'");
 		newString = replace(newString,"&quot;","\"");
-		/*
-		newString = replace(newString,"&eacute", "é");
-		newString = replace(newString,"&aacute", "á");
-		newString = replace(newString,"&oacute", "ó");
-		newString = replace(newString,"&uacute", "ú");
-		newString = replace(newString,"&iacute", "í");
-		newString = replace(newString,"&Eacute", "É");
-		newString = replace(newString,"&Aacute", "Á");
-		newString = replace(newString,"&Iacute", "Í");
-		newString = replace(newString,"&Oacute", "Ó");
-		newString = replace(newString,"&Uacute", "Ú");
-		newString = replace(newString,"&egrave", "è");
-		newString = replace(newString,"&agrave", "à");
-		newString = replace(newString,"&ograve", "ò");
-		newString = replace(newString,"&ugrave", "ù");
-		newString = replace(newString,"&igrave", "ì");
-		newString = replace(newString,"&Egrave", "È");
-		newString = replace(newString,"&Agrave", "À");
-		newString = replace(newString,"&Igrave", "Ì");
-		newString = replace(newString,"&Ograve", "Ò");
-		newString = replace(newString,"&Ugrave", "Ù");
-		newString = replace(newString,"&euml", "ë");
-		newString = replace(newString,"&auml", "ä");
-		newString = replace(newString,"&ouml", "ö");
-		newString = replace(newString,"&uuml", "ü");
-		newString = replace(newString,"&iuml", "ï");
-		newString = replace(newString,"&Euml", "Ë");
-		newString = replace(newString,"&Auml", "Ä");
-		newString = replace(newString,"&Iuml", "Ï");
-		newString = replace(newString,"&Ouml", "Ö");
-		newString = replace(newString,"&Uuml", "Ü");
-		newString = replace(newString,"&oslash", "ø");
-		newString = replace(newString,"&Oslash", "Ø");
-		newString = replace(newString,"&ntilde", "ñ");
-		newString = replace(newString,"&Ntilde", "Ñ");
-		newString = replace(newString,"&ccedil", "ç");
-		newString = replace(newString,"&Ccedil", "Ç");
-		*/
 		return newString;  		 
 	}
 
@@ -1843,34 +1641,23 @@ public class StringUtil {
  * other than letters and numbers are removed (or converted to underscores if alphaNumericAndUnderscore is true).
  * */
 	public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeric, boolean alphaNumericAndUnderscore){
-		if (s==null)
+		if (s==null) {
 			return null;
-		StringBuffer buffer = new StringBuffer(s.length()*2);
-		for (int i=0; i<s.length(); i++) {
-			if (onlyAlphaNumeric) {
-				if ((s.charAt(i)>='0'&& s.charAt(i)<='9')||(s.charAt(i)>='a'&& s.charAt(i)<='z')||(s.charAt(i)>='A'&& s.charAt(i)<='Z'))
-					buffer.append(s.charAt(i));
-				else if (stripAccent(s.charAt(i))!= 0)
-					buffer.append(stripAccent(s.charAt(i)));
-			}
-			else if (alphaNumericAndUnderscore) {
-				if ((s.charAt(i)>='0'&& s.charAt(i)<='9')||(s.charAt(i)>='a'&& s.charAt(i)<='z')||(s.charAt(i)>='A'&& s.charAt(i)<='Z'))
-					buffer.append(s.charAt(i));
-				else if (stripAccent(s.charAt(i))!= 0)
-					buffer.append(stripAccent(s.charAt(i)));
-				else 
-					buffer.append('_');
-			}
-			else if (s.charAt(i)=='“')
-				buffer.append("\"");
-			else if (s.charAt(i)=='”')
-				buffer.append("\"");
-			else if (stripAccent(s.charAt(i))!= 0)
-				buffer.append(stripAccent(s.charAt(i)));
-			else
-				buffer.append(s.charAt(i));
 		}
-		return buffer.toString();
+		// replace fancy quotes with straight quotes
+		s = s.replaceAll("[\\u2018\\u2019]", "'").replaceAll("[\\u201C\\u201D]", "\"");
+
+		// strip accent characters
+		s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+		if (onlyAlphaNumeric) {
+			s = s.replaceAll("[^a-zA-Z0-9]", "");
+		}
+
+		if (alphaNumericAndUnderscore) {
+			s = s.replaceAll("[^a-zA-Z0-9_]", "");
+		}
+		return s;
 	}
 	/*.................................................................................................................*/
 	public static String cleanseStringOfFancyChars(String s){
