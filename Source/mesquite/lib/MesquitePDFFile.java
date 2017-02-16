@@ -57,9 +57,8 @@ public class MesquitePDFFile {
 	}	
 
 	/**
-	@param frame the MesquiteWindow to copy to a PDF file
+	@param w the MesquiteWindow to copy to a PDF file
 	@param name string holding the title of the *file choice menu*
-	@param fitToPage integer controlling whether the image is fit to the page
 	 */
 	public static MesquitePDFFile getPDFFile(MesquiteWindow w, String name) {
 		MesquitePDFFile f = new MesquitePDFFile(w,name);
@@ -331,138 +330,138 @@ public class MesquitePDFFile {
 		return g;
 	}
 
-	/**
-	@arg component Component to display
-	@arg dim
-	@arg font
-	 */
-	public void printComponent(Component component, Dimension dim, java.awt.Font font) {
-		final String exceptionMessage = "Error, an exception occurred while creating the PDF document: ";
-		float pageMatrix[] = zeroPageMatrix();
-		int pageOrientation = PageFormat.LANDSCAPE;
-		float imageableHeight;
-		float imageableWidth;
-		float pageHeight;   //dimensions of the virtual page, not the imageable area
-		float pageWidth;    // actually these are only different for Java2D pages
-
-
-		if ((component == null)) { 
-			return;
-		}
-		if (dim == null)
-			dimension = component.getSize();
-		else
-			dimension = dim;
-
-		if (fitToPage >= 0) {
-			if (dimension == null || dimension.width <= 0 || dimension.height <= 0) {
-				return;
-			}
-			double shrinkWidth;
-			double shrinkHeight;
-			double shrinkRatioLANDSCAPE = 0.0;
-			double shrinkRatioPORTRAIT = 0.0;
-			double shrink;
-			   //Java2Davailable == true
-				if ((job2 == null) || pf == null)
-					return;
-				//pf = job2.defaultPage();
-
-				pf.setOrientation(PageFormat.LANDSCAPE);
-				shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
-				shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
-				if (shrinkWidth < shrinkHeight)
-					shrinkRatioLANDSCAPE = shrinkWidth;
-				else
-					shrinkRatioLANDSCAPE = shrinkHeight;	
-				pf.setOrientation(PageFormat.PORTRAIT);
-				shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
-				shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
-				if (shrinkWidth < shrinkHeight)
-					shrinkRatioPORTRAIT = shrinkWidth;
-				else
-					shrinkRatioPORTRAIT = shrinkHeight;
-				if (shrinkRatioPORTRAIT < shrinkRatioLANDSCAPE){
-					pf.setOrientation(PageFormat.LANDSCAPE);
-					shrink = shrinkRatioLANDSCAPE;
-				}
-				else {
-					pf.setOrientation(PageFormat.PORTRAIT);
-					shrink = shrinkRatioPORTRAIT;
-				}	
-				pageOrientation = pf.getOrientation();
-
-				imageableWidth = (float)pf.getImageableWidth();
-				imageableHeight = (float)pf.getImageableHeight();
-				pageWidth = (float)pf.getWidth();
-				pageHeight = (float)pf.getHeight();
-				//pageMatrix = zeroPageMatrix();
-				pageMatrix[0] = (float)shrink;
-				pageMatrix[3] = (float)shrink;  
-			}
-		
-		else {    // not fit to page
-			    // Java2Davailable == true
-				if (job2 == null) 
-					return;
-				imageableWidth = (float)pf.getImageableWidth();
-				imageableHeight = (float)pf.getImageableHeight();
-				pageHeight = (float)pf.getHeight();
-				pageWidth = (float)pf.getWidth(); 
-				//pageMatrix = zeroPageMatrix();
-				pageOrientation = pf.getOrientation();
-				pageMatrix[0] = pageMatrix[3] = 1f;
-			
-		}
-		pageRectangle = new com.lowagie.text.Rectangle(0.0f,imageableHeight,imageableWidth,0.0f);
-		try {
-			document = new Document(pageRectangle);
-			writer = PdfWriter.getInstance(document,new FileOutputStream(pdfPathString)); 
-			addMetaData(document);
-			document.open();
-			cb = writer.getDirectContent();
-			tp = cb.createTemplate((int)pageWidth, (int)pageHeight);  //dump this??
-
-			java.awt.Image jImage= component.createImage((int)dimension.getWidth(),(int)dimension.getHeight());
-
-			Graphics j2 = jImage.getGraphics();
-			component.printAll(j2);
-			//com.lowagie.text.Image outImage = null; //HEADLESS  Use this line for headless mode
-			com.lowagie.text.Image outImage = com.lowagie.text.Image.getInstance(jImage,null);  //HEADLESS  Comment this line out for headless mode
-			float verticalIncrement = imageableHeight/pageMatrix[0];
-			float horizontalIncrement = imageableWidth/pageMatrix[3];
-			float heightLimit = (imageableHeight/pageMatrix[0]);
-			float widthLimit = -1*outImage.width();
-			float verticalStart = (imageableHeight/pageMatrix[0])-outImage.height();
-			for (float vertical = verticalStart; vertical < heightLimit ; vertical += verticalIncrement) {
-				for (float horizontal = 0; horizontal > widthLimit; horizontal -= horizontalIncrement) {
-					document.newPage();
-					cb.concatCTM(pageMatrix[0],pageMatrix[1],pageMatrix[2],pageMatrix[3],pageMatrix[4],pageMatrix[5]);
-					switch (pageOrientation) {
-					case PageFormat.LANDSCAPE: {
-						cb.addImage(outImage,outImage.width(),0f,0f,outImage.height(),horizontal,vertical);
-						break;
-					}
-					case PageFormat.PORTRAIT: 
-					default: {
-						cb.addImage(outImage,outImage.width(),0.0f,0.0f,outImage.height(),horizontal,vertical);
-						break;
-					}
-					}
-				}	
-			}
-		}
-		catch (java.io.IOException e) {
-			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
-		}
-		catch (com.lowagie.text.BadElementException e) {
-			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
-		}
-		catch (com.lowagie.text.DocumentException e) {
-			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
-		}
-		end();
-	}
+//	/**
+//	@arg component Component to display
+//	@arg dim
+//	@arg font
+//	 */
+//	public void printComponent(Component component, Dimension dim, java.awt.Font font) {
+//		final String exceptionMessage = "Error, an exception occurred while creating the PDF document: ";
+//		float pageMatrix[] = zeroPageMatrix();
+//		int pageOrientation = PageFormat.LANDSCAPE;
+//		float imageableHeight;
+//		float imageableWidth;
+//		float pageHeight;   //dimensions of the virtual page, not the imageable area
+//		float pageWidth;    // actually these are only different for Java2D pages
+//
+//
+//		if ((component == null)) {
+//			return;
+//		}
+//		if (dim == null)
+//			dimension = component.getSize();
+//		else
+//			dimension = dim;
+//
+//		if (fitToPage >= 0) {
+//			if (dimension == null || dimension.width <= 0 || dimension.height <= 0) {
+//				return;
+//			}
+//			double shrinkWidth;
+//			double shrinkHeight;
+//			double shrinkRatioLANDSCAPE = 0.0;
+//			double shrinkRatioPORTRAIT = 0.0;
+//			double shrink;
+//			   //Java2Davailable == true
+//				if ((job2 == null) || pf == null)
+//					return;
+//				//pf = job2.defaultPage();
+//
+//				pf.setOrientation(PageFormat.LANDSCAPE);
+//				shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
+//				shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
+//				if (shrinkWidth < shrinkHeight)
+//					shrinkRatioLANDSCAPE = shrinkWidth;
+//				else
+//					shrinkRatioLANDSCAPE = shrinkHeight;
+//				pf.setOrientation(PageFormat.PORTRAIT);
+//				shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
+//				shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
+//				if (shrinkWidth < shrinkHeight)
+//					shrinkRatioPORTRAIT = shrinkWidth;
+//				else
+//					shrinkRatioPORTRAIT = shrinkHeight;
+//				if (shrinkRatioPORTRAIT < shrinkRatioLANDSCAPE){
+//					pf.setOrientation(PageFormat.LANDSCAPE);
+//					shrink = shrinkRatioLANDSCAPE;
+//				}
+//				else {
+//					pf.setOrientation(PageFormat.PORTRAIT);
+//					shrink = shrinkRatioPORTRAIT;
+//				}
+//				pageOrientation = pf.getOrientation();
+//
+//				imageableWidth = (float)pf.getImageableWidth();
+//				imageableHeight = (float)pf.getImageableHeight();
+//				pageWidth = (float)pf.getWidth();
+//				pageHeight = (float)pf.getHeight();
+//				//pageMatrix = zeroPageMatrix();
+//				pageMatrix[0] = (float)shrink;
+//				pageMatrix[3] = (float)shrink;
+//			}
+//
+//		else {    // not fit to page
+//			    // Java2Davailable == true
+//				if (job2 == null)
+//					return;
+//				imageableWidth = (float)pf.getImageableWidth();
+//				imageableHeight = (float)pf.getImageableHeight();
+//				pageHeight = (float)pf.getHeight();
+//				pageWidth = (float)pf.getWidth();
+//				//pageMatrix = zeroPageMatrix();
+//				pageOrientation = pf.getOrientation();
+//				pageMatrix[0] = pageMatrix[3] = 1f;
+//
+//		}
+//		pageRectangle = new com.lowagie.text.Rectangle(0.0f,imageableHeight,imageableWidth,0.0f);
+//		try {
+//			document = new Document(pageRectangle);
+//			writer = PdfWriter.getInstance(document,new FileOutputStream(pdfPathString));
+//			addMetaData(document);
+//			document.open();
+//			cb = writer.getDirectContent();
+//			tp = cb.createTemplate((int)pageWidth, (int)pageHeight);  //dump this??
+//
+//			java.awt.Image jImage= component.createImage((int)dimension.getWidth(),(int)dimension.getHeight());
+//
+//			Graphics j2 = jImage.getGraphics();
+//			component.printAll(j2);
+//			//com.lowagie.text.Image outImage = null; //HEADLESS  Use this line for headless mode
+//			com.lowagie.text.Image outImage = com.lowagie.text.Image.getInstance(jImage,null);  //HEADLESS  Comment this line out for headless mode
+//			float verticalIncrement = imageableHeight/pageMatrix[0];
+//			float horizontalIncrement = imageableWidth/pageMatrix[3];
+//			float heightLimit = (imageableHeight/pageMatrix[0]);
+//			float widthLimit = -1*outImage.width();
+//			float verticalStart = (imageableHeight/pageMatrix[0])-outImage.height();
+//			for (float vertical = verticalStart; vertical < heightLimit ; vertical += verticalIncrement) {
+//				for (float horizontal = 0; horizontal > widthLimit; horizontal -= horizontalIncrement) {
+//					document.newPage();
+//					cb.concatCTM(pageMatrix[0],pageMatrix[1],pageMatrix[2],pageMatrix[3],pageMatrix[4],pageMatrix[5]);
+//					switch (pageOrientation) {
+//					case PageFormat.LANDSCAPE: {
+//						cb.addImage(outImage,outImage.width(),0f,0f,outImage.height(),horizontal,vertical);
+//						break;
+//					}
+//					case PageFormat.PORTRAIT:
+//					default: {
+//						cb.addImage(outImage,outImage.width(),0.0f,0.0f,outImage.height(),horizontal,vertical);
+//						break;
+//					}
+//					}
+//				}
+//			}
+//		}
+//		catch (java.io.IOException e) {
+//			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
+//		}
+//		catch (com.lowagie.text.BadElementException e) {
+//			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
+//		}
+//		catch (com.lowagie.text.DocumentException e) {
+//			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
+//		}
+//		end();
+//	}
 
 
 	/**

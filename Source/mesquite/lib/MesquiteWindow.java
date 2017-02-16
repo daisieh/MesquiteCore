@@ -1136,7 +1136,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 					printingComponent = graphics[0];
 				else
 					printingComponent = graphics[1];
-				pdfFile.printComponent(printingComponent,null,currentFont);
+//				pdfFile.printComponent(printingComponent,null,currentFont);
 				//TODO: figure out why calling print(g) generates empty pages.
 				//Graphics g = pdfFile.getPDFGraphicsForComponent(printingComponent, null);
 				//printingComponent.print(g);
