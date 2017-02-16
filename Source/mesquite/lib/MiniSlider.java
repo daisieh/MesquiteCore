@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls
@@ -43,8 +42,8 @@ public class MiniSlider extends MousePanel implements Explainable, ImageOwner {
 	MesquiteTimer timer=null;
 	//boolean enforceMin, enforceMax;
 	static {
-		enterVertical = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "sliderVert.gif");
-		enterHorizontal = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "sliderHoriz.gif");
+		enterVertical = MesquiteImage.getResourceImage("sliderVert.gif");
+		enterHorizontal = MesquiteImage.getResourceImage("sliderHoriz.gif");
 	}
 	public MiniSlider (MesquiteCommand command, boolean horizontal, double currentValue, double minValue, double maxValue, double minSweetValue, double maxSweetValue) {
 		setCursor(Cursor.getDefaultCursor());

@@ -17,7 +17,7 @@ package mesquite.meristic.MerItemsEditInfo;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -110,9 +110,9 @@ class ItemsPanel extends MatrixInfoExtraPanel  {
 		statesBox =  new StringInABox("", null, 50);
 		itemsField = new ItemsField(this);
 		itemsField.setBackground(getBackground());
-		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "addGray.gif");
-		subtract = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "subtractGray.gif");
-		query = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "queryGray.gif");
+		add = MesquiteImage.getResourceImage("addGray.gif");
+		subtract = MesquiteImage.getResourceImage("subtractGray.gif");
+		query = MesquiteImage.getResourceImage("queryGray.gif");
 		currentHeight = 100 + MINHEIGHT + charNameHeight;
 		setLayout(null);
 		add(itemsField);

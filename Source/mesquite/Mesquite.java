@@ -20,11 +20,6 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-import javax.imageio.ImageIO;
-
-import com.apple.mrj.MRJFileUtils;
-import com.apple.mrj.MRJOSType;
-
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.*;
@@ -350,18 +345,14 @@ public class Mesquite extends MesquiteTrunk
 		setModuleWindow(logWindow);
 		if (verboseStartup) System.out.println("main init 13");
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) {
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquiteBeta.gif");
+			mesquiteTrunk.logo = MesquiteImage.getResourceImage("mesquiteBeta.gif");
 		}
 		else
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
+			mesquiteTrunk.logo = MesquiteImage.getResourceImage("mesquite.gif");
 
-		BufferedImage equiv = null;
-		try {
-			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
-		} catch (IOException e) {
-			MesquiteMessage.println(" IOException trying to read equivocal texture ");
-		}
-		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
+		Image equiv = null;
+		equiv = MesquiteImage.getResourceImage("equivocal.gif");
+		GraphicsUtil.missingDataTexture = new TexturePaint((BufferedImage) equiv, new Rectangle(0, 0, 16, 16));
 
 		if (verboseStartup) System.out.println("main init 14");
 		MediaTracker mt = new MediaTracker(logWindow.getOuterContentsArea());
@@ -1151,13 +1142,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteButton.onImage[i]=  MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/colors/" + i + "blank-on.gif");  
 		}
 		 */
-		InfoBar.triangleImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/infoBarTriangle.gif");  
-		InfoBar.triangleImageDown=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/triangleDown.gif");  
-		InfoBar.releaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/release.gif");  
-		InfoBar.prereleaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/prerelease.gif");  
-		ExplanationArea.plusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationPlus.gif");  
-		ExplanationArea.minusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinus.gif");  
-		ExplanationArea.minusOffImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinusOff.gif");  
+		InfoBar.triangleImage=  MesquiteImage.getResourceImage("infoBarTriangle.gif");
+		InfoBar.triangleImageDown=  MesquiteImage.getResourceImage("triangleDown.gif");
+		InfoBar.releaseImage=  MesquiteImage.getResourceImage("release.gif");
+		InfoBar.prereleaseImage=  MesquiteImage.getResourceImage("prerelease.gif");
+		ExplanationArea.plusImage=  MesquiteImage.getResourceImage("explanationPlus.gif");
+		ExplanationArea.minusImage=  MesquiteImage.getResourceImage("explanationMinus.gif");
+		ExplanationArea.minusOffImage=  MesquiteImage.getResourceImage("explanationMinusOff.gif");
 	}
 	/*.................................................................................................................*/
 	public String getName() {

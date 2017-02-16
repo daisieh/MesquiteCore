@@ -16,12 +16,8 @@ modified 26 July 01: protected against NullPointerException if null images in pa
 package mesquite.lib;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Path2D;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
-import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.simplicity.SimplicityStrip;
 /* ======================================================================== */
@@ -115,8 +111,8 @@ public class InfoBar extends MousePanel implements Commandable {
 			simplicityStrip.setVisible(true);
 		}
 		if (iconImages==null && MesquiteModule.getRootPath()!=null){ //done here instead of static in case root path not yet defined when static run
-			iconImages=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "infoBarIcons.gif");  
-			popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");  
+			iconImages=  MesquiteImage.getResourceImage("infoBarIcons.gif");
+			popIn = MesquiteImage.getResourceImage("compactTransparent.gif");
 		}
 		which = new MesquiteInteger(0);
 		setFont(smallFont);

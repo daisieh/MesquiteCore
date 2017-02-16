@@ -18,18 +18,13 @@ package mesquite.trees.BasicTreeWindowMaker;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 
-import mesquite.categ.lib.CategDataEditorInitD;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
 import java.awt.datatransfer.*;
 
-import mesquite.tol.lib.TaxonOnWebServer;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
@@ -5462,7 +5457,7 @@ class BranchInfoPanel extends TreeInfoExtraPanel {
 
 	public BranchInfoPanel(ClosablePanelContainer container) {
 		super(container, "Branch/Node Info");
-		query = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "queryGray.gif");
+		query = MesquiteImage.getResourceImage("queryGray.gif");
 		statsBox = new StringInABox("", null, 50);
 	}
 
@@ -5592,7 +5587,7 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 	public TreeInfoPanel(BasicTreeWindow w) {
 		super();
 		this.w = w;
-		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "addGray.gif");
+		add = MesquiteImage.getResourceImage("addGray.gif");
 		setLayout(null);
 		addExtraPanel(btsp = new BasicTreeStatisticsPanel(this));
 		addExtraPanel(ap = new BranchInfoPanel(this));
@@ -5602,7 +5597,7 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 		titleFont = new Font("SansSerif", Font.BOLD, 12);
 		titleBox = new StringInABox("", null, width);
 		explanationBox = new StringInABox("", null, width);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
+		goaway = MesquiteImage.getResourceImage("minimizeTransparent.gif");
 	}
 
 	/* ................................................................................................................. */

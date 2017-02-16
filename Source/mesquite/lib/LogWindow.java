@@ -15,10 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import java.awt.image.*;
 import java.awt.event.*;
-import mesquite.lib.duties.*;
-import mesquite.trunk.ProjectTreeWindow;
 
 
 /* ======================================================================== */
@@ -118,9 +115,9 @@ class BannerPanel extends Panel {
 	int bannerHeight;
 	public BannerPanel(LogWindow w){
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
-			banner=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/bannerBeta.gif");  
+			banner=  MesquiteImage.getResourceImage("bannerBeta.gif");
 		else
-			banner=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/banner.gif");  
+			banner=  MesquiteImage.getResourceImage("banner.gif");
 		bannerHeight = w.bannerHeight;
 		setBackground(ColorDistribution.mesquiteBrown);
 

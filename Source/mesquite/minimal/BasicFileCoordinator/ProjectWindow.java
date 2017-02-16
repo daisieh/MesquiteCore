@@ -18,9 +18,6 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.event.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -765,9 +762,9 @@ class ScrollPanel extends MousePanel {
 		searchStrip.setLocation(20, 0);
 		searchStrip.setVisible(true);
 		searchStrip.setText("");
-		search = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "search.gif");
-		up = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "uparrow.gif");
-		down = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "downarrow.gif");
+		search = MesquiteImage.getResourceImage("search.gif");
+		up = MesquiteImage.getResourceImage("uparrow.gif");
+		down = MesquiteImage.getResourceImage("downarrow.gif");
 	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}

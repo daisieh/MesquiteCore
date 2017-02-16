@@ -16,9 +16,7 @@ Modified 27 July 01: name reverted to "Tree Legend"; added getNameForMenuItem "T
 package mesquite.trees.TreeInfoValues;
 
 import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
+
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.trees.lib.TreeInfoExtraPanel;
@@ -217,9 +215,9 @@ class ValuesPanel extends TreeInfoExtraPanel {
 	Image add, query, goaway;
 	public ValuesPanel(ClosablePanelContainer container, TreeInfoValues ownerModule){
 		super(container, "Values");
-		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "addGray.gif");
-		query = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "queryGray.gif");
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
+		add = MesquiteImage.getResourceImage("addGray.gif");
+		query = MesquiteImage.getResourceImage("queryGray.gif");
+		goaway = MesquiteImage.getResourceImage("minimizeTransparent.gif");
 		boxes =  new StringInABox[maxNumLines];
 		for (int i= 0; i<maxNumLines; i++)
 			boxes[i] = new StringInABox("", null, 50);

@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib; 
 
-import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+
 import mesquite.lib.table.*;
 import java.awt.image.*;
 
@@ -1251,14 +1249,9 @@ class ControlP extends MesquitePanel {
 		scroll.setLocation(spacing*(numicons+1) + closeLeft, 6);
 		scroll.setSize(pw.controlsWidth, pw.textHeight);
 		scroll.setVisible(true);
-		trash = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "trashcan.gif");
-		addPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
-		/*
-		newPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "new.gif");
-		spotPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "spot.gif");
-		spotGreenPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "spotgreen.gif");
-		 */
+		trash = MesquiteImage.getResourceImage("trashcan.gif");
+		addPic = MesquiteImage.getResourceImage("add.gif");
+		goaway = MesquiteImage.getResourceImage("goaway.gif");
 	}
 	void setAttachable(boolean a){
 		attachable = a;
@@ -1410,7 +1403,7 @@ class HeaderPanel extends MesquitePanel {
 	static Image checkMark;
 
 	static {
-		checkMark = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "checkMark.gif");
+		checkMark = MesquiteImage.getResourceImage("checkMark.gif");
 	}
 	public HeaderPanel (AnnotationsPanel pw, String title) {
 		this.pw = pw;
@@ -1446,9 +1439,9 @@ class ImageHeaderPanel extends HeaderPanel {
 
 	public ImageHeaderPanel (AnnotationsPanel pw, String title) {
 		super(pw, title);
-		trash = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "trashcan.gif");
-		addPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
-		addRemotePic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "addRemote.gif");
+		trash = MesquiteImage.getResourceImage("trashcan.gif");
+		addPic = MesquiteImage.getResourceImage("add.gif");
+		addRemotePic = MesquiteImage.getResourceImage("addRemote.gif");
 	}
 	/*.................................................................................................................*/
 	public void paint(Graphics g) {

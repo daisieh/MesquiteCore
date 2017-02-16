@@ -14,16 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib;
 /*~~  */
 
-import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
-import java.awt.datatransfer.*;
-import java.awt.event.*;
+
 /* ======================================================================== *
 
 *new in 1. 06*
@@ -348,10 +343,10 @@ class Ledge extends MousePanel implements SeqLedge{
 		add(message);
 		message.setBounds(controlWidth,1,labelWidth, 10);
 		message.setBackground(ColorDistribution.paleGoldenRod);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
-		play = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "play.gif");
-		pause = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "pause.gif");
-		taxonButton = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "taxon.gif");
+		goaway = MesquiteImage.getResourceImage("goaway.gif");
+		play = MesquiteImage.getResourceImage("play.gif");
+		pause = MesquiteImage.getResourceImage("pause.gif");
+		taxonButton = MesquiteImage.getResourceImage("taxon.gif");
 	}
 	public void setText(String s){
 		if (!StringUtil.stringsEqual(s, text.getText()))
