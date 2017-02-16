@@ -16,9 +16,12 @@ package mesquite;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.jar.JarFile;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -165,59 +168,64 @@ public class Mesquite extends MesquiteTrunk
 		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 
 		//finding mesquite directory
-		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
-		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
+		try {
+			if (mesquiteDirectory == null) {
+				File classFile = new File(System.getProperty("java.class.path"));
+				Path classPath = classFile.toPath();
+				JarFile classJar = new JarFile(classFile);
+				URL classURL = mesquite.Mesquite.class.getClassLoader().getResource("mesquite/Mesquite.class");
+				URI classURI = classURL.toURI();
 
-		String sepp = MesquiteFile.fileSeparator;
-		if (loc.indexOf(sepp)<0){
-			sepp = "/";
-			if (loc.indexOf(sepp)<0)
-				System.out.println("Not a recognized separator in path to Mesquite class!");
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
-
-			try {
-				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForURL(loc);
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
+				System.out.println("path is " + classPath.toString());
+				System.out.println("class loader path is " + classURL.toString());
+				// if we've executed from a jar, find the mesquite directory within the classes directory that is part of the target build.
+				mesquiteDirectory = classPath.getParent().resolve("classes").toFile();
+				if (!mesquiteDirectory.exists())
+					mesquiteDirectory = null;
 			}
-
-
-
-
-		}
-		else {
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
-			try {
-				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForURL(loc);
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+			System.out.println("exception " + e.toString());
 		}
 
-		if (mesquiteDirectory == null){
-			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
-			while (st.hasMoreElements()){
-				String token = st.nextToken();
-				File mesquiteClass = new File(token + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
-				if (mesquiteClass.exists()) {
-					mesquiteDirectory = new File(token);
-					if (!mesquiteDirectory.exists())
-						mesquiteDirectory = null;
+		if (mesquiteDirectory == null) {
+			ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
+			URL classLoc = cl.getResource("mesquite/Mesquite.class");
+			String loc = "";
+			if (classLoc != null) {
+				loc = classLoc.getPath();
+			}
+			String sepp = MesquiteFile.fileSeparator;
+			if (!loc.contains(sepp)) {
+				sepp = "/";
+				if (!loc.contains(sepp))
+					System.out.println("Not a recognized separator in path to Mesquite class!");
+				// find parent of parent path
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				System.out.println("@ " + loc);
+
+				try {
+					if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
+						loc = StringUtil.encodeForURL(loc);
+					URI uri = new URI(loc);
+					mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+			} else {
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				System.out.println("@ " + loc);
+				try {
+					if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
+						loc = StringUtil.encodeForURL(loc);
+					URI uri = new URI(loc);
+					mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
 				}
 			}
 		}
-
-
 
 		if (mesquiteDirectory ==null){
 			File mesquiteClass = new File(System.getProperty("user.dir") + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
