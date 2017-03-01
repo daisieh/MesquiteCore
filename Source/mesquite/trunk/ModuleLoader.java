@@ -449,19 +449,13 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			if (macrosFound)
 				loadMacros(f.getAbsolutePath()+ MesquiteFile.fileSeparator + "macros", false);
 		} else if (f.isFile()) {
-			if (f.getName().endsWith(".class")) {  //this is a class file, therefore try to load it
-				String[] pathParts = f.getAbsolutePath().split(String.valueOf(File.separatorChar));
-				if (!f.getName().contains(pathParts[pathParts.length-2])) {
-					return;
-				}
-				if (!"BasicFileCoordinator.class".equalsIgnoreCase(f.getName())) { //is a single file; see if it's a class file; file coordinator has already been loaded
-					loadMesquiteModuleClassFiles(f);
-					if (verboseStartup) {
-						if (targetOn)
-							MesquiteMessage.println("+loading " + f.getName());
-						else
-							MesquiteMessage.println("-loading " + f.getName());
-					}
+			if (!f.getName().contains("BasicFileCoordinator.class")) {
+				loadMesquiteModuleClassFiles(f);
+				if (verboseStartup) {
+					if (targetOn)
+						MesquiteMessage.println("+loading " + f.getName());
+					else
+						MesquiteMessage.println("-loading " + f.getName());
 				}
 			}
 		}
