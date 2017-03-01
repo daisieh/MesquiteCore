@@ -381,7 +381,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		File f = new File(filePathName + File.separatorChar + "mesquite");
 		if (!f.isDirectory())
 			return;
-		getModules("mesquite", f, 0, targetDirectories, targetOn, loadingAll);
+		getModules("", f, 0, targetDirectories, targetOn, loadingAll);
 //		String[] modulesList = f.list();
 //		Arrays.sort(modulesList);
 //		for (int i=0; i<modulesList.length; i++) {
