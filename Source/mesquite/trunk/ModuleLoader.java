@@ -615,12 +615,14 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		String packageName = StringUtils.join(thisFile.getAbsolutePath().split(String.valueOf(File.separatorChar)),".");
 		packageName = "mesquite." + StringUtils.substringAfter(packageName, ".mesquite.");
 
-		//NOTE: module must be in directory of same name!!
+		// A module file is a class file located directly inside a directory of the same name.
 		Pattern r = Pattern.compile("(.+\\.)(.+?)(\\.\\2)\\.class");
 		Matcher modulePattern = r.matcher(packageName);
 
-		if (!modulePattern.matches()) //NOTE: module must be in directory of same name!!!
+		// if it's not of this pattern, it's not a module. Return.
+		if (!modulePattern.matches())
 			return;
+
 		String className = modulePattern.group(1) + modulePattern.group(2) + modulePattern.group(3);
 		try {
 			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader

@@ -17,6 +17,11 @@
             <artifactId>mesquite_module</artifactId>
             <version>1.6-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.nexml</groupId>
+            <artifactId>model</artifactId>
+            <version>1.6-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -69,6 +74,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/jars/Jsci.zip</systemPath>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+
     </dependencies>
     <build>
         <sourceDirectory>Source</sourceDirectory>
