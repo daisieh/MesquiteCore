@@ -18,7 +18,7 @@ import java.util.*;
 import java.lang.reflect.*;
 import mesquite.*;
 import mesquite.lib.*;
-import mesquite.lib.duties.*;
+
 /*======================================================================== */
 public class ModuleLoader {
 	Mesquite mesquite;
@@ -83,7 +83,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			else
 				directoryTotal =  mesquite.numDirectories;
 			showMessage(true, "Looking for modules", directoryTotal, 0);
-			loadMesquiteModuleClassFiles(f, path, "mesquite.minimal.BasicFileCoordinator." , "BasicFileCoordinator.class");
+			loadMesquiteModuleClassFiles(f, "mesquite.minimal.BasicFileCoordinator." , "BasicFileCoordinator.class");
 			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite/");
 			
 			StringBuffer report =  new StringBuffer(5000);
@@ -368,7 +368,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				if (!f.exists())
 					return;
 				if (!"BasicFileCoordinator.class".equalsIgnoreCase(fileName)) { //is a single file; see if it's a class file; file coordinator has already been loaded
-					loadMesquiteModuleClassFiles(f, path, packageName, fileName);
+					loadMesquiteModuleClassFiles(f, packageName, fileName);
 					if (verboseStartup){
 						if (targetOn)
 							MesquiteMessage.println("+loading " + fileName);
@@ -584,7 +584,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
    	 static boolean warnedError = false;
    	 CommandChecker moduleChecker = new CommandChecker();
 	/*.................................................................................................................*/
-	public void loadMesquiteModuleClassFiles (File thisFile, String pathname, String packageName, String filename) {
+	public void loadMesquiteModuleClassFiles(File thisFile, String packageName, String filename) {
+		String pathname = thisFile.getParent();
 		String classname=StringUtil.getAllButLastItem(filename, ".");
 		String directoryName=StringUtil.getLastItem(pathname, MesquiteFile.fileSeparator);
 		if (classname==null || !classname.equalsIgnoreCase(directoryName)) //NOTE: module must be in directory of same name!!!
