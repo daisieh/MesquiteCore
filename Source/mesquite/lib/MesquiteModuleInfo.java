@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.duties.*;
 
+import java.io.File;
 import java.util.*;
 import java.net.*;
 
@@ -90,8 +91,12 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		checker =CommandChecker.accumulate(mb, checker);
 		mb.moduleInfo = this;
  		this.manualPath = mb.getManualPath();
-  		if (directoryPath!=null)
-  			this.directoryPath = new String(directoryPath); //must come first so subsequent can call module's path method
+  		if (directoryPath!=null) {
+  			if (!directoryPath.endsWith(String.valueOf(File.separatorChar))) {
+  				directoryPath = directoryPath + File.separatorChar;
+			}
+			this.directoryPath = directoryPath; //must come first so subsequent can call module's path method
+		}
 		this.splashExists = (mb instanceof PackageIntroInterface && (( PackageIntroInterface)mb).hasSplash());
 		if (mb instanceof PackageIntroInterface)
 			this.splashURL = (( PackageIntroInterface)mb).getSplashURL();
