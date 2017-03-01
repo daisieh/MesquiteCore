@@ -16,6 +16,8 @@ package mesquite.trunk;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +60,23 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			System.out.println("Error: attempt to use applet as application");
 		}
 		else {
+
+			File classFile = new File(System.getProperty("java.class.path"));
+			try {
+				JarFile classJar = new JarFile(classFile);
+				for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+					JarEntry entry = entries.nextElement();
+					String file = entry.getName();
+					if (file.startsWith("mesquite")) {
+						System.out.println("found jarEntry " + file);
+//						loadJarModule(entry);
+					}
+				}
+			} catch (Exception e) {
+
+			}
+
+
 			StringArray targetDirectories;
 
 			
