@@ -403,14 +403,13 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 //		}
 	}
 
-	private void getModules(String packageName, File f, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll) { //path has no slash at the end of it
+	private void getModules(File f, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll) { //path has no slash at the end of it
 		level++;  //increment depth into directory structure
-		System.out.println("getModules " + packageName + ", " + f.getAbsolutePath());
 		if (verboseStartup) MesquiteMessage.println(">level " + level + " " + f.getAbsolutePath());
 		if (!f.exists())
 			return;
 		if (f.isDirectory()) {  // is a directory; hence look inside at each item
-			String fileName = f.getName();
+			String packageName = getPackageName(f);
 			numDirectoriesCurrent++;
 			String[] modulesList = f.list();
 			Arrays.sort(modulesList);
@@ -419,7 +418,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			for (int i=0; i<modulesList.length; i++) {
 				System.out.println("  module " + modulesList[i] + " level " + level + " targetOn " + targetOn);
 				if (modulesList[i] != null && !avoidedDirectory(modulesList[i])) {
-					String pathFM = packageName + fileName + "."+modulesList[i];
+					String pathFM = packageName + "." + modulesList[i];
 					if (targetDirectories !=null){
 						int targetNumber = targetDirectories.indexOf(pathFM);
 						if (targetNumber>=0 && targetNumber<packagesFound.length)
@@ -428,7 +427,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					if ((targetDirectories==null || (targetDirectories.indexOf(pathFM)<0 && !targetOn) || (targetDirectories.indexOf(pathFM)>=0 && targetOn))) {
 						// if targetDirs are null OR targetDirs do not contain this module (?) and no target OR targetDirs DO contain this module and target
 						File newFile = new File(f.getAbsolutePath() + MesquiteFile.fileSeparator + modulesList[i]);
-						getModules(packageName + fileName + ".", newFile, level, null, targetOn, loadingAll);
+						getModules(newFile, level, null, targetOn, loadingAll);
 					} else if (level == 1) {
 						String notDonePath = f.getAbsolutePath()+ MesquiteFile.fileSeparator + modulesList[i];
 						File notDoneFile = new File(notDonePath);
@@ -606,12 +605,11 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (!thisFile.exists() || !thisFile.isFile()) {
 			return;
 		}
-		String packageName = StringUtils.join(thisFile.getAbsolutePath().split(String.valueOf(File.separatorChar)),".");
-		packageName = "mesquite." + StringUtils.substringAfter(packageName, ".mesquite.");
+		String packageName = getPackageName(thisFile.getParentFile());
 
 		// A module file is a class file located directly inside a directory of the same name.
 		Pattern r = Pattern.compile("(.+\\.)(.+?)(\\.\\2)\\.class");
-		Matcher modulePattern = r.matcher(packageName);
+		Matcher modulePattern = r.matcher(packageName + "." + thisFile.getName());
 
 		// if it's not of this pattern, it's not a module. Return.
 		if (!modulePattern.matches())
@@ -696,6 +694,11 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (!warnedError)
 			mesquite.discreetAlert("Error while loading "  + lastTried + ".    It appears that a component of Mesquite or a required library is missing.  We recommend that you install Mesquite again. \n\nDetails: " +  e);
 		warnedError = true;
+	}
+	private static String getPackageName(File thisFile) {
+		String packageName = StringUtils.join(thisFile.getAbsolutePath().split(String.valueOf(File.separatorChar)),".");
+		packageName = "mesquite." + StringUtils.substringAfter(packageName, ".mesquite.");
+		return packageName;
 	}
 }
 
