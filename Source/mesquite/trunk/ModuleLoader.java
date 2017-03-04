@@ -418,8 +418,9 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			for (int i=0; i<modulesList.length; i++) {
 				String module = modulesList[i];
 				if (module != null && !avoidedDirectory(module)) {
-					int targetNumber = targetDirectories.indexOf(packageName + "." + module);
+					int targetNumber = -1; // assume that this module is not in targetDirectories
 					if (targetDirectories !=null) {
+						targetNumber = targetDirectories.indexOf(packageName + "." + module);
 						// mark as found in packagesFound
 						if (targetNumber>=0 && targetNumber<packagesFound.length)
 							packagesFound[targetNumber] = true;
