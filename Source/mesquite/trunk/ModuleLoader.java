@@ -14,6 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 import java.io.*;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.lang.reflect.*;
 import java.util.jar.JarEntry;
@@ -66,11 +69,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				JarFile classJar = new JarFile(classFile);
 				for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
 					JarEntry entry = entries.nextElement();
-					String file = entry.getName();
-					if (file.startsWith("mesquite")) {
-						System.out.println("found jarEntry " + file);
-//						loadJarModule(entry);
-					}
+					loadJarModule(entry);
 				}
 			} catch (Exception e) {
 
@@ -207,7 +206,28 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			mesquite.logln("");
 		}
 	}
-	
+
+	void loadJarModule(JarEntry entry) throws Exception {
+		String fileName = entry.getName();
+		if (fileName.startsWith("mesquite")) {
+			System.out.println("found jarEntry " + fileName);
+			if (fileName.endsWith("macros/")) {
+				mesquite.logln("loadMacros " + fileName);
+			} else if (fileName.endsWith("config/")) {
+				mesquite.logln("loadConfigs " + fileName);
+			} else if (fileName.endsWith(".class")) {
+				mesquite.logln("loading class");
+				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+				URL url = classLoader.getResource(fileName);
+				File file = new File(url.toURI());
+				mesquite.logln("found class " + file.getName());
+
+//				JarURLConnection connection = (JarURLConnection) url.openConnection();
+//				JarFile file = connection.getJarFile();
+//				String jarPath = file.getName();
+			}
+		}
+	}
 						
 	void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
 		if (xmlPathsFileContents == null)return;
