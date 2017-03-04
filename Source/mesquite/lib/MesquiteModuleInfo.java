@@ -368,6 +368,10 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 			return s + MesquiteFile.fileSeparator;
    	}
 
+   	public String getRelativePackagePath() {
+		return this.getModuleClass().getPackage().getName().replaceAll("\\.","/");
+	}
+
  	/** returns the class of the module*/
  	public Class getModuleClass() { 
  		return mbClass;
