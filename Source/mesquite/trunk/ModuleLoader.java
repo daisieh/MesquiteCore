@@ -47,7 +47,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	public void init(String configFile, ListableVector configurations, boolean useMinimal) {
 	this.configurations = configurations;
 		mesquite.mesquiteModulesInfoVector = new ModulesInfoVector();
-		MesquiteModuleInfo mBI = new MesquiteModuleInfo(Mesquite.class, mesquite, new CommandChecker(), mesquite.getPath());
+		MesquiteModuleInfo mBI = new MesquiteModuleInfo(Mesquite.class, mesquite, new CommandChecker());
 		mesquite.mesquiteModulesInfoVector.addElement(mBI, false);
 		mesquite.mesquiteModulesInfoVector.recordDuty(mesquite);
 		loadTimer= new MesquiteTimer();
@@ -646,7 +646,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					}
 					String message = checkModuleForCompatibility(c);
 					if (message == null && mb.compatibleWithSystem() && mb.loadModule()) {
-						MesquiteModuleInfo mBI = new MesquiteModuleInfo(c, mb, moduleChecker, thisFile.getParent());
+						MesquiteModuleInfo mBI = new MesquiteModuleInfo(c, mb, moduleChecker);
 						if (!mb.getName().equals("Mesquite") && mesquite.mesquiteModulesInfoVector.nameAlreadyInList(mb.getName()))
 							MesquiteTrunk.mesquiteTrunk.alert("Two modules have the same name (" + mb.getName() + ").  This may make one of the modules unavailable for use. (Module class: " + mb.getClass().getName() +
 									").\n\nThis problem can arise if a module has been moved, and you update your copy of Mesquite on a Windows machine by replacing folders without deleting the previous folder, or if you are programming and you haven't updated all projects.");
