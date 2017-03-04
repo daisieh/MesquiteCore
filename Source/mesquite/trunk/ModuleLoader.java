@@ -381,16 +381,17 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		File f = new File(filePathName + File.separatorChar + "mesquite");
 		if (!f.isDirectory())
 			return;
-		getModules("", f, 0, targetDirectories, targetOn, loadingAll);
+		getModules(f, 0, targetDirectories, targetOn, loadingAll);
 //		String[] modulesList = f.list();
 //		Arrays.sort(modulesList);
 //		for (int i=0; i<modulesList.length; i++) {
-//			File newFile = new File(f.getAbsolutePath()+ File.separatorChar + modulesList[i]);
+//			String module = modulesList[i];
+//			File newFile = new File(f.getAbsolutePath()+ File.separatorChar + module);
 //			if (newFile.list() != null) {
-//				System.out.println("loading from " + modulesList[i]);
-//				loadPackageExplanation(newFile.getAbsolutePath(), true);
+////				System.out.println("loading from " + module);
+////				loadPackageExplanation(newFile.getAbsolutePath(), true);
 //				showMessage(true, "Loading from directory: " + newFile.getName(), directoryTotal, ++directoryNumber);
-//				mesquite.log(" " + modulesList[i]);
+////				mesquite.log(" " + module);
 ////				if (MesquiteFile.fileOrDirectoryExists(f.getAbsolutePath() + MesquiteFile.fileSeparator + "jars")){
 ////					StringBuffer buffer =new StringBuffer();
 ////					buffer.append("\n");
@@ -399,7 +400,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 ////				}
 //				showMessage(true, ++directoryNumber);
 //			}
-//			getModules("mesquite" + ".", newFile, 1, targetDirectories, targetOn, loadingAll);
+//			getModules(newFile, 1, targetDirectories, targetOn, loadingAll);
 //		}
 	}
 
