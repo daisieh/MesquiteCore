@@ -45,9 +45,9 @@ public abstract class MesquiteImage extends Image {
 	public static Image getResourceImage(String filename) {
 		BufferedImage image = null;
 		try {
-			URL url = Thread.currentThread().getContextClassLoader().getResource("images/" + filename);
+			URL url = Thread.currentThread().getContextClassLoader().getResource(filename);
 			if (url == null) {
-				MesquiteMessage.println("couldn't find " + "images/" + filename);
+				MesquiteMessage.println("couldn't find " + filename);
 				for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
 					MesquiteMessage.println(ste.toString());
 				}

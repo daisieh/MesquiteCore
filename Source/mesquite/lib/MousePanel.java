@@ -253,9 +253,9 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 				if ((best.width>16 || best.height>16) && MesquiteFile.fileExists(MesquiteModule.getSizedRootImageFilePath(best.width, imageFileName))){
 					im = MesquiteImage.getImage((MesquiteModule.getSizedRootImageFilePath(best.width, imageFileName)));
 					if (im == null)
-						im = MesquiteImage.getResourceImage(imageFileName);
+						im = MesquiteImage.getResourceImage("images/"+ imageFileName);
 				}
-				im = MesquiteImage.getResourceImage(imageFileName);
+				im = MesquiteImage.getResourceImage("images/" + imageFileName);
 				//setCursorImage(im);
 			}
 			Point p = new Point(x, y);

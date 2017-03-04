@@ -762,9 +762,9 @@ class ScrollPanel extends MousePanel {
 		searchStrip.setLocation(20, 0);
 		searchStrip.setVisible(true);
 		searchStrip.setText("");
-		search = MesquiteImage.getResourceImage("search.gif");
-		up = MesquiteImage.getResourceImage("uparrow.gif");
-		down = MesquiteImage.getResourceImage("downarrow.gif");
+		search = MesquiteImage.getResourceImage("images/search.gif");
+		up = MesquiteImage.getResourceImage("images/uparrow.gif");
+		down = MesquiteImage.getResourceImage("images/downarrow.gif");
 	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}

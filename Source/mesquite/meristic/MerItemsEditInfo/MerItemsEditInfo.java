@@ -110,9 +110,9 @@ class ItemsPanel extends MatrixInfoExtraPanel  {
 		statesBox =  new StringInABox("", null, 50);
 		itemsField = new ItemsField(this);
 		itemsField.setBackground(getBackground());
-		add = MesquiteImage.getResourceImage("addGray.gif");
-		subtract = MesquiteImage.getResourceImage("subtractGray.gif");
-		query = MesquiteImage.getResourceImage("queryGray.gif");
+		add = MesquiteImage.getResourceImage("images/addGray.gif");
+		subtract = MesquiteImage.getResourceImage("images/subtractGray.gif");
+		query = MesquiteImage.getResourceImage("images/queryGray.gif");
 		currentHeight = 100 + MINHEIGHT + charNameHeight;
 		setLayout(null);
 		add(itemsField);

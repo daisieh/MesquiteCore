@@ -37,18 +37,18 @@ public class MiniScrollButton extends MousePanel {
 	String itemName="";
 	
 	static {
-		leftArrow = MesquiteImage.getResourceImage("leftarrow.gif");
-		leftArrowPressed = MesquiteImage.getResourceImage("leftarrowPressed.gif");
-		leftArrowDisabled = MesquiteImage.getResourceImage("leftarrowDisabled.gif");
-		rightArrow = MesquiteImage.getResourceImage("rightarrow.gif");
-		rightArrowPressed = MesquiteImage.getResourceImage("rightarrowPressed.gif");
-		rightArrowDisabled = MesquiteImage.getResourceImage("rightarrowDisabled.gif");
-		upArrow = MesquiteImage.getResourceImage("uparrow.gif");
-		upArrowPressed = MesquiteImage.getResourceImage("uparrowPressed.gif");
-		upArrowDisabled = MesquiteImage.getResourceImage("uparrowDisabled.gif");
-		downArrow = MesquiteImage.getResourceImage("downarrow.gif");
-		downArrowPressed = MesquiteImage.getResourceImage("downarrowPressed.gif");
-		downArrowDisabled = MesquiteImage.getResourceImage("downarrowDisabled.gif");
+		leftArrow = MesquiteImage.getResourceImage("images/leftarrow.gif");
+		leftArrowPressed = MesquiteImage.getResourceImage("images/leftarrowPressed.gif");
+		leftArrowDisabled = MesquiteImage.getResourceImage("images/leftarrowDisabled.gif");
+		rightArrow = MesquiteImage.getResourceImage("images/rightarrow.gif");
+		rightArrowPressed = MesquiteImage.getResourceImage("images/rightarrowPressed.gif");
+		rightArrowDisabled = MesquiteImage.getResourceImage("images/rightarrowDisabled.gif");
+		upArrow = MesquiteImage.getResourceImage("images/uparrow.gif");
+		upArrowPressed = MesquiteImage.getResourceImage("images/uparrowPressed.gif");
+		upArrowDisabled = MesquiteImage.getResourceImage("images/uparrowDisabled.gif");
+		downArrow = MesquiteImage.getResourceImage("images/downarrow.gif");
+		downArrowPressed = MesquiteImage.getResourceImage("images/downarrowPressed.gif");
+		downArrowDisabled = MesquiteImage.getResourceImage("images/downarrowDisabled.gif");
 	}
 	public MiniScrollButton (MiniScroll miniScroll, int orientation, String itemName) {
 		this.orientation = orientation;

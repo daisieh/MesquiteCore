@@ -33,12 +33,12 @@ public class EnterButton extends MousePanel {
 	public static final int MIN_DIMENSION = 13;
 	
 	static {
-		enterVerticalDisabled = MesquiteImage.getResourceImage("enterVertDisabled.gif");
-		enterHorizontalDisabled = MesquiteImage.getResourceImage("enterHorizDisabled.gif");
-		enterVertical = MesquiteImage.getResourceImage("enterVert.gif");
-		enterHorizontal = MesquiteImage.getResourceImage("enterHoriz.gif");
-		enterVerticalPressed = MesquiteImage.getResourceImage("enterVertPressed.gif");
-		enterHorizontalPressed = MesquiteImage.getResourceImage("enterHorizPressed.gif");
+		enterVerticalDisabled = MesquiteImage.getResourceImage("images/enterVertDisabled.gif");
+		enterHorizontalDisabled = MesquiteImage.getResourceImage("images/enterHorizDisabled.gif");
+		enterVertical = MesquiteImage.getResourceImage("images/enterVert.gif");
+		enterHorizontal = MesquiteImage.getResourceImage("images/enterHoriz.gif");
+		enterVerticalPressed = MesquiteImage.getResourceImage("images/enterVertPressed.gif");
+		enterHorizontalPressed = MesquiteImage.getResourceImage("images/enterHorizPressed.gif");
 	}
 	public EnterButton (MiniControl miniControl, boolean vertical) {
 		this.miniControl = miniControl;

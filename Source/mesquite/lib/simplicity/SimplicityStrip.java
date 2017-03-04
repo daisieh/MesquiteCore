@@ -35,9 +35,9 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 		setFont(smallFont);
 		setBackground(ColorTheme.getInterfaceBackground());
 		setCursor(Cursor.getDefaultCursor());
-		power = MesquiteImage.getResourceImage("simplification/power.gif");
-		simple = MesquiteImage.getResourceImage("simplification/simple.gif");
-		editing = MesquiteImage.getResourceImage("notesTool.gif");
+		power = MesquiteImage.getResourceImage("images/simplification/power.gif");
+		simple = MesquiteImage.getResourceImage("images/simplification/simple.gif");
+		editing = MesquiteImage.getResourceImage("images/notesTool.gif");
 	}
 
 	public void dispose(){

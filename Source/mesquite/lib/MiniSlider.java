@@ -42,8 +42,8 @@ public class MiniSlider extends MousePanel implements Explainable, ImageOwner {
 	MesquiteTimer timer=null;
 	//boolean enforceMin, enforceMax;
 	static {
-		enterVertical = MesquiteImage.getResourceImage("sliderVert.gif");
-		enterHorizontal = MesquiteImage.getResourceImage("sliderHoriz.gif");
+		enterVertical = MesquiteImage.getResourceImage("images/sliderVert.gif");
+		enterHorizontal = MesquiteImage.getResourceImage("images/sliderHoriz.gif");
 	}
 	public MiniSlider (MesquiteCommand command, boolean horizontal, double currentValue, double minValue, double maxValue, double minSweetValue, double maxSweetValue) {
 		setCursor(Cursor.getDefaultCursor());

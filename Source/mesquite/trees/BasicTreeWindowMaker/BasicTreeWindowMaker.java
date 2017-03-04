@@ -5457,7 +5457,7 @@ class BranchInfoPanel extends TreeInfoExtraPanel {
 
 	public BranchInfoPanel(ClosablePanelContainer container) {
 		super(container, "Branch/Node Info");
-		query = MesquiteImage.getResourceImage("queryGray.gif");
+		query = MesquiteImage.getResourceImage("images/queryGray.gif");
 		statsBox = new StringInABox("", null, 50);
 	}
 
@@ -5587,7 +5587,7 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 	public TreeInfoPanel(BasicTreeWindow w) {
 		super();
 		this.w = w;
-		add = MesquiteImage.getResourceImage("addGray.gif");
+		add = MesquiteImage.getResourceImage("images/addGray.gif");
 		setLayout(null);
 		addExtraPanel(btsp = new BasicTreeStatisticsPanel(this));
 		addExtraPanel(ap = new BranchInfoPanel(this));
@@ -5597,7 +5597,7 @@ class TreeInfoPanel extends MousePanel implements ClosablePanelContainer {
 		titleFont = new Font("SansSerif", Font.BOLD, 12);
 		titleBox = new StringInABox("", null, width);
 		explanationBox = new StringInABox("", null, width);
-		goaway = MesquiteImage.getResourceImage("minimizeTransparent.gif");
+		goaway = MesquiteImage.getResourceImage("images/minimizeTransparent.gif");
 	}
 
 	/* ................................................................................................................. */

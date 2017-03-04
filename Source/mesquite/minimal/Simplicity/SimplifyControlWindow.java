@@ -239,8 +239,8 @@ class TrianglePanel extends MousePanel {
 	PackagesPanel packagesPanel;
 	public TrianglePanel(PackagesPanel pp){
 		packagesPanel = pp;
-		triangleRight = MesquiteImage.getResourceImage("triangleRightOn.gif");
-		triangleDown = MesquiteImage.getResourceImage("triangleDownOn.gif");
+		triangleRight = MesquiteImage.getResourceImage("images/triangleRightOn.gif");
+		triangleDown = MesquiteImage.getResourceImage("images/triangleDownOn.gif");
 		setBackground(ColorTheme.getInterfaceBackgroundPale());
 	}
 	public void paint(Graphics g){
@@ -694,7 +694,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 
 	public EditModeButton(){
 		super("Editing Mode");
-		editing = MesquiteImage.getResourceImage("notesTool.gif");
+		editing = MesquiteImage.getResourceImage("images/notesTool.gif");
 		setState(false);
 		setBackground(ColorTheme.getExtInterfaceElement());
 		setForeground(ColorTheme.getExtInterfaceTextContrast()); //ColorTheme.getExtInterfaceElement());
@@ -758,8 +758,8 @@ class ModePanel extends Panel implements ItemListener {
 		simplerCB.setFont(fontBig14);
 		powerCB.addItemListener(this);
 		simplerCB.addItemListener(this);
-		power = MesquiteImage.getResourceImage("simplification/power.gif");
-		simple = MesquiteImage.getResourceImage("simplification/simple.gif");
+		power = MesquiteImage.getResourceImage("images/simplification/power.gif");
+		simple = MesquiteImage.getResourceImage("images/simplification/simple.gif");
 
 		loadButton = new LoadButton();
 		loadButton.setFont(fontBig);
