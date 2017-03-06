@@ -393,7 +393,9 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		File f = new File(filePathName + File.separatorChar + "mesquite");
 		if (!f.isDirectory())
 			return;
-		getModules(f, 0, targetDirectories, targetOn, loadingAll);
+		mesquite.logln("targetDirectories are " + ((targetDirectories == null) ? "null" : targetDirectories.toString()));
+		getModules(targetDirectories);
+		getModulesOld(f, 0, targetDirectories, targetOn, loadingAll);
 //		String[] modulesList = f.list();
 //		Arrays.sort(modulesList);
 //		for (int i=0; i<modulesList.length; i++) {
@@ -412,11 +414,37 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 ////				}
 //				showMessage(true, ++directoryNumber);
 //			}
-//			getModules(newFile, 1, targetDirectories, targetOn, loadingAll);
+//			getModulesOld(newFile, 1, targetDirectories, targetOn, loadingAll);
 //		}
 	}
 
-	private void getModules(File f, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll) { //path has no slash at the end of it
+	private void getModules(StringArray targetDirectories) {
+		// get a list of all packages in jar:
+		ArrayList<String> jarEntries = new ArrayList<>();
+		try {
+			JarFile classJar = new JarFile(new File(System.getProperty("java.class.path")));
+			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+				JarEntry entry = entries.nextElement();
+				jarEntries.add(entry.getName().replace('/', '.'));
+			}
+		} catch (Exception e) {
+
+		}
+		// next, look for everything in the jar that corresponds to each package in targetDirectories:
+		for (int i=0; i< targetDirectories.getSize(); i++) {
+			String packageToLoad = targetDirectories.getValue(i) + ".";
+			ArrayList<String> jarEntriesToLoad = new ArrayList<>();
+			for (String entry : jarEntries) {
+				if (entry.contains(packageToLoad)) {
+					jarEntriesToLoad.add(entry);
+				}
+			}
+			mesquite.logln("loading package " + packageToLoad + ": ");
+
+		}
+	}
+
+	private void getModulesOld(File f, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll) { //path has no slash at the end of it
 		level++;  //increment depth into directory structure
 		if (verboseStartup) MesquiteMessage.println(">level " + level + " " + f.getAbsolutePath());
 		if (!f.exists())
@@ -440,7 +468,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					if ((targetDirectories==null || (targetNumber<0 && !targetOn) || (targetNumber>=0 && targetOn))) {
 						// if targetDirs are null OR targetDirs do not contain this module (?) and no target OR targetDirs DO contain this module and target
 						File newFile = new File(f.getAbsolutePath() + MesquiteFile.fileSeparator + module);
-						getModules(newFile, level, null, targetOn, loadingAll);
+						getModulesOld(newFile, level, null, targetOn, loadingAll);
 					} else if (level == 1) {
 						String notDonePath = f.getAbsolutePath()+ MesquiteFile.fileSeparator + module;
 						File notDoneFile = new File(notDonePath);
@@ -666,7 +694,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 								MesquiteMessage.warnProgrammer("...\n**************\nThe module " +mb.getName() + " (" + mb.getClass().getName() + ") expects a file or directory at " + mb.getExpectedPath() + " but it was not found. \n**************\n ...");
 						}
 						modulesLoaded++;
-						mesquite.logln("loadMesquiteModuleClassFiles " + packageName);
+//						mesquite.logln("loadMesquiteModuleClassFiles " + packageName);
 						//mesquite.logln("Loading: " + mb.getName(), MesquiteLong.unassigned, MesquiteLong.unassigned);
 					}
 					else if (message !=null)
