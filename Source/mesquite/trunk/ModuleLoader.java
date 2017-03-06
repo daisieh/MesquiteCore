@@ -14,9 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 import java.io.*;
-import java.net.JarURLConnection;
-import java.net.URI;
-import java.net.URL;
 import java.util.*;
 import java.lang.reflect.*;
 import java.util.jar.JarEntry;
@@ -41,6 +38,7 @@ public class ModuleLoader {
 		this.mesquite = mesquite;
 		parser = new Parser();
 	}
+	ClassLoader jcl = null;
 	
 MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,otherTime, classTime;
 	/*.................................................................................................................*/
@@ -63,19 +61,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			System.out.println("Error: attempt to use applet as application");
 		}
 		else {
-
-			File classFile = new File(System.getProperty("java.class.path"));
-			try {
-				JarFile classJar = new JarFile(classFile);
-				for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
-					JarEntry entry = entries.nextElement();
-					loadJarModule(entry);
-				}
-			} catch (Exception e) {
-
-			}
-
-
 			StringArray targetDirectories;
 
 			
@@ -207,7 +192,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		}
 	}
 
-	void loadJarModule(JarEntry entry) throws Exception {
+	private void loadJarModule(JarEntry entry) throws Exception {
 		String fileName = entry.getName();
 		if (fileName.startsWith("mesquite")) {
 			System.out.println("found jarEntry " + fileName);
@@ -216,15 +201,22 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			} else if (fileName.endsWith("config/")) {
 				mesquite.logln("loadConfigs " + fileName);
 			} else if (fileName.endsWith(".class")) {
-				mesquite.logln("loading class");
-				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-				URL url = classLoader.getResource(fileName);
-				File file = new File(url.toURI());
-				mesquite.logln("found class " + file.getName());
+				String className = entry.getName();//.substring(0,entry.getName().length()-6);
+				className = className.replace('/', '.');
+				// A module file is a class file located directly inside a directory of the same name.
+				Pattern r = Pattern.compile("(.+\\.)(.+?)(\\.\\2)\\.class");
+				Matcher modulePattern = r.matcher(className);
 
-//				JarURLConnection connection = (JarURLConnection) url.openConnection();
-//				JarFile file = connection.getJarFile();
-//				String jarPath = file.getName();
+				// if it's not of this pattern, it's not a module. Return.
+				if (!modulePattern.matches())
+					return;
+
+				className = modulePattern.group(1) + modulePattern.group(2) + modulePattern.group(3);
+				Class c = Class.forName(className);
+				mesquite.logln("loading class " + className);
+				loadModuleClass(c);
+			} else {
+				mesquite.logln("found another kind of file " + fileName);
 			}
 		}
 	}
@@ -635,9 +627,22 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		String className = modulePattern.group(1) + modulePattern.group(2) + modulePattern.group(3);
 		try {
-			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
 			Class c = Class.forName(className);
-			if (c != null && !className.equals("mesquite.Mesquite")) {
+			ClassLoader cl = c.getClassLoader();
+//			mesquite.logln("loading " + className + " from " + cl.getResource(c.getName().replace('.', '/') + ".class"));
+			loadModuleClass(c);
+		} catch (ClassNotFoundException e) {
+			mesquite.logln("\n\nClassNotFoundException while loading: " + className);
+			MesquiteFile.throwableToLog(this, e);
+			warnMissing(className, e);
+		}
+	}
+
+	private void loadModuleClass(Class c) {
+		String className = c.getName();
+		try {
+			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
+			if (c != null && !c.getName().equals("mesquite.Mesquite")) {
 				MesquiteModule mb = mesquite.instantiateModule(c);
 				if (mb!=null && mb instanceof MesquiteModule) {
 					if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
@@ -673,11 +678,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				}
 				c = null;
 			}
-		}
-		catch (ClassNotFoundException e){
-			mesquite.logln("\n\nClassNotFoundException while loading: " + className);
-			MesquiteFile.throwableToLog(this, e);
-			warnMissing(className, e);
 		}
 		catch (NoClassDefFoundError e){
 			mesquite.logln("\n\nNoClassDefFoundError while loading: " + className);
