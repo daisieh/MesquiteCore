@@ -16,6 +16,7 @@ package mesquite;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.io.*;
@@ -178,7 +179,36 @@ public class Mesquite extends MesquiteTrunk
 
 
 		String sep = MesquiteFile.fileSeparator;
-		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
+//		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
+
+		// set up the support file location:
+		String os = (System.getProperty("os.name")).toLowerCase();
+		System.out.println("OS is " + os);
+		File appdata = new File(System.getProperty("user.home"));
+		Path appSupportPath = appdata.toPath();
+		if (os.contains("win")) {
+			// on Windows, the application data is in Appdata:
+			appdata = new File(System.getenv("AppData"));
+			appSupportPath = appdata.toPath();
+		} else if (os.contains("mac")) {
+			appSupportPath = appdata.toPath().resolve("Library").resolve("Application Support");
+			if (appSupportPath.toFile().exists()) {
+				System.out.println("appsupportpath is " + appSupportPath.toString());
+			}
+		} else {
+			// assume a unix, just drop it into the user home.
+		}
+
+		appSupportPath = appSupportPath.resolve("Mesquite_Support_Files");
+		supportFilesPath = appSupportPath.toString();
+		if (!appSupportPath.toFile().exists()) {
+			try {
+				supportFilesPath = Files.createDirectory(appSupportPath).toString();
+			} catch (IOException e) {
+				System.out.println("couldn't create directory " + appSupportPath.toString());
+			}
+		}
+
 		mesquiteClassLoader = this.getClass().getClassLoader();
 		try {
 			File classFile = new File(System.getProperty("java.class.path"));
