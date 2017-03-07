@@ -197,10 +197,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				mesquite.logln("  loadConfigs " + fileName);
 			} else if (fileName.endsWith(".class")) {
 				fileName = fileName.replace('/', '.');
-				mesquite.logln("  loading class " + fileName);
 				loadModuleClass(fileName);
-			} else {
-//				mesquite.logln("found another kind of file " + fileName);
 			}
 		}
 	}
@@ -599,16 +596,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 						MesquiteTrunk.mesquiteTrunk.addSplash(mBI);
 						showMessage(false, configurationString);
 						if (mb.getExpectedPath() !=null){
-							File n = new File(mb.getExpectedPath());
-							if (!n.exists())
+							if (mesquite.getMesquiteClassLoader().getResource(mb.getExpectedPath()) != null)
 								MesquiteMessage.warnProgrammer("...\n**************\nThe module " +mb.getName() + " (" + mb.getClass().getName() + ") expects a file or directory at " + mb.getExpectedPath() + " but it was not found. \n**************\n ...");
 						}
 						modulesLoaded++;
 						mesquite.logln("   loadModuleClass " + className);
 						//mesquite.logln("Loading: " + mb.getName(), MesquiteLong.unassigned, MesquiteLong.unassigned);
-					}
-					else {
-						mesquite.logln("can't load " + className + ": " + message + "; mb.compatibleWithSystem() = " + mb.compatibleWithSystem() + " mb.loadModule() = " + mb.loadModule() + "; mb is " + mb.getClass().getName());
 					}
 					//					else if (message !=null) {
 //						MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current version of the Mesquite system.   Error message: " + message);
