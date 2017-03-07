@@ -941,10 +941,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** returns path to this module's directory*/
 	public String getPath() {  
 		if (this == MesquiteTrunk.mesquiteTrunk)
-			return getRootPath() + "mesquite" + MesquiteFile.fileSeparator;
+			return "mesquite" + MesquiteFile.fileSeparator;
 		if (moduleInfo == null)
 			return null;
-		return  moduleInfo.getDirectoryPath();
+		return  moduleInfo.getRelativePackagePath();
 	}
 	/*.................................................................................................................*/
 	/** returns path to this module's package directory*/
