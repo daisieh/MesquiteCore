@@ -108,7 +108,9 @@ public class Mesquite extends MesquiteTrunk
 	private  FileOpener fileHandler;
 	private ArrayList<String> mesquiteJarEntries = new ArrayList<>();
 	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
+	private ClassLoader mesquiteClassLoader = null;
 
+	public ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
 
 	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
 
@@ -177,15 +179,14 @@ public class Mesquite extends MesquiteTrunk
 
 		String sep = MesquiteFile.fileSeparator;
 		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
-
+		mesquiteClassLoader = this.getClass().getClassLoader();
 		//finding mesquite directory
 		try {
 			if (mesquiteDirectory == null) {
 				File classFile = new File(System.getProperty("java.class.path"));
 				Path classPath = classFile.toPath();
 				JarFile classJar = new JarFile(classFile);
-				URL classURL = mesquite.Mesquite.class.getClassLoader().getResource("mesquite/Mesquite.class");
-				URI classURI = classURL.toURI();
+				URL classURL = mesquiteClassLoader.getResource("mesquite/Mesquite.class");
 
 				System.out.println("path is " + classPath.toString());
 				System.out.println("class loader path is " + classURL.toString());
@@ -223,8 +224,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 
 		if (mesquiteDirectory == null) {
-			ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
-			URL classLoc = cl.getResource("mesquite/Mesquite.class");
+			URL classLoc = mesquiteClassLoader.getResource("mesquite/Mesquite.class");
 			String loc = "";
 			if (classLoc != null) {
 				loc = classLoc.getPath();
