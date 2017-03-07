@@ -180,49 +180,36 @@ public class Mesquite extends MesquiteTrunk
 		String sep = MesquiteFile.fileSeparator;
 		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 		mesquiteClassLoader = this.getClass().getClassLoader();
-		//finding mesquite directory
 		try {
-			if (mesquiteDirectory == null) {
-				File classFile = new File(System.getProperty("java.class.path"));
-				Path classPath = classFile.toPath();
-				JarFile classJar = new JarFile(classFile);
-				URL classURL = mesquiteClassLoader.getResource("mesquite/Mesquite.class");
+			File classFile = new File(System.getProperty("java.class.path"));
+			JarFile classJar = new JarFile(classFile);
 
-				System.out.println("path is " + classPath.toString());
-				System.out.println("class loader path is " + classURL.toString());
-				// if we've executed from a jar, find the mesquite directory within the classes directory that is part of the target build.
-				mesquiteDirectory = classPath.getParent().resolve("classes").toFile();
-				if (!mesquiteDirectory.exists())
-					mesquiteDirectory = null;
-
-				mesquiteJarEntries = new ArrayList<>();
-				for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
-					JarEntry entry = entries.nextElement();
-					if (entry.getName().contains("mesquite/")) {
-						mesquiteJarEntries.add(entry.getName());
+			mesquiteJarEntries = new ArrayList<>();
+			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().contains("mesquite/")) {
+					mesquiteJarEntries.add(entry.getName());
+				}
+			}
+			mesquiteJarModules = new HashMap<>();
+			for (String entry : mesquiteJarEntries) {
+				Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
+				Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
+				if (modulePackageMatcher.matches()) {
+					String packageName = modulePackageMatcher.group(1).replace("/",".");
+					if (!mesquiteJarModules.containsKey(packageName)) {
+						logln("making key " + packageName);
+						mesquiteJarModules.put(packageName, new ArrayList<String>());
+					}
+					if (!modulePackageMatcher.group(2).isEmpty()) {
+						mesquiteJarModules.get(packageName).add(modulePackageMatcher.group(0));
 					}
 				}
-				mesquiteJarModules = new HashMap<>();
-				for (String entry : mesquiteJarEntries) {
-					Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
-					Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
-					if (modulePackageMatcher.matches()) {
-						String packageName = modulePackageMatcher.group(1).replace("/",".");
-						if (!mesquiteJarModules.containsKey(packageName)) {
-							logln("making key " + packageName);
-							mesquiteJarModules.put(packageName, new ArrayList<String>());
-						}
-						if (!modulePackageMatcher.group(2).isEmpty()) {
-							mesquiteJarModules.get(packageName).add(modulePackageMatcher.group(0));
-						}
-					}
-				}
-
 			}
 		} catch (Exception e) {
 			System.out.println("exception " + e.toString());
 		}
-
+		//finding mesquite directory
 		if (mesquiteDirectory == null) {
 			URL classLoc = mesquiteClassLoader.getResource("mesquite/Mesquite.class");
 			String loc = "";
