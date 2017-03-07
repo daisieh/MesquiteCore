@@ -228,7 +228,6 @@ public class Mesquite extends MesquiteTrunk
 				if (modulePackageMatcher.matches()) {
 					String packageName = modulePackageMatcher.group(1).replace("/",".");
 					if (!mesquiteJarModules.containsKey(packageName)) {
-						logln("making key " + packageName);
 						mesquiteJarModules.put(packageName, new ArrayList<String>());
 					}
 					if (!modulePackageMatcher.group(2).isEmpty()) {
