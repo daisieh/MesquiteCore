@@ -38,8 +38,7 @@ public class ModuleLoader {
 		this.mesquite = mesquite;
 		parser = new Parser();
 	}
-	ClassLoader jcl = null;
-	
+
 MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,otherTime, classTime;
 	/*.................................................................................................................*/
 	public void init(String configFile, ListableVector configurations, boolean useMinimal) {
