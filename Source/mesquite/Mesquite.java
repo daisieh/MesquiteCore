@@ -17,11 +17,13 @@ package mesquite;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -104,6 +106,15 @@ public class Mesquite extends MesquiteTrunk
 	HPanel browser;
 	ListableVector configurations;
 	private  FileOpener fileHandler;
+	private ArrayList<String> mesquiteJarEntries = new ArrayList<>();
+	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
+
+
+	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
+
+	public HashMap<String, ArrayList<String>> getMesquiteJarModules() {
+		return mesquiteJarModules;
+	}
 
 	/*.................................................................................................................*/
 	public void endJob() {
@@ -182,6 +193,30 @@ public class Mesquite extends MesquiteTrunk
 				mesquiteDirectory = classPath.getParent().resolve("classes").toFile();
 				if (!mesquiteDirectory.exists())
 					mesquiteDirectory = null;
+
+				mesquiteJarEntries = new ArrayList<>();
+				for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+					JarEntry entry = entries.nextElement();
+					if (entry.getName().contains("mesquite/")) {
+						mesquiteJarEntries.add(entry.getName());
+					}
+				}
+				mesquiteJarModules = new HashMap<>();
+				for (String entry : mesquiteJarEntries) {
+					Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
+					Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
+					if (modulePackageMatcher.matches()) {
+						String packageName = modulePackageMatcher.group(1).replace("/",".");
+						if (!mesquiteJarModules.containsKey(packageName)) {
+							logln("making key " + packageName);
+							mesquiteJarModules.put(packageName, new ArrayList<String>());
+						}
+						if (!modulePackageMatcher.group(2).isEmpty()) {
+							mesquiteJarModules.get(packageName).add(modulePackageMatcher.group(0));
+						}
+					}
+				}
+
 			}
 		} catch (Exception e) {
 			System.out.println("exception " + e.toString());
