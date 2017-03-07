@@ -87,7 +87,8 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	public MesquiteModuleInfo(Class c, MesquiteModule mb, CommandChecker checker) {
 		checker =CommandChecker.accumulate(mb, checker);
 		mb.moduleInfo = this;
- 		this.manualPath = mb.getManualPath();
+		this.mbClass = c;
+		this.manualPath = mb.getManualPath();
  		this.directoryPath = MesquiteModule.getRootPath() + File.separatorChar + c.getPackage().getName().replace(".", String.valueOf(File.separatorChar)) + File.separatorChar;
  		this.directoryPath = this.directoryPath.replaceAll(String.valueOf(File.separatorChar) + String.valueOf(File.separatorChar), String.valueOf(File.separatorChar));
 		this.splashExists = (mb instanceof PackageIntroInterface && (( PackageIntroInterface)mb).hasSplash());
@@ -96,7 +97,6 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
  		this.commands = checker.getAccumulatedCommands();
  		this.explanations = checker.getAccumulatedExplanations();
  		this.menus =checker.getAccumulatedMenus();
-		this.mbClass = c;
 		isPrimaryChoice = mb.requestPrimaryChoice();
 		this.hireSubchoice = mb.getHireSubchoice();
 		this.dontHireSubchoice = mb.getDontHireSubchoice();
@@ -369,7 +369,7 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
    	}
 
    	public String getRelativePackagePath() {
-		return this.getModuleClass().getPackage().getName().replaceAll("\\.","/");
+		return mbClass.getPackage().getName().replaceAll("\\.","/");
 	}
 
  	/** returns the class of the module*/
