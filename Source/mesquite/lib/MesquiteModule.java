@@ -972,15 +972,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns path to the root directory of Mesquite images*/
 	public static String getRootImageDirectoryPath() {
-		String s = getRootPath();
-		if (s==null)
-			return null;
-		else
-			return s + "images/";
+		return "images/";
 	}
 	/*.................................................................................................................*/
-	public static String getSizedRootImageFilePath(int s, String imageFileName){
-		return getRootImageDirectoryPath() + s + imageFileName;
+	public static String getSizedRootImageResource(int s, String imageFileName){
+		return "images/" + s + imageFileName;
 	}
 	/*.................................................................................................................*/
 	/** returns path to the root directory of the documentation of Mesquite*
