@@ -108,9 +108,9 @@ public class Mesquite extends MesquiteTrunk
 	private  FileOpener fileHandler;
 	private ArrayList<String> mesquiteJarEntries = new ArrayList<>();
 	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
-	private ClassLoader mesquiteClassLoader = null;
+	private static ClassLoader mesquiteClassLoader = null;
 
-	public ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
+	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
 
 	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
 
