@@ -292,25 +292,15 @@ public class Mesquite extends MesquiteTrunk
 		userDirectory = new File(System.getProperty("user.home")+sep);  //used to be user.dir, but caused permission problems in linux
 
 		supportFilesDirectory = new File(supportFilesPath);
-		if (!supportFilesDirectory.exists()){
-			supportFilesDirectory.mkdir();
-		}
 		boolean supportFilesWritable = MesquiteFile.canWrite(supportFilesPath);
 		boolean writabilityWarned = false;
 		if (!supportFilesWritable || !supportFilesDirectory.exists()){
-			String oldPath = supportFilesPath;
-			supportFilesPath = mesquiteDirectory.getPath() + sep + "Mesquite_Support_Files";
-			supportFilesDirectory = new File(supportFilesPath);
-			if (!supportFilesDirectory.exists())
-				supportFilesDirectory.mkdir();
 			if (!supportFilesDirectory.exists()){
 				writabilityWarned = true;
 				if (MesquiteWindow.headless)
-					System.out.println("Mesquite does not have permission to write its log file or its preferences files.  It has attempted to create both " + oldPath +
-							"\" and \"" + supportFilesPath + "\" but failed.");
+					System.out.println("Mesquite does not have permission to write its log file or its preferences files.  It has attempted to create \"" + supportFilesPath + "\" but failed.");
 				else
-					alert("Mesquite does not have permission to write its log file or its preferences files.  It has attempted to create both " + oldPath +
-							"\" and \"" + supportFilesPath + "\" but failed.  This will prevent Mesquite from functioning properly.  Please check that your system permits " +
+					alert("Mesquite does not have permission to write its log file or its preferences files.  It has attempted to create \"" + supportFilesPath + "\" but failed.  This will prevent Mesquite from functioning properly.  Please check that your system permits " +
 							"Mesquite to write to " + userDirectory);
 			}
 		}
