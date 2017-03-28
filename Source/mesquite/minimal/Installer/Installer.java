@@ -124,10 +124,12 @@ public class Installer extends MesquiteInit {
 	/*.................................................................................................................*/
 	void readReceipts(){
 		readReceipts(getInstallationSettingsPath() + "receipts.xml");
-		File mesquite = new File(getRootPath()+ "mesquite"); 
-		String[] folders = mesquite.list(); 
-		for (int i=0; i<folders.length; i++){
-			readReceipts(getRootPath() + "mesquite/" + folders[i] + "/receipts.xml");
+		File mesquite = new File(getRootPath()+ "mesquite");
+		String[] folders = mesquite.list();
+		if (folders != null) {
+			for (int i = 0; i < folders.length; i++) {
+				readReceipts(getRootPath() + "mesquite/" + folders[i] + "/receipts.xml");
+			}
 		}
 
 	}
