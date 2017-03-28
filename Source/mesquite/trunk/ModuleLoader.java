@@ -386,57 +386,66 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 			// if targetOn is true, we're loading only the modules in the targetDirectories.
 			// if targetOn is false, we're loading everything *but* the modules in the targetDirectories.
-			ArrayList<String> jarEntriesToLoad = new ArrayList<>();
+			ArrayList<String> modulePackagesToLoad = new ArrayList<>();
 			if (targetOn) {
 				for (int i = 0; i < targetDirectories.getSize(); i++) {
 					String packageToLoad = targetDirectories.getValue(i);
-					// are we using targetOn? If so, check to see if this package is in a target.
 					if (moduleList.containsKey(packageToLoad)) {
-						mesquite.logln("targetON loading " + packageToLoad);
-						jarEntriesToLoad.addAll(moduleList.get(packageToLoad));
+						modulePackagesToLoad.add(packageToLoad);
 					}
 				}
 			} else {
 				for (String entry : moduleList.keySet()) {
 					if (!targetDirectories.exists(entry)) {
-						mesquite.logln("targetOFF loading " + entry);
-						jarEntriesToLoad.addAll(moduleList.get(entry));
+						modulePackagesToLoad.add(entry);
 					}
 				}
 			}
-				for (String entry : jarEntriesToLoad) {
-					if (!entry.contains("BasicFileCoordinator.class")) {
-						loadJarModule(entry);
+
+			// load each modulePackage: classes, explanation, macros, configs
+			for (String modulePackage : modulePackagesToLoad) {
+				// load explanation, if available:
+				loadPackageExplanation(modulePackage, true);
+				// load classes
+				ArrayList<String> jarEntriesToLoad = moduleList.get(modulePackage);
+				for (String module : jarEntriesToLoad) {
+					if (!module.contains("BasicFileCoordinator.class")) {
+						loadJarModule(module);
 					}
 				}
+			}
 
 		} catch (Exception e) {
 
 		}
 	}
 
-	private void loadPackageExplanation(String path, boolean loaded){
-		String[] pathPieces = path.split(String.valueOf(File.separatorChar));
-		String packageName = pathPieces[pathPieces.length - 1];
-//		System.out.println("loadPackageExplanation " + path + ", " + packageName);
-			MesquitePackageRecord pRec = new MesquitePackageRecord();
-			pRec.setStored(0, packageName);
-			pRec.setLoaded(loaded);
-			mesquite.packages.addElement(pRec, false);
-			String ePath = path + MesquiteFile.fileSeparator + "explanation.txt";
-			if (MesquiteFile.fileExists(ePath)){
-				String[] contents = MesquiteFile.getFileContentsAsStrings(ePath);
-				if (contents!=null && contents.length>0){
-					pRec.setStored(1,contents[0]);
-					if (contents.length>1){
-						String s = "";
-						for (int i=1; i<contents.length; i++)
-							s += contents[i] + "\n";
-						pRec.setStored(2, s);
-					}
+	private void loadPackageExplanation(String packageName, boolean loaded){
+		MesquitePackageRecord pRec = new MesquitePackageRecord();
+		pRec.setStored(0, packageName);
+		pRec.setLoaded(loaded);
+		mesquite.packages.addElement(pRec, false);
+		String ePath = packageName.replace(".", "/") + File.separatorChar + "explanation.txt";
+		InputStream in = Mesquite.getMesquiteClassLoader().getResourceAsStream(ePath);
+		if (in != null) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			try {
+				pRec.setStored(1, reader.readLine());
+
+				String restOfExplanation = "";
+				String line = reader.readLine();
+				while (line != null) {
+					restOfExplanation += line + "\n";
+					line = reader.readLine();
 				}
+				if (!restOfExplanation.isEmpty()) {
+					pRec.setStored(2, restOfExplanation);
+				}
+			} catch (IOException e) {
+
 			}
-							
+		}
+
 	}
 
 	private void loadConfigs(String path, boolean userDefined){
@@ -600,7 +609,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 								MesquiteMessage.warnProgrammer("...\n**************\nThe module " +mb.getName() + " (" + mb.getClass().getName() + ") expects a file or directory at " + mb.getExpectedPath() + " but it was not found. \n**************\n ...");
 						}
 						modulesLoaded++;
-						mesquite.logln("   loadModuleClass " + className);
 						//mesquite.logln("Loading: " + mb.getName(), MesquiteLong.unassigned, MesquiteLong.unassigned);
 					}
 					//					else if (message !=null) {
