@@ -286,7 +286,7 @@ public class AttachedNote  implements NexusWritable {
 
 				relPath = MesquiteFile.decomposePath(proj.getHomeDirectoryName(), loc);
 				module.logln("Attaching image at " + loc + " (path " + relPath + "  relative to " + proj.getHomeDirectoryName() + ")");
-	   	 		im = MesquiteImage.getImage(relPath, proj);
+	   	 		im = MesquiteImage.getImageFromProject(relPath, proj);
 				if (!MesquiteImage.waitForImageToLoad(im)) {
 					String ext = StringUtil.getLastItem(loc, ".");
 					if (ext == null || !(ext.equalsIgnoreCase("gif") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg")))

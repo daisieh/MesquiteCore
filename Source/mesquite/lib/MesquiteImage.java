@@ -88,7 +88,7 @@ public abstract class MesquiteImage extends Image {
 	}
 
 	/** Returns an image at a given path relative to the location of a file (URL or local)*/
-	public static Image getImage(String path, MesquiteProject project) {
+	public static Image getImageFromProject(String path, MesquiteProject project) {
 		if (project.getHomeURL()==null) {
 			return Toolkit.getDefaultToolkit().getImage(MesquiteFile.composePath(project.getHomeDirectoryName(), path));
 		}
