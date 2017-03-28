@@ -37,18 +37,18 @@ public class MiniScrollButton extends MousePanel {
 	String itemName="";
 	
 	static {
-		leftArrow = MesquiteImage.getResourceImage("images/leftarrow.gif");
-		leftArrowPressed = MesquiteImage.getResourceImage("images/leftarrowPressed.gif");
-		leftArrowDisabled = MesquiteImage.getResourceImage("images/leftarrowDisabled.gif");
-		rightArrow = MesquiteImage.getResourceImage("images/rightarrow.gif");
-		rightArrowPressed = MesquiteImage.getResourceImage("images/rightarrowPressed.gif");
-		rightArrowDisabled = MesquiteImage.getResourceImage("images/rightarrowDisabled.gif");
-		upArrow = MesquiteImage.getResourceImage("images/uparrow.gif");
-		upArrowPressed = MesquiteImage.getResourceImage("images/uparrowPressed.gif");
-		upArrowDisabled = MesquiteImage.getResourceImage("images/uparrowDisabled.gif");
-		downArrow = MesquiteImage.getResourceImage("images/downarrow.gif");
-		downArrowPressed = MesquiteImage.getResourceImage("images/downarrowPressed.gif");
-		downArrowDisabled = MesquiteImage.getResourceImage("images/downarrowDisabled.gif");
+		leftArrow = MesquiteImage.getImageFromResource("images/leftarrow.gif");
+		leftArrowPressed = MesquiteImage.getImageFromResource("images/leftarrowPressed.gif");
+		leftArrowDisabled = MesquiteImage.getImageFromResource("images/leftarrowDisabled.gif");
+		rightArrow = MesquiteImage.getImageFromResource("images/rightarrow.gif");
+		rightArrowPressed = MesquiteImage.getImageFromResource("images/rightarrowPressed.gif");
+		rightArrowDisabled = MesquiteImage.getImageFromResource("images/rightarrowDisabled.gif");
+		upArrow = MesquiteImage.getImageFromResource("images/uparrow.gif");
+		upArrowPressed = MesquiteImage.getImageFromResource("images/uparrowPressed.gif");
+		upArrowDisabled = MesquiteImage.getImageFromResource("images/uparrowDisabled.gif");
+		downArrow = MesquiteImage.getImageFromResource("images/downarrow.gif");
+		downArrowPressed = MesquiteImage.getImageFromResource("images/downarrowPressed.gif");
+		downArrowDisabled = MesquiteImage.getImageFromResource("images/downarrowDisabled.gif");
 	}
 	public MiniScrollButton (MiniScroll miniScroll, int orientation, String itemName) {
 		this.orientation = orientation;

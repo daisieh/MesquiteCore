@@ -47,9 +47,9 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 		searchBox.setFont(smallFont);
 		searchBox.addKeyListener(new KIListener(this));
 		if (andImage==null && MesquiteModule.getRootPath()!=null){ //done here instead of static in case root path not yet defined when static run
-			andImage=  MesquiteImage.getResourceImage("images/and.gif");
-			orImage=  MesquiteImage.getResourceImage("images/or.gif");
-			dataImage=  MesquiteImage.getResourceImage("images/dataSearch.gif");
+			andImage=  MesquiteImage.getImageFromResource("images/and.gif");
+			orImage=  MesquiteImage.getImageFromResource("images/or.gif");
+			dataImage=  MesquiteImage.getImageFromResource("images/dataSearch.gif");
 		}
 		setFont(smallFont);
 		setBackground(ColorTheme.getInterfaceBackground());

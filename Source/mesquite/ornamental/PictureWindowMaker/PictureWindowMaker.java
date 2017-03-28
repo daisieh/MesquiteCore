@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ornamental.PictureWindowMaker;
 /*~~  */
 
-import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
@@ -163,7 +162,7 @@ class PictureWindow extends MesquiteWindow implements Commandable  {
 	}
 	public boolean setPath(String path){
 		this.path = path;
-		image = MesquiteImage.getImage(path);
+		image = MesquiteImage.getImageFromResource(path);
 		if (MesquiteImage.waitForImageToLoad(image, this.getOuterContentsArea())){
 			imagePanel.setImage(image);
 			imagePanel.repaint();

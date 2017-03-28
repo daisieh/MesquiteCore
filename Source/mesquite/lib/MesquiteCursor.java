@@ -14,8 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls*/
@@ -62,12 +60,12 @@ public class MesquiteCursor {
 			if (im == null){
 				Dimension best = Toolkit.getDefaultToolkit().getBestCursorSize(16, 16);
 				if ((best.width>16 || best.height>16) && MesquiteFile.fileExists(getSizedImagePath(best.width))){
-					im = MesquiteImage.getImage(getSizedImagePath(best.width));
+					im = MesquiteImage.getImageFromResource(getSizedImagePath(best.width));
 					if (im == null)
-						im = MesquiteImage.getImage(getImagePath());
+						im = MesquiteImage.getImageFromResource(getImagePath());
 				}
 				else 
-					im = MesquiteImage.getImage(getImagePath());
+					im = MesquiteImage.getImageFromResource(getImagePath());
 				setCursorImage(im);
 			}
 			if (!MesquiteImage.waitForImageToLoad(im)) {

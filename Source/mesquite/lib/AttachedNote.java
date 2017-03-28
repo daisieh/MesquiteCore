@@ -301,7 +301,7 @@ public class AttachedNote  implements NexusWritable {
 				loc = "";
 	   	 		if (StringUtil.blank(relPath))
 					return;
-				im = MesquiteImage.getImage(relPath);
+				im = MesquiteImage.getImageFromResource(relPath);
 
 			}
    	 		setImagePath(relPath, loc, false);
@@ -442,7 +442,7 @@ public class AttachedNote  implements NexusWritable {
 	}
 	public Image getImage(){
  		if (im == null && imPath !=null) {
-	 		im = MesquiteImage.getImage(imPath);
+	 		im = MesquiteImage.getImageFromResource(imPath);
 			if (!MesquiteImage.waitForImageToLoad(im)) {
 				MesquiteTrunk.mesquiteTrunk.logln("Error in loading image; location: " + imPath);
 			}

@@ -115,9 +115,9 @@ class BannerPanel extends Panel {
 	int bannerHeight;
 	public BannerPanel(LogWindow w){
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
-			banner=  MesquiteImage.getResourceImage("images/bannerBeta.gif");
+			banner=  MesquiteImage.getImageFromResource("images/bannerBeta.gif");
 		else
-			banner=  MesquiteImage.getResourceImage("images/banner.gif");
+			banner=  MesquiteImage.getImageFromResource("images/banner.gif");
 		bannerHeight = w.bannerHeight;
 		setBackground(ColorDistribution.mesquiteBrown);
 

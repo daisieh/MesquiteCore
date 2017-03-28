@@ -343,10 +343,10 @@ class Ledge extends MousePanel implements SeqLedge{
 		add(message);
 		message.setBounds(controlWidth,1,labelWidth, 10);
 		message.setBackground(ColorDistribution.paleGoldenRod);
-		goaway = MesquiteImage.getResourceImage("images/goaway.gif");
-		play = MesquiteImage.getResourceImage("images/play.gif");
-		pause = MesquiteImage.getResourceImage("images/pause.gif");
-		taxonButton = MesquiteImage.getResourceImage("images/taxon.gif");
+		goaway = MesquiteImage.getImageFromResource("images/goaway.gif");
+		play = MesquiteImage.getImageFromResource("images/play.gif");
+		pause = MesquiteImage.getImageFromResource("images/pause.gif");
+		taxonButton = MesquiteImage.getImageFromResource("images/taxon.gif");
 	}
 	public void setText(String s){
 		if (!StringUtil.stringsEqual(s, text.getText()))

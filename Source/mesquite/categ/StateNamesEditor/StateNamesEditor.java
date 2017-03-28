@@ -13,13 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.StateNamesEditor;
 
-import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.categ.lib.*;
 
@@ -666,7 +664,7 @@ class StateNamesTable extends MesquiteTable {
 			setNumColumns(data.getNumChars());
 		}
 		this.window = window;
-		transpose  = MesquiteImage.getImage(window.ownerModule.getPath() + "transpose.gif");
+		transpose  = MesquiteImage.getImageFromResource(window.ownerModule.getPath() + "transpose.gif");
 		autosizeColumns = true;
 		cellAnnotated = new StateAnnotation(data);
 		showRowGrabbers=true;

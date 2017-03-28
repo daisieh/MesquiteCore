@@ -111,8 +111,8 @@ public class InfoBar extends MousePanel implements Commandable {
 			simplicityStrip.setVisible(true);
 		}
 		if (iconImages==null && MesquiteModule.getRootPath()!=null){ //done here instead of static in case root path not yet defined when static run
-			iconImages=  MesquiteImage.getResourceImage("images/infoBarIcons.gif");
-			popIn = MesquiteImage.getResourceImage("images/compactTransparent.gif");
+			iconImages=  MesquiteImage.getImageFromResource("images/infoBarIcons.gif");
+			popIn = MesquiteImage.getImageFromResource("images/compactTransparent.gif");
 		}
 		which = new MesquiteInteger(0);
 		setFont(smallFont);

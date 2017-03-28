@@ -718,8 +718,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		Image image=null;
 		Image imagePressed=null;
 		if (inRoot) {
-			image = MesquiteImage.getResourceImage("images/" +imageName);
-			imagePressed = MesquiteImage.getResourceImage("images/" +imagePressedName);
+			image = MesquiteImage.getImageFromResource("images/" +imageName);
+			imagePressed = MesquiteImage.getImageFromResource("images/" +imagePressedName);
 		}
 		imagePanel = new ImagePanel(image,imagePressed, imageCommandName, imageListener);
 		if (panel==null) {
@@ -732,7 +732,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 	/*.................................................................................................................*/
 	public ImagePanel addAnEmptyImage (Panel panel) {
-		Image image = MesquiteImage.getResourceImage("images/empty.gif");
+		Image image = MesquiteImage.getImageFromResource("images/empty.gif");
 		ImagePanel imagePanel = new ImagePanel(image);
 
 		if (panel==null) {

@@ -215,9 +215,9 @@ class ValuesPanel extends TreeInfoExtraPanel {
 	Image add, query, goaway;
 	public ValuesPanel(ClosablePanelContainer container, TreeInfoValues ownerModule){
 		super(container, "Values");
-		add = MesquiteImage.getResourceImage("images/addGray.gif");
-		query = MesquiteImage.getResourceImage("images/queryGray.gif");
-		goaway = MesquiteImage.getResourceImage("images/minimizeTransparent.gif");
+		add = MesquiteImage.getImageFromResource("images/addGray.gif");
+		query = MesquiteImage.getImageFromResource("images/queryGray.gif");
+		goaway = MesquiteImage.getImageFromResource("images/minimizeTransparent.gif");
 		boxes =  new StringInABox[maxNumLines];
 		for (int i= 0; i<maxNumLines; i++)
 			boxes[i] = new StringInABox("", null, 50);

@@ -2818,7 +2818,7 @@ class ColorLegend extends MousePanel {
 		setBackground(Color.white);
 		setFont(new Font("SansSerif", Font.PLAIN, 10));
 		box = new StringInABox("", null, width);
-		goaway = MesquiteImage.getResourceImage("images/goaway.gif");
+		goaway = MesquiteImage.getImageFromResource("images/goaway.gif");
 	}
 
 	public void setLegendColors(ColorRecord[] colors, String title, String explanation) {
@@ -5344,7 +5344,7 @@ class CellInfoPanel extends MatrixInfoExtraPanel {
 
 	public CellInfoPanel(ClosablePanelContainer container) {
 		super(container, "Cell Info");
-		query = MesquiteImage.getResourceImage("images/queryGray.gif");
+		query = MesquiteImage.getImageFromResource("images/queryGray.gif");
 		statsBox = new StringInABox("", null, 50);
 		setOpen(true);
 	}
@@ -5518,7 +5518,7 @@ class MatrixInfoPanel extends MousePanel implements ClosablePanelContainer {
 	public MatrixInfoPanel(BasicDataWindow w) {
 		super();
 		this.w = w;
-		add = MesquiteImage.getResourceImage("images/addGray.gif");
+		add = MesquiteImage.getImageFromResource("images/addGray.gif");
 		setLayout(null);
 		addExtraPanel(btsp = new BasicMatrixStatisticsPanel(this));
 		setBackground(ColorDistribution.veryLightGray);
@@ -5526,7 +5526,7 @@ class MatrixInfoPanel extends MousePanel implements ClosablePanelContainer {
 		titleFont = new Font("SansSerif", Font.BOLD, 10);
 		titleBox = new StringInABox("", null, width);
 		explanationBox = new StringInABox("", null, width);
-		goaway = MesquiteImage.getResourceImage("images/minimizeTransparent.gif");
+		goaway = MesquiteImage.getImageFromResource("images/minimizeTransparent.gif");
 	}
 
 	/* ................................................................................................................. */

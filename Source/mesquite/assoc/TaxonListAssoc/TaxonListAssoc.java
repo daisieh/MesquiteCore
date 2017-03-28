@@ -455,10 +455,10 @@ class AssocEditor extends MousePanel {
 	public AssocEditor(TaxonListAssoc ownerModule){
 		super();
 		setLayout(null);
-		goaway = MesquiteImage.getResourceImage("images/goaway.gif");
-		add = MesquiteImage.getResourceImage("images/add.gif");
-		replace = MesquiteImage.getResourceImage("images/replaceLeft.gif");
-		subtract = MesquiteImage.getResourceImage("images/subtract.gif"); //should be subtract.gif
+		goaway = MesquiteImage.getImageFromResource("images/goaway.gif");
+		add = MesquiteImage.getImageFromResource("images/add.gif");
+		replace = MesquiteImage.getImageFromResource("images/replaceLeft.gif");
+		subtract = MesquiteImage.getImageFromResource("images/subtract.gif"); //should be subtract.gif
 		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_NONE);
 		add(text);
 		text.setVisible(true);

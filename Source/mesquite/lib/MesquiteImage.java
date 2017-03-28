@@ -37,12 +37,8 @@ public abstract class MesquiteImage extends Image {
 		}
 		return Toolkit.getDefaultToolkit().getImage(path);
 	}
-	/** Returns an image at a given path relative to the code base of Mesquite*/
-	public static Image getImage(String path) {
-		return getImage(path, true);
-	}
 
-	public static Image getResourceImage(String filename) {
+	public static Image getImageFromResource(String filename) {
 		BufferedImage image = null;
 		try {
 			URL url = Thread.currentThread().getContextClassLoader().getResource(filename);

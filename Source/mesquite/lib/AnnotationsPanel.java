@@ -1249,9 +1249,9 @@ class ControlP extends MesquitePanel {
 		scroll.setLocation(spacing*(numicons+1) + closeLeft, 6);
 		scroll.setSize(pw.controlsWidth, pw.textHeight);
 		scroll.setVisible(true);
-		trash = MesquiteImage.getResourceImage("images/trashcan.gif");
-		addPic = MesquiteImage.getResourceImage("images/add.gif");
-		goaway = MesquiteImage.getResourceImage("images/goaway.gif");
+		trash = MesquiteImage.getImageFromResource("images/trashcan.gif");
+		addPic = MesquiteImage.getImageFromResource("images/add.gif");
+		goaway = MesquiteImage.getImageFromResource("images/goaway.gif");
 	}
 	void setAttachable(boolean a){
 		attachable = a;
@@ -1403,7 +1403,7 @@ class HeaderPanel extends MesquitePanel {
 	static Image checkMark;
 
 	static {
-		checkMark = MesquiteImage.getResourceImage("images/checkMark.gif");
+		checkMark = MesquiteImage.getImageFromResource("images/checkMark.gif");
 	}
 	public HeaderPanel (AnnotationsPanel pw, String title) {
 		this.pw = pw;
@@ -1439,9 +1439,9 @@ class ImageHeaderPanel extends HeaderPanel {
 
 	public ImageHeaderPanel (AnnotationsPanel pw, String title) {
 		super(pw, title);
-		trash = MesquiteImage.getResourceImage("images/trashcan.gif");
-		addPic = MesquiteImage.getResourceImage("images/add.gif");
-		addRemotePic = MesquiteImage.getResourceImage("images/addRemote.gif");
+		trash = MesquiteImage.getImageFromResource("images/trashcan.gif");
+		addPic = MesquiteImage.getImageFromResource("images/add.gif");
+		addRemotePic = MesquiteImage.getImageFromResource("images/addRemote.gif");
 	}
 	/*.................................................................................................................*/
 	public void paint(Graphics g) {

@@ -1270,13 +1270,13 @@ class FrameTabsPanel extends MousePanel {
 
 	static Image goaway, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
-		goaway = MesquiteImage.getResourceImage("images/goawayTransparent.gif");
-		goawayMouseOver = MesquiteImage.getResourceImage("images/windowIcons/goAway.gif");
-		minimize = MesquiteImage.getResourceImage("images/minimizeTransparent.gif");
-		mediumize = MesquiteImage.getResourceImage("images/mediumizeTransparent.gif");
-		popOut = MesquiteImage.getResourceImage("images/decompactTransparent.gif");
-		popIn = MesquiteImage.getResourceImage("images/compactTransparent.gif");
-		show = MesquiteImage.getResourceImage("images/showTransparent.gif");
+		goaway = MesquiteImage.getImageFromResource("images/goawayTransparent.gif");
+		goawayMouseOver = MesquiteImage.getImageFromResource("images/windowIcons/goAway.gif");
+		minimize = MesquiteImage.getImageFromResource("images/minimizeTransparent.gif");
+		mediumize = MesquiteImage.getImageFromResource("images/mediumizeTransparent.gif");
+		popOut = MesquiteImage.getImageFromResource("images/decompactTransparent.gif");
+		popIn = MesquiteImage.getImageFromResource("images/compactTransparent.gif");
+		show = MesquiteImage.getImageFromResource("images/showTransparent.gif");
 	}
 	MesquitePopup popupForPopoutWindow=null;
 	MesquiteCommand popCommand, tileCommand, closeCommand;
@@ -1291,13 +1291,13 @@ class FrameTabsPanel extends MousePanel {
 		fonts[5] = new Font("SanSerif", Font.PLAIN, 7);
 		//	f.diagnose();
 		if (goaway == null){
-			goaway = MesquiteImage.getResourceImage("images/goawayTransparent.gif");
-			goawayMouseOver = MesquiteImage.getResourceImage("images/windowIcons/goAway.gif");
-			minimize = MesquiteImage.getResourceImage("images/minimizeTransparent.gif");
-			mediumize = MesquiteImage.getResourceImage("images/mediumizeTransparent.gif");
-			popOut = MesquiteImage.getResourceImage("images/decompactTransparent.gif");
-			popIn = MesquiteImage.getResourceImage("images/compactTransparent.gif");
-			show = MesquiteImage.getResourceImage("images/showTransparent.gif");
+			goaway = MesquiteImage.getImageFromResource("images/goawayTransparent.gif");
+			goawayMouseOver = MesquiteImage.getImageFromResource("images/windowIcons/goAway.gif");
+			minimize = MesquiteImage.getImageFromResource("images/minimizeTransparent.gif");
+			mediumize = MesquiteImage.getImageFromResource("images/mediumizeTransparent.gif");
+			popOut = MesquiteImage.getImageFromResource("images/decompactTransparent.gif");
+			popIn = MesquiteImage.getImageFromResource("images/compactTransparent.gif");
+			show = MesquiteImage.getImageFromResource("images/showTransparent.gif");
 		}
 		closeCommand = new MesquiteCommand("closeWindow", this);
 		popCommand = new MesquiteCommand("popOut", this);

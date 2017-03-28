@@ -2879,7 +2879,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		return icon;
 	}
 	public void setIcon(String s){
-		icon = MesquiteImage.getImage(s);
+		icon = MesquiteImage.getImageFromResource(s);
 	}
 
 	/*.................................................................................................................*/

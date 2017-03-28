@@ -25,9 +25,9 @@ public class CardPanel extends Panel  {
 	CardPanel (String tabImageOnFile, String tabImageOffFile) {
 		super();
 		if (tabImageOnFile != null)
-			tabImageOn = MesquiteImage.getResourceImage("images/" +tabImageOnFile);
+			tabImageOn = MesquiteImage.getImageFromResource("images/" +tabImageOnFile);
 		if (tabImageOffFile != null)
-			tabImageOff = MesquiteImage.getResourceImage("images/" +tabImageOffFile);
+			tabImageOff = MesquiteImage.getImageFromResource("images/" +tabImageOffFile);
 	}
 
 	CardPanel () {

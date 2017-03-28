@@ -198,7 +198,6 @@ public class Mesquite extends MesquiteTrunk
 				if (modulePackageMatcher.matches()) {
 					String packageName = modulePackageMatcher.group(1).replace("/",".");
 					if (!mesquiteJarModules.containsKey(packageName)) {
-						logln("making key " + packageName);
 						mesquiteJarModules.put(packageName, new ArrayList<String>());
 					}
 					if (!modulePackageMatcher.group(2).isEmpty()) {
@@ -383,13 +382,13 @@ public class Mesquite extends MesquiteTrunk
 		setModuleWindow(logWindow);
 		if (verboseStartup) System.out.println("main init 13");
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) {
-			mesquiteTrunk.logo = MesquiteImage.getResourceImage("images/mesquiteBeta.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImageFromResource("images/mesquiteBeta.gif");
 		}
 		else
-			mesquiteTrunk.logo = MesquiteImage.getResourceImage("images/mesquite.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImageFromResource("images/mesquite.gif");
 
 		Image equiv = null;
-		equiv = MesquiteImage.getResourceImage("images/equivocal.gif");
+		equiv = MesquiteImage.getImageFromResource("images/equivocal.gif");
 		GraphicsUtil.missingDataTexture = new TexturePaint((BufferedImage) equiv, new Rectangle(0, 0, 16, 16));
 
 		if (verboseStartup) System.out.println("main init 14");
@@ -1180,13 +1179,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteButton.onImage[i]=  MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/colors/" + i + "blank-on.gif");  
 		}
 		 */
-		InfoBar.triangleImage=  MesquiteImage.getResourceImage("images/infoBarTriangle.gif");
-		InfoBar.triangleImageDown=  MesquiteImage.getResourceImage("images/triangleDown.gif");
-		InfoBar.releaseImage=  MesquiteImage.getResourceImage("images/release.gif");
-		InfoBar.prereleaseImage=  MesquiteImage.getResourceImage("images/prerelease.gif");
-		ExplanationArea.plusImage=  MesquiteImage.getResourceImage("images/explanationPlus.gif");
-		ExplanationArea.minusImage=  MesquiteImage.getResourceImage("images/explanationMinus.gif");
-		ExplanationArea.minusOffImage=  MesquiteImage.getResourceImage("images/explanationMinusOff.gif");
+		InfoBar.triangleImage=  MesquiteImage.getImageFromResource("images/infoBarTriangle.gif");
+		InfoBar.triangleImageDown=  MesquiteImage.getImageFromResource("images/triangleDown.gif");
+		InfoBar.releaseImage=  MesquiteImage.getImageFromResource("images/release.gif");
+		InfoBar.prereleaseImage=  MesquiteImage.getImageFromResource("images/prerelease.gif");
+		ExplanationArea.plusImage=  MesquiteImage.getImageFromResource("images/explanationPlus.gif");
+		ExplanationArea.minusImage=  MesquiteImage.getImageFromResource("images/explanationMinus.gif");
+		ExplanationArea.minusOffImage=  MesquiteImage.getImageFromResource("images/explanationMinusOff.gif");
 	}
 	/*.................................................................................................................*/
 	public String getName() {

@@ -50,7 +50,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 		
 		this.bfc = bfc;
 		if (getIconFilePath() != null)
-			im = 	MesquiteImage.getImage(getIconFilePath());
+			im = 	MesquiteImage.getImageFromResource(getIconFilePath());
 		currentHeight = COMMANDHEIGHT + MINHEIGHT;
 
 		setTightness(2);
@@ -103,7 +103,7 @@ public void resetTitle(){
 
 	public void refreshIcon(){
 		if (getIconFilePath() != null)
-			im = 	MesquiteImage.getImage(getIconFilePath());
+			im = 	MesquiteImage.getImageFromResource(getIconFilePath());
 		else
 			im = null;
 	}
@@ -335,7 +335,7 @@ public void resetTitle(){
 	public void addCommand(boolean menuOnly, String iconFileName, String label, String shortLabel, MesquiteCommand command){
 		ProjPanelCommand ec = new ProjPanelCommand(menuOnly, iconFileName, label, shortLabel, command);
 		if (iconFileName != null)
-			ec.icon = MesquiteImage.getImage(bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + iconFileName);
+			ec.icon = MesquiteImage.getImageFromResource(bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + iconFileName);
 
 		commands.addElement(ec);
 	}
