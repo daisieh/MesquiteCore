@@ -15,6 +15,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.io.*;
@@ -926,25 +928,29 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** returns path to this module's directory for installation settings (i.e., belonging to Mesquite_Folder, not to the user)*/
-	public String getInstallationSettingsPath() {  
-		if (this == MesquiteTrunk.mesquiteTrunk)
-			return getRootPath() + "settings" + MesquiteFile.fileSeparator;
-		String base = getRootPath() + "settings" + MesquiteFile.fileSeparator;
-		String modulePath = moduleInfo.getClassName();
-		modulePath = modulePath.substring(modulePath.indexOf(".")+1, modulePath.length());
-		modulePath = StringUtil.getAllButLastItem(modulePath, ".");
-		modulePath = StringUtil.replace(modulePath, ".", MesquiteFile.fileSeparator) +MesquiteFile.fileSeparator ;
-		//modulePath = modulePath.substring(9, modulePath.length());
-		return  base + modulePath;
+	public String getInstallationSettingsPath() {
+		File prefsDir = new File(getPreferencesPath());
+		Path prefsPath = prefsDir.toPath().resolve("Installation_Settings").resolve(getShortClassName());
+		if (!prefsPath.toFile().exists()) {
+			try {
+				Files.createDirectories(prefsPath);
+			} catch (IOException e) {
+				System.out.println("Couldn't create directory " + prefsPath.toString() + ": " + e.getMessage());
+			}
+		}
+
+		System.out.println("getInstallationSettingsPath " + prefsPath);
+
+		return prefsPath.toString();
 	}
 	/*.................................................................................................................*/
 	/** returns path to this module's directory*/
 	public String getPath() {  
 		if (this == MesquiteTrunk.mesquiteTrunk)
-			return "mesquite" + MesquiteFile.fileSeparator;
+			return "mesquite" + File.separatorChar;
 		if (moduleInfo == null)
 			return null;
-		return  moduleInfo.getRelativePackagePath();
+		return  moduleInfo.getRelativePackagePath() + File.separatorChar;
 	}
 	/*.................................................................................................................*/
 	/** returns path to this module's package directory*/
@@ -952,13 +958,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (this == MesquiteTrunk.mesquiteTrunk)
 			return getRootPath() + "mesquite" + MesquiteFile.fileSeparator;
 		return  moduleInfo.getPackagePath();
-	}
-	/*.................................................................................................................*/
-	/** returns path to the image directory for this module's images*/
-	public String getPackageImagesPath() {  
-		if (this == MesquiteTrunk.mesquiteTrunk)
-			return getRootPath() + "mesquite" + MesquiteFile.fileSeparator;
-		return  moduleInfo.getPackagePath() + "images"+ MesquiteFile.fileSeparator;
 	}
 	/*.................................................................................................................*/
 	/** returns path to the root directory of Mesquite (i.e., above mesquite, images, etc.)*/
@@ -969,6 +968,16 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else
 			return s + MesquiteFile.fileSeparator;
 	}
+	/*.................................................................................................................*/
+	/** returns path to the preferences directory of Mesquite*/
+	public static String getPreferencesPath() {
+		String path = prefsDirectory.getPath();
+		if (path.endsWith(String.valueOf(File.separatorChar))) {
+			return path;
+		}
+		return path + File.separatorChar;
+	}
+
 	/*.................................................................................................................*/
 	/** returns path to the root directory of Mesquite images*/
 	public static String getRootImageDirectoryPath() {
