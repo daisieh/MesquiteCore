@@ -104,7 +104,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				for (int i=1; i< configs.length; i++) { //first String is title & explanation
 					targetDirectories.setValue(i, configs[i]);
 				}
-				getModulesFromDir(MesquiteModule.getRootPath(), targetDirectories, true, false);  //do the directories in config
+				getModulesFromJar(targetDirectories, true);  //do the directories in config
 				int count = 0;
 				String notFound = "";
 				for (int i=0; i<configs.length; i++)
@@ -130,11 +130,11 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				targetDirectories = new StringArray(numStandard);
 				for (int i=0; i<numStandard; i++)
 					targetDirectories.setValue(i, "mesquite." + MesquiteTrunk.standardPackages[i]); //getting standard mesquite directories
-				getModulesFromDir(MesquiteModule.getRootPath(), targetDirectories, true, true);  //first, only do the target directories
+				getModulesFromJar(targetDirectories, true);  //first, only do the target directories
 				targetDirectories = new StringArray(numStandardExtra);
 				for (int i=0; i<numStandardExtra; i++)
 					targetDirectories.setValue(i, "mesquite." + MesquiteTrunk.standardExtras[i]); //getting standard mesquite directories
-				getModulesFromDir(MesquiteModule.getRootPath(), targetDirectories, true, true);  //first, only do the target directories
+				getModulesFromJar(targetDirectories, true);  //first, only do the target directories
 
 				targetDirectories = new StringArray(numStandard+ numStandardExtra+ 6);
 				for (int i=0; i<numStandard; i++)
@@ -147,30 +147,30 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				targetDirectories.setValue(numStandard + numStandardExtra+3, "mesquite.docs");//TODO: avoid docs in all contexts!
 				targetDirectories.setValue(numStandard + numStandardExtra+4, "mesquite.macros");//TODO: avoid macros in all contexts!
 				targetDirectories.setValue(numStandard + numStandardExtra+5, "mesquite.configs");  //TODO: avoid configs in all contexts!
-				getModulesFromDir(MesquiteModule.getRootPath(), targetDirectories, false, true); //next, add to the target directories and do everything but them
-//				try {
-//					ClassPathHacker.addFile(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classes");
-//					getModulesFromDir(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classes", null, false, true);  //do the directories in config
-//					ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
-//					getModulesFromDir(MesquiteModule.getRootPath() +  "additionalMesquiteModules", null, false, true);  //do the directories in config
-//
-//					String classPathsFileMF = null;
-//					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
-//						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
-//
-//						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
-//
-//					}
-//					if (MesquiteFile.fileExists(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classpaths.xml")){
-//						classPathsFileMF = MesquiteFile.getFileContentsAsString(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classpaths.xml");
-//						addModulesAtPaths(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator , classPathsFileMF);
-//					}
-//				}
-//				catch(java.io.IOException e){
-//					System.out.println("IOE in loading extra classes in Mesquite_Support_Files");
-//				}
-//				catch(Throwable e){  //to permit function under Java 1.1
-//				}
+				getModulesFromJar(targetDirectories, false); //next, add to the target directories and do everything but them
+				try {
+					ClassPathHacker.addFile(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classes");
+					getModulesFromDir(new File(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classes" + MesquiteFile.fileSeparator + "mesquite"), 0);  //do the directories in config
+					ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
+					getModulesFromDir(new File(MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite"), 0);  //do the directories in config
+
+					String classPathsFileMF = null;
+					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
+						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
+
+						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
+
+					}
+					if (MesquiteFile.fileExists(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classpaths.xml")){
+						classPathsFileMF = MesquiteFile.getFileContentsAsString(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classpaths.xml");
+						addModulesAtPaths(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator , classPathsFileMF);
+					}
+				}
+				catch(java.io.IOException e){
+					System.out.println("IOE in loading extra classes in Mesquite_Support_Files");
+				}
+				catch(Throwable e){  //to permit function under Java 1.1
+				}
 			}
 			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
 			mesquite.mesquiteModulesInfoVector.accumulateAllVersions();
@@ -202,39 +202,34 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		}
 	}
 						
-//	void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
-//		if (xmlPathsFileContents == null)return;
-//
-//		Parser parser = new Parser();
-//		parser.setString(xmlPathsFileContents);
-//		if (!parser.isXMLDocument(false))   // check if XML
-//			return;
-//		if (!parser.resetToMesquiteTagContents())   // check if has mesquite tag
-//			return;
-//
-//		MesquiteString nextTag = new MesquiteString();
-//		String tagContent = parser.getNextXMLTaggedContent(nextTag);
-//		while (!StringUtil.blank(tagContent) || !StringUtil.blank(nextTag.getValue())) {
-//				if (!StringUtil.blank(tagContent) && "classpath".equalsIgnoreCase(nextTag.getValue())) {
-//					try{
-//						String path = MesquiteFile.composePath(relativeTo, tagContent) ; //here you pass the ith thing in the list
-//						DirectInit.loadJarsInDirectories(path, mesquite.jarFilesLoaded);
-//						ClassPathHacker.addFile(path);
-//
-//						mesquite.logln("\n\nAdditional modules loaded from " + path);
-//						getModulesFromDir(path, null, false, true);  //do the directories in config
-//					}
-//					catch(IOException e){
-//					}
-//				}
-//				tagContent = parser.getNextXMLTaggedContent(nextTag);
-//			}
-//
-//
-//	}
+	private void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
+		if (xmlPathsFileContents == null)return;
 
-	
-	
+		Parser parser = new Parser();
+		parser.setString(xmlPathsFileContents);
+		if (!parser.isXMLDocument(false))   // check if XML
+			return;
+		if (!parser.resetToMesquiteTagContents())   // check if has mesquite tag
+			return;
+
+		MesquiteString nextTag = new MesquiteString();
+		String tagContent = parser.getNextXMLTaggedContent(nextTag);
+		while (!StringUtil.blank(tagContent) || !StringUtil.blank(nextTag.getValue())) {
+			if (!StringUtil.blank(tagContent) && "classpath".equalsIgnoreCase(nextTag.getValue())) {
+				try{
+					String path = MesquiteFile.composePath(relativeTo, tagContent) ; //here you pass the ith thing in the list
+					DirectInit.loadJarsInDirectories(path, mesquite.jarFilesLoaded);
+					ClassPathHacker.addFile(path);
+
+					mesquite.logln("\n\nAdditional modules loaded from " + path);
+					getModulesFromDir(new File(path), 0);  //do the directories in config
+				}
+				catch(IOException e){
+				}
+			}
+			tagContent = parser.getNextXMLTaggedContent(nextTag);
+		}
+	}
 	
 	int directoryNumber = 0;
 	int modulesLoaded = 0;
@@ -369,14 +364,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	}
 	String[] indent = {" ", "    ", "        ", "            ", "                ", "                   ", "                        "};
 
-	private void getModulesFromDir(String filePathName, StringArray targetDirectories, boolean targetOn, boolean loadingAll) {
-		mesquite.logln("Starting to load modules");
-		mesquite.logln("targetDirectories are " + ((targetDirectories == null) ? "null" : targetDirectories.toString()));
-		mesquite.logln("targetOn = " + targetOn + ", loadingAll = " + loadingAll);
-		getModules(targetDirectories, targetOn, loadingAll);
-	}
-
-	private void getModules(StringArray targetDirectories, Boolean targetOn, Boolean loadingAll) {
+	private void getModulesFromJar(StringArray targetDirectories, Boolean targetOn) {
 		// get a list of all packages in jar:
 		HashMap<String, ArrayList<String>> moduleList = mesquite.getMesquiteJarModules();
 		try {
@@ -417,6 +405,37 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		} catch (Exception e) {
 
+		}
+	}
+
+	private void getModulesFromDir(File f, int level) { //path has no slash at the end of it
+		level++;  //increment depth into directory structure
+		if (verboseStartup) MesquiteMessage.println(">level " + level + " " + f.getAbsolutePath());
+		if (!f.exists())
+			return;
+		if (f.isDirectory()) {  // is a directory; hence look inside at each item
+			numDirectoriesCurrent++;
+			String[] modulesList = f.list();
+
+			Arrays.sort(modulesList);
+			if (verboseStartup) MesquiteMessage.println("    into directory with  " + modulesList.length + " items" );
+			for (int i=0; i<modulesList.length; i++) {
+				String module = modulesList[i];
+				if (module != null && !avoidedDirectory(module)) {
+					// if targetDirs are null OR targetDirs do not contain this module (?) and no target OR targetDirs DO contain this module and target
+					File newFile = new File(f.getAbsolutePath() + MesquiteFile.fileSeparator + module);
+					getModulesFromDir(newFile, level);
+				} else if ("macros".equalsIgnoreCase(module)){
+					loadMacros(f.getAbsolutePath()+ MesquiteFile.fileSeparator + "macros", false);
+				}
+			}
+		} else if (f.isFile()) {
+			if (!f.getName().contains("BasicFileCoordinator.class")) {
+				loadMesquiteModuleClassFiles(f);
+				if (verboseStartup) {
+					MesquiteMessage.println("-loading " + f.getName());
+				}
+			}
 		}
 	}
 
@@ -473,8 +492,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		}
 	}
 	private void loadMacros(String path, boolean auto){  
-		MesquiteInteger io = new MesquiteInteger(0);
-		File macrosDirectory = new File(path);  
+		File macrosDirectory = new File(path);
 		if (macrosDirectory.exists() && macrosDirectory.isDirectory()) {
 			String[] v = macrosDirectory.list();
 			for (int i=0; i<v.length; i++) {
@@ -569,8 +587,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (!thisFile.exists() || !thisFile.isFile()) {
 			return;
 		}
-		String className = getPackageName(thisFile.getParentFile()) + "." + thisFile.getName();
-		loadModuleClass(className);
+		String className = thisFile.getAbsolutePath().replace("/",".");
+		String[] parts = className.split("\\.mesquite\\.");
+		if (parts.length > 1) {
+			//String className = getPackageName(thisFile.getParentFile()) + "." + thisFile.getName();
+			loadModuleClass("mesquite." + parts[1]);
+		}
 	}
 
 	private void loadModuleClass(String className) {
