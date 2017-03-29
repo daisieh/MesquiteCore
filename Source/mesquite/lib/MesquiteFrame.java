@@ -164,6 +164,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	static int countSMB = 0;
 	public void setMenuBar(MenuBar mbar) {
+		if (getMenuBar() == mbar)
+			return;
 		if (!MesquiteThread.isReadingThread())
 			super.setMenuBar(mbar);
 	}
@@ -178,6 +180,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 		}
 		checkInsets(true);
 	}
+	
 	public int getNumWindows(){
 		return windows.size();
 	}
@@ -343,6 +346,8 @@ public class MesquiteFrame extends Frame implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public boolean windowPresent(MesquiteWindow window){
+		if (windows == null)
+			return false;
 		for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			if (w == window)
@@ -1032,7 +1037,7 @@ public class MesquiteFrame extends Frame implements Commandable {
 				resources.doLayout();
 				main.doLayout();
 			}
-			if (resizeContainedWindows){
+			if (resizeContainedWindows && windows != null){
 
 				for (int i = 0; i<windows.size(); i++){
 					MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);

@@ -88,7 +88,7 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void fillArc(Graphics2D g2, double x, double y, double width, double height, double startingAngle, double angleExtent) {
-		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
+		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.PIE);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.fill(arc);
 	}
@@ -313,12 +313,12 @@ public class GraphicsUtil {
 			mg = panel.getGraphics();
 		if (mg == null)
 			return;
-//		mg.setColor(Color.black);
+		//		mg.setColor(Color.black);
 		if (GraphicsUtil.useXORMode(g, false)){
 			mg.setXORMode(Color.white);
 			mg.drawLine(x, top, x, bottom);
 		}
-//		mg.drawLine(x+1, top, x+1, bottom);
+		//		mg.drawLine(x+1, top, x+1, bottom);
 		if (g==null)
 			mg.dispose();
 	}
@@ -352,16 +352,21 @@ public class GraphicsUtil {
 	}
 	/* -------------------------------------------------*/
 	public static void drawXORLine (Graphics g, int xFrom, int yFrom, int xTo, int yTo, int thickness, Color color) {
-		Graphics2D g2 = (Graphics2D)g;
-		g2.setXORMode(Color.white);
-		g2.setColor(color); 
-		
-		Stroke st = g2.getStroke();
-		g2.setStroke(new BasicStroke(thickness));
-		
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.drawLine(xFrom,yFrom,xTo,yTo);
-		g2.setStroke(st);
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setXORMode(Color.white);
+			g2.setColor(color); 
+
+			Stroke st = g2.getStroke();
+			g2.setStroke(new BasicStroke(thickness));
+
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.drawLine(xFrom,yFrom,xTo,yTo);
+			g2.setStroke(st);
+		}
+		catch (Throwable e){
+			//workaround to sun InternalError
+		}
 
 	}
 	/* -------------------------------------------------*/
@@ -551,22 +556,22 @@ public class GraphicsUtil {
 		}
 	}
 	/* -------------------------------------------------*/
-	public static void fillArc(Graphics g, double x, double y, double w, double h, int startAngle, int arcAngle, boolean threeD){
+	public static void fillArc(Graphics g, double x, double y, double w, double h, double startAngle, double arcAngle, boolean threeD){
 		if (arcAngle < 1)
 			return;
 		if (MesquiteTrunk.isWindows()){ //this is workaround to Windows problem by which goes all black if too close to 0 or 360
 			double spotsize = MesquiteDouble.maximum(w, h);
-			if (3.14*spotsize*(360-arcAngle)/360<1){
+			if (Math.PI*spotsize*(360-arcAngle)/360<1){
 				fillOval(g, x, y, w, h, threeD);
 				return;
 			}
-			if (3.14*spotsize*arcAngle/360<1)
+			if (Math.PI*spotsize*arcAngle/360<1)
 				return;
 		}
 		if (threeD){
 			Color c = g.getColor();
 			Color current = c;
-//			TODO: needs to define a polygon that clips to prevent upward curved edges on left side
+			//			TODO: needs to define a polygon that clips to prevent upward curved edges on left side
 			current = ColorDistribution.darker(current, 0.75);
 			while (w>0) {
 				g.setColor(current);

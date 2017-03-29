@@ -2652,6 +2652,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			//MesquiteMessage.printStackTrace();
 			return null;
 		}
+		catch( Exception e ) {
+			if (warnIfProblem)
+				MesquiteMessage.warnProgrammer("Other Exception found (6) : " + relativePath + "   " + e.getMessage());
+			//MesquiteMessage.printStackTrace();
+			return null;
+		}
 	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
@@ -2743,9 +2749,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}
 		}
 		catch( IOException e ) {
-			if (warnIfProblem)
-				MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "\n   " + e.getMessage());
-			//MesquiteMessage.printStackTrace();  
+			if (warnIfProblem) {
+				MesquiteMessage.warnProgrammer("IO Exception getting URL contents (6a) : " + path + "\n   " + e.getMessage());
+				if (MesquiteTrunk.debugMode){
+					MesquiteMessage.warnProgrammer("  " + e);
+					e.printStackTrace();
+				}
+			}
 			return null;
 		}
 		return s.toString();
@@ -3173,7 +3183,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (!MesquiteTrunk.isApplet() && s!=null) {
 			try {
 				if (logStream==null) {
-					logPath = MesquiteModule.userDirectory + fileSeparator + "Mesquite_Support_Files" + fileSeparator + MesquiteTrunk.logFileName; //TODO: should have user settable in future
+					logPath = MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName; //TODO: should have user settable in future
 					logStream = new PrintWriter(new FileOutputStream(logPath, appendToLog));
 					appendToLog = true;  //subsequent calls append
 				}
@@ -3218,7 +3228,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (logStream!=null) {
 			logStream.close();
 			logStream = null;
-			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.userDirectory + fileSeparator + "Mesquite_Support_Files" + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
 			catch (Throwable t){}
 		}
 	}

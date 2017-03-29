@@ -181,16 +181,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteProject p = new MesquiteProject((FileCoordinator)this);
 		p.incrementProjectWindowSuppression();
 		setProject(p);
-		if (true){ //Debugg.println
-			pw =  new ProjectWindow(this);
-			p.setFrame(pw.getParentFrame());
-			setModuleWindow(pw);
-			if (Thread.currentThread() instanceof ProjectReadThread)
-				pw.setWindowSize(2, 500);
-			else
-				pw.setWindowSize(700, 500);
-			pw.setWindowLocation(8,8, false); //TODO: should set staggered positions
-		}
+		pw =  new ProjectWindow(this);
+		p.setFrame(pw.getParentFrame());
+		setModuleWindow(pw);
+		if (Thread.currentThread() instanceof ProjectReadThread)
+			pw.setWindowSize(2, 500);
+		else
+			pw.setWindowSize(700, 500);
+		pw.setWindowLocation(8,8, false); //TODO: should set staggered positions
+
 		MesquiteTrunk.mesquiteTrunk.addProject(getProject());
 		p.addFile(homeFile);
 		homeFile.setProject(p);
@@ -671,14 +670,13 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			p = e.establishProject(extraArgs);
 			if (p!=null){
 				p.incrementProjectWindowSuppression();
-				if (true){ //Debugg.println
-					if (pw == null){
+				if (pw == null){
 					pw =  new ProjectWindow(this);
 					p.setFrame(pw.getParentFrame());
 					setModuleWindow(pw);
-				}
-				pw.setWindowSize(700, 500);
-				pw.setWindowLocation(8,8, false);
+
+					pw.setWindowSize(700, 500);
+					pw.setWindowLocation(8,8, false);
 				}
 
 				p.developing = false;
@@ -959,12 +957,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/*  */
 	public boolean closeFile(MesquiteFile fi){
+		return closeFile(fi, false);
+	}
+	public boolean closeFile(MesquiteFile fi, boolean quietly){
 		if (getProject() ==null)
 			return false;
 		incrementMenuResetSuppression();
 		if (fi!=null) {
 			if (getProject().getHomeFile() == fi) { //should ask for all files
-				if (MesquiteThread.isScripting() || !getProject().isDirty()) {
+				if (quietly || MesquiteThread.isScripting() || !getProject().isDirty()) {
 					waitWriting(null);
 					logln("Closing " + getProject().getName());
 					getProject().isDoomed = true;
@@ -1005,7 +1006,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 			else {
-				if (MesquiteThread.isScripting() || !fi.isDirty()) {
+				if (quietly || MesquiteThread.isScripting() || !fi.isDirty()) {
 					waitWriting(fi);
 					fi.close();
 				}
@@ -1132,7 +1133,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				MesquiteMessage.notifyUser("File \"" + fi.getName() + "\" cannot be written because it was accessed as a URL");
 		}
 		MainThread.decrementSuppressWaitWindow();
-		getProject().decrementProjectWindowSuppression();
+		if (getProject() != null)
+			getProject().decrementProjectWindowSuppression();
 	}
 	/*.................................................................................................................*/
 	/*  */
@@ -2069,8 +2071,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 				else 
 					((FileInterpreterITree)fileInterp).readTreeFile(ownerModule.getProject(), linkedFile, arguments);
 				if (ownerModule.pw != null) {
-				ownerModule.pw.resume();
-				ownerModule.pw.getParentFrame().setAsFrontWindow(ownerModule.getProject().activeWindowOfProject);
+					ownerModule.pw.resume();
+					ownerModule.pw.getParentFrame().setAsFrontWindow(ownerModule.getProject().activeWindowOfProject);
 				}
 				CommandRecord.setScriptingFileS(sf);
 				linkedFile.fileReadingArguments = null;

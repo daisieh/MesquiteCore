@@ -38,36 +38,39 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2016. Mesquite: A modular system for evolutionary analysis.  Version 3.1+.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.2.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.1+";
+		return "3.2";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 310;
+		return 320;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.10;
+		return 3.2;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "June 2016"; //"April 2007";
+		return "January 2017"; //"April 2007";
 	}
+	
 	/*.................................................................................................................*/
 	/** returns the URL of the notices file for this module so that it can phone home and check for messages */
 	public String  getHomePhoneNumber(){ 
 		if (!isPrerelease() && !debugMode)
-			return "http://mesquiteproject.org/mesquite/notice/notices.xml";   
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/master/noticesAndUpdates/notices.xml";   
 		else
-			return "http://mesquiteproject.org/mesquite/prereleasenotices/notices.xml";   
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
 	}
+	//See MesquiteModule for version reporter and error reporter URLs
+	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -150,7 +153,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 
-	static boolean startedFromOSXJava17Executable = false;
+	static boolean startedFromOSXJava17Executable = false; 
 	/*.................................................................................................................*/
 	public void init()
 	{
@@ -269,9 +272,17 @@ public class Mesquite extends MesquiteTrunk
 		/* EMBEDDED delete these if embedded */
 		userDirectory = new File(System.getProperty("user.home")+sep);  //used to be user.dir, but caused permission problems in linux
 
+		String supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 		supportFilesDirectory = new File(supportFilesPath);
 		if (!supportFilesDirectory.exists()){
-			supportFilesDirectory.mkdir();
+			String supportFilesPathALT = System.getProperty("user.home") + sep + ".Mesquite_Support_Files";
+			File supportFilesDirectoryALT = new File(supportFilesPathALT);
+			if (supportFilesDirectoryALT.exists()){
+				supportFilesPath = supportFilesPathALT;
+				supportFilesDirectory = supportFilesDirectoryALT;
+			}
+			else
+				supportFilesDirectory.mkdir();
 		}
 		boolean supportFilesWritable = MesquiteFile.canWrite(supportFilesPath);
 		boolean writabilityWarned = false;
@@ -368,11 +379,11 @@ public class Mesquite extends MesquiteTrunk
 		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2015 W. Maddison and D. Maddison\n");
+		logInitString  += ("Copyright (c) 1997-2017 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
-				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Peter Midford, Rutger Vos, Jeff Oliver, Daisie Huang"
+				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Daisie Huang, Peter Midford, Rutger Vos, Jeff Oliver"
 				+ "\nDevelopment Team Alumnus: Danny Mandel\n";
 
 		if (verboseStartup) System.out.println("main init 11");
@@ -723,6 +734,7 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
+		
 	} 
 
 	/*.................................................................................................................*/
@@ -1820,7 +1832,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Redirects log saving to the given filename", "[filename]", commandName, "redirectLog")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name))
-				name = MesquiteString.queryString(containerOfModule(), "Redirect Log", "Indicate name of log file to which subsequent log output is to be directored.  It will be saved in the directory " + supportFilesPath, MesquiteTrunk.logFileName);
+				name = MesquiteString.queryString(containerOfModule(), "Redirect Log", "Indicate name of log file to which subsequent log output is to be directored.  It will be saved in the directory " + supportFilesDirectory, MesquiteTrunk.logFileName);
 			if (StringUtil.blank(name))
 				return null;
 			logln("Log redirected to \"" + name + "\"");
@@ -1830,14 +1842,14 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Changes the current log file's name", "[filename]", commandName, "renameLog")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name))
-				name = MesquiteString.queryString(containerOfModule(), "Rename Log", "Indicate new name of log file.  It will be saved in the directory " + supportFilesPath, MesquiteTrunk.logFileName);
+				name = MesquiteString.queryString(containerOfModule(), "Rename Log", "Indicate new name of log file.  It will be saved in the directory " + supportFilesDirectory, MesquiteTrunk.logFileName);
 			if (StringUtil.blank(name))
 				return null;
 			MesquiteFile.closeLog();
 			logln("Log renamed to \"" + name + "\"");
-			String currentPath = supportFilesPath  + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName;
+			String currentPath = supportFilesDirectory  + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName;
 			MesquiteTrunk.logFileName = name;
-			MesquiteFile.rename(currentPath, supportFilesPath + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName);
+			MesquiteFile.rename(currentPath, supportFilesDirectory + MesquiteFile.fileSeparator + MesquiteTrunk.logFileName);
 
 
 		}
@@ -1881,36 +1893,6 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
-			//Debugg.println do this only once
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
-			resetAllMenuBars();
 			resetAllMenuBars();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
@@ -2608,6 +2590,8 @@ public class Mesquite extends MesquiteTrunk
 			System.out.println("main constructor 6");
 		if (about !=null && mesquiteTrunk.getProjectList()!=null && mesquiteTrunk.getProjectList().getNumProjects()>0 && defaultHideMesquiteWindow)
 			about.hide();
+		
+		
 	}
 
 	/*.................................................................................................................*

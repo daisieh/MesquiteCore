@@ -161,9 +161,9 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
 
 					}
-					if (MesquiteFile.fileExists(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classpaths.xml")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsString(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classpaths.xml");
-						addModulesAtPaths(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator , classPathsFileMF);
+					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
+						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
+						addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
 					}
 				}
 				catch(java.io.IOException e){
