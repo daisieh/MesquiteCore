@@ -102,8 +102,6 @@ public class Mesquite extends MesquiteTrunk
 	private Vector splashURLInfo = new Vector(3);
 	private ListableVector splashNames = new ListableVector(3);
 	public static AboutWindow about;
-	private String supportFilesPath;
-	private File supportFilesDirectory;
 	private int numUses =0;
 	String configFile = "all";
 	HPanel browser;
@@ -181,7 +179,6 @@ public class Mesquite extends MesquiteTrunk
 
 
 		String sep = MesquiteFile.fileSeparator;
-		supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
 		mesquiteClassLoader = this.getClass().getClassLoader();
 		try {
 			File classFile = new File(System.getProperty("java.class.path"));
