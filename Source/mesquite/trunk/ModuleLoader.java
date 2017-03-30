@@ -179,7 +179,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			//checker.composeDocumentation();
 			
 			// get special macros from user prefs directory
-			loadMacros(MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator +"macros", true);
+			loadMacrosFromDirectory(MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator +"macros", true);
 			loadConfigs(MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator +"configs", true);
 
 			hideMessage(true);
@@ -192,7 +192,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	private void loadJarModule(String fileName) throws Exception {
 		if (fileName.startsWith("mesquite")) {
 			if (fileName.endsWith("macros/")) {
-				mesquite.logln("  loadMacros " + fileName);
+				loadMacrosFromJarResource(fileName, false);
 			} else if (fileName.endsWith("config/")) {
 				mesquite.logln("  loadConfigs " + fileName);
 			} else if (fileName.endsWith(".class")) {
@@ -392,6 +392,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 			// load each modulePackage: classes, explanation, macros, configs
 			for (String modulePackage : modulePackagesToLoad) {
+				mesquite.log(" " + modulePackage.replace("mesquite.", ""));
 				// load explanation, if available:
 				loadPackageExplanation(modulePackage, true);
 				// load classes
@@ -426,7 +427,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					File newFile = new File(f.getAbsolutePath() + MesquiteFile.fileSeparator + module);
 					getModulesFromDir(newFile, level);
 				} else if ("macros".equalsIgnoreCase(module)){
-					loadMacros(f.getAbsolutePath()+ MesquiteFile.fileSeparator + "macros", false);
+					loadMacrosFromDirectory(f.getAbsolutePath()+ MesquiteFile.fileSeparator + "macros", false);
 				}
 			}
 		} else if (f.isFile()) {
@@ -491,7 +492,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			}
 		}
 	}
-	private void loadMacros(String path, boolean auto){  
+	private void loadMacrosFromDirectory(String path, boolean auto){
 		File macrosDirectory = new File(path);
 		if (macrosDirectory.exists() && macrosDirectory.isDirectory()) {
 			String[] v = macrosDirectory.list();
@@ -499,26 +500,46 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				String fullPath = path + MesquiteFile.fileSeparator + v[i];
 				File cFile = new File(fullPath);
 				if (cFile.exists() && !cFile.isDirectory()) {
-					String firstLine = MesquiteFile.getFileFirstContents(fullPath);
-					parser.getFirstToken(firstLine);  //"telling"
-					String target  = parser.getNextToken();
-					String name  = parser.getNextToken();
-					String explanation  = parser.getNextToken();
-					int preferredMenu  = MesquiteInteger.fromString(parser.getNextToken());
-					if (explanation== null || ";".equals(explanation))
-						explanation = "";
-					if (name == null || ";".equals(name))
-						name = v[i];
-					MesquiteModuleInfo mmi = mesquite.mesquiteModulesInfoVector.findModule(MesquiteModule.class, "#" + target);
-					if (mmi !=null) {
-						MesquiteMacro cfr = new MesquiteMacro(name, explanation, fullPath, mmi);
-						cfr.setAutoSave(auto);
-						if (MesquiteInteger.isCombinable(preferredMenu))
-								cfr.setPreferredMenu(preferredMenu);
-						mmi.addMacro(cfr);
-					}
+					loadMacroFile(v[i], fullPath, auto);
 				}
 			}
+		}
+	}
+
+	private void loadMacrosFromJarResource(String macrosPath, boolean auto) {
+		String modulePath = "";
+		Pattern modulePackagePattern = Pattern.compile("(mesquite/.*)/macros/");
+		Matcher modulePackageMatcher = modulePackagePattern.matcher(macrosPath);
+		if (modulePackageMatcher.matches()) {
+			modulePath = modulePackageMatcher.group(1).replace("/",".");
+			ArrayList<String> bits = mesquite.getMesquiteJarModules().get(modulePath);
+			for (String bit : bits) {
+				if (bit.startsWith(macrosPath) && !bit.equals(macrosPath)) {
+					String macroName = bit.replace(macrosPath,"");
+					loadMacroFile(macroName, bit, auto);
+				}
+			}
+		}
+	}
+
+	private void loadMacroFile(String macroName, String fullPath, boolean auto) {
+		String firstLine = MesquiteFile.getFileContentsAsString(fullPath);
+		parser.getFirstToken(firstLine);  //"telling"
+		String target  = parser.getNextToken();
+		String name  = parser.getNextToken();
+		String explanation  = parser.getNextToken();
+		int preferredMenu  = MesquiteInteger.fromString(parser.getNextToken());
+		if (explanation== null || ";".equals(explanation))
+			explanation = "";
+		if (name == null || ";".equals(name))
+			name = macroName;
+		MesquiteModuleInfo mmi = mesquite.mesquiteModulesInfoVector.findModule(MesquiteModule.class, "#" + target);
+		if (mmi !=null) {
+			MesquiteMacro cfr = new MesquiteMacro(name, explanation, fullPath, mmi);
+			cfr.setAutoSave(auto);
+			if (MesquiteInteger.isCombinable(preferredMenu))
+				cfr.setPreferredMenu(preferredMenu);
+			mmi.addMacro(cfr);
 		}
 	}
 	/*.................................................................................................................*/
