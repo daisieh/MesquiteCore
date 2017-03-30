@@ -2566,7 +2566,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".*/
 	public static String getFileContentsAsString(String relativePath) {
-		return getFileContentsAsString(relativePath, -1,100);
+		return getFileContentsAsString(relativePath, -1);
 	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file, local or remote.  The parameter "maxCharacters"
@@ -2587,21 +2587,14 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".  The parameter "maxCharacters"
 	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
 	public static String getFileContentsAsString(String relativePath, int maxCharacters) {
-		return getFileContentsAsString(relativePath,maxCharacters,100);
-	}
-	/*.................................................................................................................*/
-	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
-	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".  The parameter "maxCharacters"
-	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
-	public static String getFileContentsAsString(String relativePath, int maxCharacters, int startBufferSize) {
-		return getFileContentsAsString(relativePath, maxCharacters, startBufferSize, true);
+		return getFileContentsAsString(relativePath, maxCharacters, true);
 	}
 
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName".  The parameter "maxCharacters"
 	sets an upper limit on how many characters are read (if <0, then all characters read in)*/
-	public static String getFileContentsAsString(String relativePath, int maxCharacters, int startBufferSize, boolean warnIfProblem) {
+	public static String getFileContentsAsString(String relativePath, int maxCharacters, boolean warnIfProblem) {
 		if (StringUtil.blank(relativePath))
 			return "";
 		try {
@@ -2626,7 +2619,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				in.read(chrArr);
 				in.close();
 				return new String(chrArr);
-			} else {
+			} else { // jar resource
 				String str = "";
 				InputStream in = Mesquite.getMesquiteClassLoader().getResourceAsStream(relativePath);
 				if (in != null) {

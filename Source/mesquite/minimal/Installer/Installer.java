@@ -137,7 +137,7 @@ public class Installer extends MesquiteInit {
 	void readReceipts(String path){
 		String receiptsContents = null;
 		try{
-			receiptsContents = MesquiteFile.getFileContentsAsString(path, 2000000, 100, false);
+			receiptsContents = MesquiteFile.getFileContentsAsString(path, 2000000, false);
 		} catch (Exception e) {
 			return;
 		}

@@ -104,7 +104,7 @@ public class PhoneHomeUtil {
 			return ;
 		String oldPhoneRecords = null;
 		try{
-			oldPhoneRecords = MesquiteFile.getFileContentsAsString(path, -1, 100, false);
+			oldPhoneRecords = MesquiteFile.getFileContentsAsString(path, -1, false);
 		} catch (Exception e) {
 			return ;
 		}

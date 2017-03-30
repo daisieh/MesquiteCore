@@ -234,7 +234,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
 
 		if (success){
-			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
+			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
 				blastResponse.setLength(0);
 				blastResponse.append(results);
@@ -292,7 +292,7 @@ public class LocalBlaster extends Blaster implements ShellScriptWatcher {
 		boolean success = ShellScriptUtil.executeAndWaitForShell(scriptPath, runningFilePath, null, true, getName(),null,null, this, true);
 
 		if (success){
-			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
+			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, false);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
 				blastResponse.setLength(0);
 				blastResponse.append(results);
