@@ -23,7 +23,7 @@ import javax.swing.JWindow;
 /*===============================================*/
 /** A dialog box*/
 public class MesquiteFileDialog extends FileDialog implements Commandable, Listable {
-	String path = MesquiteTrunk.getRootPath(); //TODO: use default directory
+	String path = System.getProperty("user.home"); //TODO: use default directory
 	String message = null;
 	String fileName = null;
 	boolean holdsConsoleFocus = false;
