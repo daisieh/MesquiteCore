@@ -16,6 +16,7 @@ package mesquite.trees.BasicTreeDrawCoordinator;
 
 import java.util.*;
 
+import com.itextpdf.awt.PdfGraphics2D;
 import mesquite.assoc.lib.*;
 
 import java.awt.*;
@@ -25,7 +26,6 @@ import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
-import com.lowagie.text.pdf.PdfGraphics2D;
 
 /** Coordinates the drawing of trees in windows (e.g., used in the Tree Window and other places) */
 public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
