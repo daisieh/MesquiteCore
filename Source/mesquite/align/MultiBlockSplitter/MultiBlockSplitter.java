@@ -57,7 +57,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			setOptionTools();
 			moveTool.setDeselectIfOutsideOfCells(false);
 			moveTool.setAcceptsOutsideDrops(true);
-			moveTool.setOptionImageFileName( "multiBlockSplitterOption.gif", 8, 8);
+			moveTool.setOptionImageFileName( "MultiBlockSplitterOption.gif", 8, 8);
 
 			((MesquiteWindow)containerOfModule()).addTool(moveTool);
 			moveTool.setPopUpOwner(this);
