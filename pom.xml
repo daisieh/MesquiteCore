@@ -71,7 +71,7 @@
             <artifactId>Jsci.maths</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/jars/Jsci.zip</systemPath>
+            <systemPath>${project.basedir}/jars/JSci.zip</systemPath>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
