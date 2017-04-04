@@ -77,8 +77,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					mesquite.logln("Preferences request startup configuration file.  Mesquite will start with a selected set of modules.");
 				}
 			}
-			String path =MesquiteModule.getRootPath() + "mesquite" + MesquiteFile.fileSeparator + "minimal" + MesquiteFile.fileSeparator + "BasicFileCoordinator";
-			File f = new File(path+ MesquiteFile.fileSeparator + "BasicFileCoordinator.class");  //Modules/
 			numDirectoriesCurrent = 0;
 			if (!MesquiteInteger.isCombinable(mesquite.numDirectories))
 				mesquite.numDirectories = 0;
@@ -87,9 +85,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			else
 				directoryTotal =  mesquite.numDirectories;
 			showMessage(true, "Looking for modules", directoryTotal, 0);
-			loadMesquiteModuleClassFiles(f);
 			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite/");
-			
+
+			targetDirectories = new StringArray(1);
+			targetDirectories.setValue(0, "mesquite.minimal");
+			getModulesFromJar(targetDirectories, true);
+
 			StringBuffer report =  new StringBuffer(5000);
 			MesquiteModule.mesquiteTrunk.logln(report.toString());
 		//timer.start();
@@ -136,7 +137,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					targetDirectories.setValue(i, "mesquite." + MesquiteTrunk.standardExtras[i]); //getting standard mesquite directories
 				getModulesFromJar(targetDirectories, true);  //first, only do the target directories
 
-				targetDirectories = new StringArray(numStandard+ numStandardExtra+ 6);
+				targetDirectories = new StringArray(numStandard+ numStandardExtra+ 7);
 				for (int i=0; i<numStandard; i++)
 					targetDirectories.setValue(i, "mesquite." + MesquiteTrunk.standardPackages[i]); //getting standard mesquite directories
 				for (int i=0; i<numStandardExtra; i++)
@@ -147,6 +148,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				targetDirectories.setValue(numStandard + numStandardExtra+3, "mesquite.docs");//TODO: avoid docs in all contexts!
 				targetDirectories.setValue(numStandard + numStandardExtra+4, "mesquite.macros");//TODO: avoid macros in all contexts!
 				targetDirectories.setValue(numStandard + numStandardExtra+5, "mesquite.configs");  //TODO: avoid configs in all contexts!
+				targetDirectories.setValue(numStandard + numStandardExtra+6, "mesquite.minimal");
 				getModulesFromJar(targetDirectories, false); //next, add to the target directories and do everything but them
 				try {
 					ClassPathHacker.addFile(System.getProperty("user.home") + MesquiteFile.fileSeparator  + "Mesquite_Support_Files" + MesquiteFile.fileSeparator  + "classes");
@@ -398,9 +400,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				// load classes
 				ArrayList<String> jarEntriesToLoad = moduleList.get(modulePackage);
 				for (String module : jarEntriesToLoad) {
-					if (!module.contains("BasicFileCoordinator.class")) {
-						loadJarModule(module);
-					}
+					loadJarModule(module);
 				}
 			}
 

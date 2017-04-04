@@ -57,7 +57,6 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	/** List of standard packages.*/
 	public static String[] standardPackages = new String[]{
-		"minimal",
 		"charMatrices",
 		"basic", 
 		"trees",
