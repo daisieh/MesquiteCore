@@ -181,7 +181,8 @@ public class Mesquite extends MesquiteTrunk
 		String sep = MesquiteFile.fileSeparator;
 		mesquiteClassLoader = this.getClass().getClassLoader();
 		try {
-			File classFile = new File(System.getProperty("java.class.path"));
+			URL classLocation = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+			File classFile = new File(classLocation.toURI());
 			JarFile classJar = new JarFile(classFile);
 
 			mesquiteJarEntries = new ArrayList<>();
