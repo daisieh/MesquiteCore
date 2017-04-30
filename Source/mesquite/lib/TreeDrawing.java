@@ -44,8 +44,8 @@ public abstract class TreeDrawing  {
     public final static int LEFT = 3;
     public final static int ALLNODES = -1;
 
-    public double[] x; //x positions of nodes
-	public double[] y; //y positions of nodes
+    public int[] x; //x positions of nodes
+	public int[] y; //y positions of nodes
 	public double[] z; //z positions of nodes (closeness to viewer, smaller numbers closer)
 	public double[] lineBaseX; //base of line on which to draw labels etc.
 	public double[] lineBaseY; 
@@ -81,8 +81,8 @@ public abstract class TreeDrawing  {
 			return;
 		this.numNodes=numNodes;
 		totalCreated++;
-		x = new double[numNodes];
-		y = new double[numNodes];
+		x = new int[numNodes];
+		y = new int[numNodes];
 		z = new double[numNodes];
 		labelOrientation = new int[numNodes];
 		lineBaseX = new double[numNodes];
