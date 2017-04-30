@@ -2,8 +2,11 @@ Mesquite_Folder/
 # Workspace files #
 ###################
 *.iml
+<<<<<<< HEAD
 .project
 .settings/
+=======
+>>>>>>> StyledSquareTree
 
 # Compiled source #
 ###################
@@ -48,3 +51,7 @@ Thumbs.db
 /target/
 
 dependency-reduced-pom.xml
+
+# Build products #
+##################
+Resources/Mesquite*
