@@ -2275,6 +2275,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return getRoot();
 	}
+	/** Returns true if the first node is an ancestor of the second node.*/
+	public boolean isAncestor(int potentialAncestor, int node){
+		int mN = motherOfNode(node);
+		while (nodeExists(mN)){
+			if (mN==potentialAncestor)
+				return true;
+			if (mN==subRoot)
+				return false;
+			mN = motherOfNode(mN);
+		}
+		return false;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns most recent common ancestor of the terminals designated in terminals.*/
 	public int mrca(Bits terminals) { 
@@ -2352,10 +2365,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return candidate;
 	}
-	/*-----------------------------------------*/
-	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
-	is treated as descendant from anc. This is one of the UR procedures, designed
-	to allow unrooted style traversal through the tree*/
+	/*-----------------------------------------* WAYNECHECK
+
 	public  int lastDaughterOfNodeUR(int anc, int node) {
 		if (!nodeExists(node) && !nodeExists(anc))
 			return 0;
@@ -2367,6 +2378,28 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return prev;
 	}
+	*/
+	
+	/** Returns the first (left-most) daughter of node in an UNROOTED sense where the node
+	is treated as descendant from anc. This is one of the UR procedures, designed
+	to allow unrooted style traversal through the tree*/
+
+	public  int lastDaughterOfNodeUR(int anc, int node) {
+		if (!nodeExists(node) && !nodeExists(anc))
+			return 0;
+		int first = firstDaughterOfNodeUR(anc, node);
+		int prev = first;
+		
+		int current = first;
+		while (nodeExists(current)) {
+			prev = current;
+			current = nextSisterOfNodeUR(anc, node, current);
+			if (current==first)
+				return prev;
+		}
+		return prev;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns what node number in Mesquite's standard rooted sense corresponds to the anc-node branch.*/
 	public  int nodeOfBranchUR(int anc, int node) {
@@ -2377,6 +2410,32 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			return 0;
 	}
+	
+	/** Returns all of the "daughters" of a node, treating the tree as unrooted.  That is, it returns as
+	 * one of the daughters the mother of the node (which should be the the last entry in the array). 
+	 * If you pass into root the MRCA of a subtree containing "node", then it will treat
+	 * that subtree as unrooted.  Note:  if node is not the root or a descendant of root, then this will return null */
+	public int[] daughtersOfNodeUR (int root, int node){  
+		if (nodeIsInternal(node) && (!getRooted() || isAncestor(root, node) || root==node)){
+			int numDaughters = numberOfDaughtersOfNode(node);
+			if (node!=root)
+				numDaughters ++;
+			int[] daughters = new int[numDaughters];
+			int firstDaughterUR = firstDaughterOfNode(node); // use firstDaughter as the first daughter 
+			int nextDaughterUR = firstDaughterUR;
+			int count=0;
+			while (nodeExists(nextDaughterUR)) {
+				daughters[count]=nextDaughterUR;
+				nextDaughterUR = nextAroundUR(node, nextDaughterUR);
+				if (nextDaughterUR==firstDaughterUR)  // we are back where we started
+					break;
+				count++;
+			}		
+			return daughters;
+		}
+		return null;
+	}
+
 	/*-----------------------------------------*/
 	/** Returns whether any branchLengths are assigned.*/
 	private boolean lengthsAssigned(int node) { 
