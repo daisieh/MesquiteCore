@@ -16,17 +16,27 @@ package mesquite.tol.lib;
 
 /*~~  */
 
+import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import mesquite.Mesquite;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.dom4j.*;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 public class TWProjectOpener  {
 
-	public static final String GROUP_SEARCH_SRV_URL = "/onlinecontributors/app?service=external&page=xml/GroupSearchService&group=";
-	public static final String TREE_STRUCTURE_SRV_URL = "/onlinecontributors/app?service=external&page=xml/TreeStructureService";
-	private static URL taxonWorksURL;
+	private static URIBuilder taxonWorksURIBuilder;
 	private String token = "";
 	private int projectID = 1;
 	
@@ -45,37 +55,50 @@ public class TWProjectOpener  {
 	}
 	
 	/*.................................................................................................................*/
-	public MesquiteProject establishProject(MesquiteModule ownerModule, String taxonName, String token, String twURL) {
+	public MesquiteProject establishProject(MesquiteModule ownerModule, String taxonName, String this_token, String twURL) {
 		FileCoordinator fileCoord = ownerModule.getFileCoordinator();
-		MesquiteFile thisFile = new MesquiteFile();		
+		MesquiteFile thisFile = new MesquiteFile();
+		token = this_token;
 
 		try {
-			taxonWorksURL = new URL(twURL);
-		} catch (MalformedURLException e) {
+			URL taxonWorksURL = new URL(twURL);
+			int port = taxonWorksURL.getPort();
+			if (port == -1) {
+				port = taxonWorksURL.getDefaultPort();
+			}
+			taxonWorksURIBuilder = new URIBuilder()
+					.setScheme(taxonWorksURL.getProtocol())
+					.setHost(taxonWorksURL.getHost())
+					.setPort(port)
+					.setParameter("token", token)
+					.setParameter("project_id", String.valueOf(projectID));
+
+		} catch (Exception e) {
 			MesquiteMessage.println("URL for TaxonWorks not valid");
 		}
+
 		// the tol web services requires us to look up the nodeId via the Group Search before getting the tree structure
-		int nodeId = retrieveNodeIdFromGroupSearchResults(taxonName, ownerModule);
-		
-		// if a nodeId was not found, nodeId < 0 is true
-		// TODO handle the case when we fail to retrieve the nodeId from the group search service 
-		
-		String treeServiceURL = taxonWorksURL + TREE_STRUCTURE_SRV_URL;
-		treeServiceURL += "&node_id=" +  nodeId;
-		MesquiteMessage.println("Request to the Tree of Life Web Project for the following URL:\n"+ treeServiceURL + "\n");
-		
-//		Element root = XMLUtil.getRootXMLElementFromURL(treeServiceURL);
-//		// if call fails, the exception will likely be reported twice
-//		if (root == null) {
-//			ownerModule.discreetAlert( "Sorry, no tree was obtained from the database");
-//			return null;
-//		}
-//
-//		int numTaxa = ToLUtil.countTerminals(root, "  ");
-//		if (numTaxa == 0) {
-//			ownerModule.discreetAlert( "Sorry, no tree was obtained from the database");
-//			return null;
-//		}
+		int nodeId = -1;
+
+		try {
+			nodeId = getNodeIDforTaxonName(taxonName, ownerModule);
+		} catch (IOException e) {
+			MesquiteMessage.println("no taxon named " + taxonName);
+		}
+		if (nodeId == -1) {
+			MesquiteMessage.println("no taxon named " + taxonName);
+		}
+
+		TaxonNode namedNode = getTaxonNodeForNodeID(nodeId);
+		if (namedNode == null) {
+			MesquiteMessage.println("Couldn't find taxon in TaxonWorks");
+			return null;
+		}
+
+		int numTaxa = 0;
+		populateChildNodes(namedNode, 5);
+		MesquiteMessage.println(namedNode.toNewickString());
+
 
 		//looks as if tree was recovered properly; prepare project
 		MesquiteProject p = fileCoord.initiateProject(thisFile.getFileName(), thisFile);
@@ -129,39 +152,119 @@ public class TWProjectOpener  {
 		return p;
 	}
 
-	/*--------------------------*/
-	private int retrieveNodeIdFromGroupSearchResults(String groupName, MesquiteModule ownerModule) {
-		// GET http://127.0.0.1:3000/api/v1/taxon_names/autocomplete?term=Coleorrhyncha&token=Ad3Hx0c4oCMgS_GIBFO7ew&project_id=1
-		String serviceURL = "";
+	private boolean populateChildNodes(TaxonNode node, int levels) {
+		boolean result = false;
+		if (node.childNodes.size() == 0) {
+			for (Integer nodeID : node.children) {
+				TaxonNode childNode = getTaxonNodeForNodeID(nodeID);
+				if (childNode != null) {
+					node.childNodes.add(childNode);
+					if (levels > 0) {
+						populateChildNodes(childNode, levels - 1);
+					}
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+	private TaxonNode getTaxonNodeForNodeID(int nodeID) {
+		CloseableHttpClient httpclient;
+		CloseableHttpResponse response = null;
 		try {
-			URI uri = new URIBuilder()
-					.setScheme("http")
-					.setHost(taxonWorksURL.toString())
+			httpclient = HttpClients.createDefault();
+			URI uri = taxonWorksURIBuilder
+					.setPath("/api/v1/taxon_names/" + nodeID)
+					.build();
+			HttpGet httpget = new HttpGet(uri);
+			response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				String content = EntityUtils.toString(entity);
+				ObjectMapper m = new ObjectMapper();
+				JsonNode rootNode = m.readTree(content);
+				return new TaxonNode(rootNode);
+			}
+			response.close();
+
+		} catch (Exception e) {
+			MesquiteMessage.println("  exception " + e.getClass().getName() + ": " + e.getMessage());
+		}
+		return null;
+	}
+
+	/*--------------------------*/
+	private int getNodeIDforTaxonName(String groupName, MesquiteModule ownerModule) throws IOException {
+		// GET http://127.0.0.1:3000/api/v1/taxon_names/autocomplete?term=Coleorrhyncha&token=Ad3Hx0c4oCMgS_GIBFO7ew&project_id=1
+		CloseableHttpClient httpclient;
+		CloseableHttpResponse response = null;
+		try {
+			httpclient = HttpClients.createDefault();
+			URI uri = taxonWorksURIBuilder
 					.setPath("/api/v1/taxon_names/autocomplete")
 					.setParameter("term", groupName)
-					.setParameter("btnG", "Google Search")
-					.setParameter("aq", "f")
-					.setParameter("oq", "")
 					.build();
+			HttpGet httpget = new HttpGet(uri);
+			response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
 
-		} catch (Exception e) {
-
-		}
-		Element root = XMLUtil.getRootXMLElementFromURL(serviceURL);
-		try {
-			int count = Integer.parseInt(root.attributeValue("COUNT"));
-			if (count == 1) {
-				Element element = (Element)root.elements().get(0);
-				return Integer.parseInt(element.attributeValue("ID"));
-				//return Integer.parseInt(((Element)root.getChildren().get(0)).getAttributeValue("ID"));
-			} else {
-				return Integer.MIN_VALUE;
+			if (entity != null) {
+				String content = EntityUtils.toString(entity);
+				ObjectMapper m = new ObjectMapper();
+				JsonNode rootNode = m.readTree(content);
+				if (rootNode.isArray()) {
+					return rootNode.get(0).get("id").asInt();
+				}
 			}
+			response.close();
 		} catch (Exception e) {
-			ownerModule.discreetAlert("Sorry, the Group ID Service appears to have failed");
-			MesquiteMessage.println("Exception " + e);
-			return Integer.MIN_VALUE;
+			MesquiteMessage.println("caught an exception " + e.getClass().getName() + ": " + e.getMessage());
 		}
+		return 0;
 	}
 }
 
+class TaxonNode {
+	String name;
+	int node_id;
+	int parent_id;
+	ArrayList<Integer> children;
+	ArrayList<TaxonNode> childNodes;
+
+	TaxonNode(JsonNode rootNode) {
+		name = rootNode.get("name").textValue();
+		node_id = rootNode.get("id").asInt();
+		parent_id = rootNode.get("parent").get("id").asInt();
+		children = new ArrayList<>();
+		childNodes = new ArrayList<>();
+		if (rootNode.has("children")) {
+			Iterator<JsonNode> elements = rootNode.get("children").elements();
+			while (elements.hasNext()) {
+				JsonNode node = elements.next();
+				children.add(node.asInt());
+			}
+		}
+	}
+
+	public String toString() {
+		return String.valueOf(node_id) + ": " + children.toString();
+	}
+
+	String toNewickString() {
+		StringBuilder result = new StringBuilder();
+		if (childNodes.size() == 0) {
+			return String.valueOf(node_id);
+		} else {
+			result.append("(");
+			for (TaxonNode child : childNodes) {
+				result.append(child.toNewickString());
+				result.append(",");
+			}
+			// remove the last comma
+			result.deleteCharAt(result.length()-1);
+			result.append(")");
+		}
+		return result.toString();
+	}
+}

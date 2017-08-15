@@ -75,8 +75,8 @@ public class GetTWTree extends GeneralFileMaker  {
 
 
 		SingleLineTextField cladeNameField = dialog.addTextField(getDialogLabel(), "", 20);
-		SingleLineTextField twURL = dialog.addTextField(getDialogLabel(), "", 20);
-		SingleLineTextField token = dialog.addTextField(getDialogLabel(), "", 20);
+		SingleLineTextField twURL = dialog.addTextField("taxonworks url", "", 20);
+		SingleLineTextField token = dialog.addTextField("token", "", 20);
 
 		IntegerField pageDepthField = dialog.addIntegerField("Number of descendent pages:", pageDepth, 4, 1, 20);
 		dialog.setDefaultTextComponent(cladeNameField);
@@ -87,12 +87,22 @@ public class GetTWTree extends GeneralFileMaker  {
 			pageDepth = pageDepthField.getValue();
 			tokenString = token.getText();
 			taxonWorksURL = twURL.getText();
+
+			cladeName = "Coleorrhyncha";
+			tokenString = "Ad3Hx0c4oCMgS_GIBFO7ew";
+			taxonWorksURL = "http://127.0.0.1:3000";
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments){
+		if (arguments ==null) {
+			if (queryOptions())
+				arguments=cladeName;
+		}
+		if (arguments == null)
+			return null;
 		TWProjectOpener po = new TWProjectOpener();
 		return po.establishProject(this, cladeName, tokenString, taxonWorksURL);
 	}
