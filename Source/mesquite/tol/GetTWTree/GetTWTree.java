@@ -16,20 +16,16 @@ package mesquite.tol.GetTWTree;
 /*~~  */
 
 
-import mesquite.Mesquite;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.tol.lib.*;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 
 public class GetTWTree extends GeneralFileMaker  {
-	protected int pageDepth = 1;
-	protected String cladeName = "";
-	protected String tokenString = "";
-	protected String taxonWorksURL = "";
+	protected int pageDepth = 5;
+	protected String cladeName = "Coleorrhyncha";
+	protected String tokenString = "Ad3Hx0c4oCMgS_GIBFO7ew";
+	protected String taxonWorksURL = "http://127.0.0.1:3000";
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -74,9 +70,9 @@ public class GetTWTree extends GeneralFileMaker  {
 		dialog.appendToHelpString(helpString);
 
 
-		SingleLineTextField cladeNameField = dialog.addTextField(getDialogLabel(), "", 20);
-		SingleLineTextField twURL = dialog.addTextField("taxonworks url", "", 20);
-		SingleLineTextField token = dialog.addTextField("token", "", 20);
+		SingleLineTextField cladeNameField = dialog.addTextField(getDialogLabel(), cladeName, 20);
+		SingleLineTextField twURL = dialog.addTextField("taxonworks url", taxonWorksURL, 20);
+		SingleLineTextField token = dialog.addTextField("token", tokenString, 20);
 
 		IntegerField pageDepthField = dialog.addIntegerField("Number of descendent pages:", pageDepth, 4, 1, 20);
 		dialog.setDefaultTextComponent(cladeNameField);
@@ -88,9 +84,6 @@ public class GetTWTree extends GeneralFileMaker  {
 			tokenString = token.getText();
 			taxonWorksURL = twURL.getText();
 
-			cladeName = "Coleorrhyncha";
-			tokenString = "Ad3Hx0c4oCMgS_GIBFO7ew";
-			taxonWorksURL = "http://127.0.0.1:3000";
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
@@ -104,7 +97,7 @@ public class GetTWTree extends GeneralFileMaker  {
 		if (arguments == null)
 			return null;
 		TWProjectOpener po = new TWProjectOpener();
-		return po.establishProject(this, cladeName, tokenString, taxonWorksURL);
+		return po.establishProject(this, cladeName, tokenString, taxonWorksURL, pageDepth);
 	}
 
 	/*.................................................................................................................*/
