@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mesquite.Mesquite;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import org.apache.http.HttpEntity;
@@ -46,7 +45,7 @@ public class TWProjectOpener  {
 	}
 	/*.................................................................................................................*/
 	public String getTreeDrawingModule() {
-		return "mesquite.trees.SquareTree.SquareTree";
+		return "mesquite.trees.BallsNSticks.BallsNSticks";
 	}
 
 	/*.................................................................................................................*/
@@ -55,7 +54,7 @@ public class TWProjectOpener  {
 	}
 	
 	/*.................................................................................................................*/
-	public MesquiteProject establishProject(MesquiteModule ownerModule, String taxonName, String this_token, String twURL) {
+	public MesquiteProject establishProject(MesquiteModule ownerModule, String taxonName, String this_token, String twURL, int pageDepth) {
 		FileCoordinator fileCoord = ownerModule.getFileCoordinator();
 		MesquiteFile thisFile = new MesquiteFile();
 		token = this_token;
@@ -95,9 +94,8 @@ public class TWProjectOpener  {
 			return null;
 		}
 
-		int numTaxa = 0;
-		populateChildNodes(namedNode, 5);
-		MesquiteMessage.println(namedNode.toNewickString());
+		int numTaxa = populateChildNodes(namedNode, pageDepth, 0);
+		MesquiteMessage.println(numTaxa + ":" + namedNode.toNewickString());
 
 
 		//looks as if tree was recovered properly; prepare project
@@ -106,67 +104,103 @@ public class TWProjectOpener  {
 //		if (MesquiteThread.isScripting())
 //			CommandRecord.setScriptingFileS(thisFile);
 
-//		//getting taxon names & building Taxa block
-//		String[] names= new String[numTaxa];
-//		boolean[] leaves = new boolean[numTaxa];
-//		boolean[] hasChildren = new boolean[numTaxa];
-//		ToLUtil.getTerminals(root, names, leaves, hasChildren, new MesquiteString(), new MesquiteInteger(0));
-//		TaxaManager taxaTask = (TaxaManager)ownerModule.findElementManager(Taxa.class);
-//		Taxa taxa = taxaTask.makeNewTaxa("Taxa from ToL", numTaxa, false);
-//		for (int i = 0; i<numTaxa; i++){
-//			Taxon t = taxa.getTaxon(i);
-//			t.setName(names[i]);
-//			taxa.setAssociatedObject(NameReference.getNameReference("ToLLeaves"), i, new MesquiteBoolean(leaves[i]));
-//			taxa.setAssociatedObject(NameReference.getNameReference("ToLHasChildren"), i, new MesquiteBoolean(hasChildren[i]));
-//		}
-//		taxa.addToFile(thisFile, p, taxaTask);
-//
-//		//getting tree structure
-//		MesquiteTree tree = new MesquiteTree(taxa);
-//		ToLUtil.buildTree(true,root, tree, tree.getRoot(), names, new MesquiteInteger(0));
-//		tree.setName("Tree for " + taxonName);
-//		TreeVector trees = new TreeVector(taxa);
-//		trees.addElement(tree, false);
-//		trees.addToFile(thisFile,p,ownerModule.findElementManager(TreeVector.class));
-//		trees.setName("Trees for " + taxonName);
+		//getting taxon names & building Taxa block
+		String[] names= new String[numTaxa];
+		getTerminals(namedNode, names, new MesquiteString(), new MesquiteInteger(0));
+
+		TaxaManager taxaTask = (TaxaManager)ownerModule.findElementManager(Taxa.class);
+		Taxa taxa = taxaTask.makeNewTaxa("Taxa from ToL", numTaxa, false);
+		for (int i = 0; i<numTaxa; i++){
+			Taxon t = taxa.getTaxon(i);
+			t.setName(names[i]);
+		}
+		taxa.addToFile(thisFile, p, taxaTask);
+
+		//getting tree structure
+		MesquiteTree tree = buildTreeFromRoot(namedNode, taxa);
+		tree.setName("Tree for " + taxonName);
+		TreeVector trees = new TreeVector(taxa);
+		trees.addElement(tree, false);
+		trees.addToFile(thisFile,p,ownerModule.findElementManager(TreeVector.class));
+		trees.setName("Trees for " + taxonName);
 //
 //		//cleaning up and scripting the windows to show the tree
 //		CommandRecord.setScriptingFileS(sf);
 
-//		MesquiteModule treeWindowCoord = ownerModule.getFileCoordinator().findEmployeeWithName("#BasicTreeWindowCoord");
-//		if (treeWindowCoord!=null){
-//			String commands = "makeTreeWindow " + p.getTaxaReference(taxa) + "  #BasicTreeWindowMaker; tell It; ";
-//			commands += "getEmployee #" + getToolModule() + "; tell It; enableTools; endTell;";
-//			commands += "setTreeSource  #StoredTrees; tell It; setTaxa " + p.getTaxaReference(taxa) + " ;  setTreeBlock 1; endTell; ";
-//			commands += "getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;";
-//			commands += "tell It; suppress; setTreeDrawer  #" + getTreeDrawingModule()+"; tell It; orientRight; endTell; desuppress; endTell;";
-//			commands += "getWindow; tell It; setActive; setSize 600 600; getToolPalette; tell It; " + getSetToolScript()+ "; endTell; endTell;";
-//			commands += "  showWindow; endTell; ";
-//			MesquiteInteger pos = new MesquiteInteger(0);
-//			Puppeteer pup = new Puppeteer(ownerModule);
-//			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
-//			MesquiteThread.setCurrentCommandRecord(new CommandRecord(true));
-//			pup.execute(treeWindowCoord, commands, pos, null, false);
-//			MesquiteThread.setCurrentCommandRecord(oldCR);
-//		}
+		MesquiteModule treeWindowCoord = ownerModule.getFileCoordinator().findEmployeeWithName("#BasicTreeWindowCoord");
+		if (treeWindowCoord!=null){
+			String commands = "makeTreeWindow " + p.getTaxaReference(taxa) + "  #BasicTreeWindowMaker; tell It; ";
+			commands += "getEmployee #" + getToolModule() + "; tell It; enableTools; endTell;";
+			commands += "setTreeSource  #StoredTrees; tell It; setTaxa " + p.getTaxaReference(taxa) + " ;  setTreeBlock 1; endTell; ";
+			commands += "getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;";
+			commands += "tell It; suppress; setTreeDrawer  #" + getTreeDrawingModule()+"; tell It; orientRight; endTell; desuppress; endTell;";
+			commands += "getWindow; tell It; setActive; setSize 600 600; getToolPalette; tell It; " + getSetToolScript()+ "; endTell; endTell;";
+			commands += "  showWindow; endTell; ";
+			MesquiteInteger pos = new MesquiteInteger(0);
+			Puppeteer pup = new Puppeteer(ownerModule);
+			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
+			MesquiteThread.setCurrentCommandRecord(new CommandRecord(true));
+			pup.execute(treeWindowCoord, commands, pos, null, false);
+			MesquiteThread.setCurrentCommandRecord(oldCR);
+		}
 		return p;
 	}
 
+	private int getTerminals(TaxonNode taxonNode, String[] names, MesquiteString termName, MesquiteInteger c) {
+		termName.setValue(taxonNode.name);
+		int terms = 0;
+		for (TaxonNode o : taxonNode.childNodes) {
+			terms += getTerminals(o, names, termName, c);
+		}
+		if (terms == 0) {
+			names[c.getValue()] =  termName.getValue(); //element.getAttributeValue("NAME");
+			c.increment();
+			return 1;
+		}
+		else
+			return terms;
+	}
+
 	private boolean populateChildNodes(TaxonNode node, int levels) {
-		boolean result = false;
-		if (node.childNodes.size() == 0) {
+		return populateChildNodes(node, levels, 0) > 0;
+	}
+
+	private int populateChildNodes(TaxonNode node, int levels, int result) {
+		if (node.isLeaf()) {
+			result++;
+		}
+		if (node.isLeaf()) {
 			for (Integer nodeID : node.children) {
 				TaxonNode childNode = getTaxonNodeForNodeID(nodeID);
 				if (childNode != null) {
 					node.childNodes.add(childNode);
 					if (levels > 0) {
-						populateChildNodes(childNode, levels - 1);
+						result = populateChildNodes(childNode, levels - 1, result);
 					}
-					result = true;
 				}
 			}
 		}
 		return result;
+	}
+
+	private MesquiteTree buildTreeFromRoot(TaxonNode rootNode, Taxa taxa) {
+		MesquiteTree tree = new MesquiteTree(taxa);
+		buildTree(rootNode, tree, tree.getRoot(), new MesquiteInteger(0));
+		return tree;
+	}
+
+	private void buildTree(TaxonNode taxonNode, MesquiteTree tree, int node, MesquiteInteger taxonNumber) {
+		if (taxonNode.isLeaf()) {
+			tree.setTaxonNumber(node, taxonNumber.getValue(), false);
+			taxonNumber.increment();
+		} else {
+			tree.setTaxonNumber(node, -1, false);
+			tree.setNodeLabel(taxonNode.name, node);
+			for (TaxonNode childNode : taxonNode.childNodes) {
+				int childNodeNum = tree.sproutDaughter(node, false);
+				buildTree(childNode, tree, childNodeNum, taxonNumber);
+			}
+		}
 	}
 
 	private TaxonNode getTaxonNodeForNodeID(int nodeID) {
@@ -247,13 +281,21 @@ class TaxonNode {
 		}
 	}
 
+	boolean hasChildren() {
+		return (this.childNodes.size() > 0);
+	}
+
+	boolean isLeaf() {
+		return (this.childNodes.size() == 0);
+	}
+
 	public String toString() {
 		return String.valueOf(node_id) + ": " + children.toString();
 	}
 
 	String toNewickString() {
 		StringBuilder result = new StringBuilder();
-		if (childNodes.size() == 0) {
+		if (isLeaf()) {
 			return String.valueOf(node_id);
 		} else {
 			result.append("(");
