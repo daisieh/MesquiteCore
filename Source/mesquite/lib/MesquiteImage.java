@@ -13,11 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.*;
 import java.net.*;
-import java.util.*;
 
 
 /* ======================================================================== */
@@ -38,9 +37,24 @@ public abstract class MesquiteImage extends Image {
 		}
 		return Toolkit.getDefaultToolkit().getImage(path);
 	}
-	/** Returns an image at a given path relative to the code base of Mesquite*/
-	public static Image getImage(String path) {
-		return getImage(path, true);
+
+	public static Image getImageFromResource(String filename) {
+		BufferedImage image = null;
+		try {
+			URL url = Thread.currentThread().getContextClassLoader().getResource(filename);
+			if (url == null) {
+				MesquiteMessage.println("couldn't find " + filename);
+				for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+					MesquiteMessage.println(ste.toString());
+				}
+			} else {
+				image = ImageIO.read(url);
+			}
+		} catch (Exception e) {
+			MesquiteMessage.println(e.getClass().getName() + ": " + e.getMessage() + ": problem opening " + filename);
+			return null;
+		}
+		return image;
 	}
 	/** Returns an image at a given path relative to the code base of Mesquite*/
 	public static Image getImage(String path, boolean warn) {
@@ -58,10 +72,14 @@ public abstract class MesquiteImage extends Image {
 		}
 		if (!MesquiteFile.fileExists(path)) {
 			if (warn){
-				if (noFileErrorCount == 10)
+				if (noFileErrorCount == 10) {
 					MesquiteMessage.printStackTrace("Image file doesn't exist: " + path + "; THIS MESSAGE WILL NOT BE REPEATED DURING THIS RUN OF MESQUITE");
-				else if (noFileErrorCount<10)
-					MesquiteMessage.println("Image file doesn't exist: " + path);
+				} else if (noFileErrorCount<10) {
+					MesquiteMessage.println("hello Image file doesn't exist: " + path);
+					for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+						MesquiteMessage.println(ste.toString());
+					}
+				}
 				noFileErrorCount++; 
 			}
 		return null;
@@ -70,7 +88,7 @@ public abstract class MesquiteImage extends Image {
 	}
 
 	/** Returns an image at a given path relative to the location of a file (URL or local)*/
-	public static Image getImage(String path, MesquiteProject project) {
+	public static Image getImageFromProject(String path, MesquiteProject project) {
 		if (project.getHomeURL()==null) {
 			return Toolkit.getDefaultToolkit().getImage(MesquiteFile.composePath(project.getHomeDirectoryName(), path));
 		}

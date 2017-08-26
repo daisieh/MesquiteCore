@@ -16,8 +16,6 @@ modified 26 July 01: protected against NullPointerException if null images in pa
 package mesquite.lib.simplicity;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 /* ======================================================================== */
 
 import mesquite.lib.*;
@@ -37,9 +35,9 @@ public class SimplicityStrip extends MousePanel implements Commandable {
 		setFont(smallFont);
 		setBackground(ColorTheme.getInterfaceBackground());
 		setCursor(Cursor.getDefaultCursor());
-		power = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simplification/power.gif");  
-		simple = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "simplification/simple.gif");  
-		editing = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "notesTool.gif");  
+		power = MesquiteImage.getImageFromResource("images/simplification/power.gif");
+		simple = MesquiteImage.getImageFromResource("images/simplification/simple.gif");
+		editing = MesquiteImage.getImageFromResource("images/notesTool.gif");
 	}
 
 	public void dispose(){

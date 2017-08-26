@@ -286,7 +286,7 @@ public class AttachedNote  implements NexusWritable {
 
 				relPath = MesquiteFile.decomposePath(proj.getHomeDirectoryName(), loc);
 				module.logln("Attaching image at " + loc + " (path " + relPath + "  relative to " + proj.getHomeDirectoryName() + ")");
-	   	 		im = MesquiteImage.getImage(relPath, proj);
+	   	 		im = MesquiteImage.getImageFromProject(relPath, proj);
 				if (!MesquiteImage.waitForImageToLoad(im)) {
 					String ext = StringUtil.getLastItem(loc, ".");
 					if (ext == null || !(ext.equalsIgnoreCase("gif") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg")))
@@ -301,7 +301,7 @@ public class AttachedNote  implements NexusWritable {
 				loc = "";
 	   	 		if (StringUtil.blank(relPath))
 					return;
-				im = MesquiteImage.getImage(relPath);
+				im = MesquiteImage.getImageFromResource(relPath);
 
 			}
    	 		setImagePath(relPath, loc, false);
@@ -442,7 +442,7 @@ public class AttachedNote  implements NexusWritable {
 	}
 	public Image getImage(){
  		if (im == null && imPath !=null) {
-	 		im = MesquiteImage.getImage(imPath);
+	 		im = MesquiteImage.getImageFromResource(imPath);
 			if (!MesquiteImage.waitForImageToLoad(im)) {
 				MesquiteTrunk.mesquiteTrunk.logln("Error in loading image; location: " + imPath);
 			}

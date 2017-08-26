@@ -17,13 +17,11 @@ package mesquite.cont.ItemsEditorForInfoPanel;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.cont.lib.*;
-import mesquite.categ.lib.CategoricalState;
-import mesquite.categ.lib.RequiresExactlyCategoricalData;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
 
@@ -116,9 +114,9 @@ class ItemsPanel extends MatrixInfoExtraPanel  {
 		statesBox =  new StringInABox("", null, 50);
 		itemsField = new ItemsField(this);
 		itemsField.setBackground(getBackground());
-		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "addGray.gif");
-		subtract = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "subtractGray.gif");
-		query = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "queryGray.gif");
+		add = MesquiteImage.getImageFromResource("images/addGray.gif");
+		subtract = MesquiteImage.getImageFromResource("images/subtractGray.gif");
+		query = MesquiteImage.getImageFromResource("images/queryGray.gif");
 		currentHeight = 100 + MINHEIGHT + charNameHeight;
 		setLayout(null);
 		add(itemsField);

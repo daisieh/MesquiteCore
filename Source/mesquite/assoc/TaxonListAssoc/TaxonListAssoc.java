@@ -15,13 +15,11 @@ package mesquite.assoc.TaxonListAssoc;
 /*~~  */
 
 import mesquite.lists.lib.*;
-import java.util.*;
+
 import java.awt.*;
-import java.awt.event.*;
+
 import mesquite.lib.*;
 import mesquite.assoc.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
@@ -457,10 +455,10 @@ class AssocEditor extends MousePanel {
 	public AssocEditor(TaxonListAssoc ownerModule){
 		super();
 		setLayout(null);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
-		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
-		replace = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "replaceLeft.gif");
-		subtract = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "subtract.gif"); //should be subtract.gif
+		goaway = MesquiteImage.getImageFromResource("images/goaway.gif");
+		add = MesquiteImage.getImageFromResource("images/add.gif");
+		replace = MesquiteImage.getImageFromResource("images/replaceLeft.gif");
+		subtract = MesquiteImage.getImageFromResource("images/subtract.gif"); //should be subtract.gif
 		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_NONE);
 		add(text);
 		text.setVisible(true);

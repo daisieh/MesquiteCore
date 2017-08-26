@@ -16,14 +16,14 @@ package mesquite;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.*;
 import java.io.*;
 import java.net.*;
-
-import javax.imageio.ImageIO;
-
-import com.apple.mrj.MRJFileUtils;
-import com.apple.mrj.MRJOSType;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
@@ -107,6 +107,17 @@ public class Mesquite extends MesquiteTrunk
 	HPanel browser;
 	ListableVector configurations;
 	private  FileOpener fileHandler;
+	private ArrayList<String> mesquiteJarEntries = new ArrayList<>();
+	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
+	private static ClassLoader mesquiteClassLoader = null;
+
+	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
+
+	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
+
+	public HashMap<String, ArrayList<String>> getMesquiteJarModules() {
+		return mesquiteJarModules;
+	}
 
 	/*.................................................................................................................*/
 	public void endJob() {
@@ -168,61 +179,83 @@ public class Mesquite extends MesquiteTrunk
 
 
 		String sep = MesquiteFile.fileSeparator;
+		mesquiteClassLoader = this.getClass().getClassLoader();
+		try {
+			URL classLocation = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+			File classFile = new File(classLocation.toURI());
+			JarFile classJar = new JarFile(classFile);
 
+			mesquiteJarEntries = new ArrayList<>();
+			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().contains("mesquite/")) {
+					mesquiteJarEntries.add(entry.getName());
+				}
+			}
+			mesquiteJarModules = new HashMap<>();
+			for (String entry : mesquiteJarEntries) {
+				Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
+				Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
+				if (modulePackageMatcher.matches()) {
+					String packageName = modulePackageMatcher.group(1).replace("/",".");
+					if (!mesquiteJarModules.containsKey(packageName)) {
+						mesquiteJarModules.put(packageName, new ArrayList<String>());
+					}
+					if (!modulePackageMatcher.group(2).isEmpty()) {
+						mesquiteJarModules.get(packageName).add(modulePackageMatcher.group(0));
+					}
+				}
+			}
+
+			if (mesquiteDirectory == null) {
+				Path classPath = classFile.toPath();
+				mesquiteDirectory = classPath.getParent().resolve("classes").toFile();
+				if (!mesquiteDirectory.exists()) {
+					mesquiteDirectory = null;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("exception " + e.toString());
+		}
 		//finding mesquite directory
-		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
-		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
-
-		String sepp = MesquiteFile.fileSeparator;
-		if (loc.indexOf(sepp)<0){
-			sepp = "/";
-			if (loc.indexOf(sepp)<0)
-				System.out.println("Not a recognized separator in path to Mesquite class!");
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
-
-			try {
-				if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForAppBuilderURL(loc);
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
+		if (mesquiteDirectory == null) {
+			URL classLoc = mesquiteClassLoader.getResource("mesquite/Mesquite.class");
+			String loc = "";
+			if (classLoc != null) {
+				loc = classLoc.getPath();
 			}
+			String sepp = MesquiteFile.fileSeparator;
+			if (!loc.contains(sepp)) {
+				sepp = "/";
+				if (!loc.contains(sepp))
+					System.out.println("Not a recognized separator in path to Mesquite class!");
+				// find parent of parent path
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				System.out.println("@ " + loc);
 
-
-
-
-		}
-		else {
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			loc = loc.substring(0, loc.lastIndexOf(sepp));
-			System.out.println("@ " + loc);
-			try {
-				if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
-					loc = StringUtil.encodeForAppBuilderURL(loc);
-				URI uri = new URI(loc);
-				mesquiteDirectory = new File(uri.getSchemeSpecificPart());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-		}
-
-		if (mesquiteDirectory == null){
-			StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path"), ":");
-			while (st.hasMoreElements()){
-				String token = st.nextToken();
-				File mesquiteClass = new File(token + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
-				if (mesquiteClass.exists()) {
-					mesquiteDirectory = new File(token);
-					if (!mesquiteDirectory.exists())
-						mesquiteDirectory = null;
+				try {
+					if (startedFromOSXJava17Executable)  //for OS X executable built by Oracle appBundler
+						loc = StringUtil.encodeForURL(loc);
+					URI uri = new URI(loc);
+					mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+			} else {
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				loc = loc.substring(0, loc.lastIndexOf(sepp));
+				System.out.println("@ " + loc);
+				try {
+					if (startedFromOSXJava17Executable) //for OS X executable built by Oracle appBundler
+						loc = StringUtil.encodeForURL(loc);
+					URI uri = new URI(loc);
+					mesquiteDirectory = new File(uri.getSchemeSpecificPart());
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
 				}
 			}
 		}
-
-
 
 		if (mesquiteDirectory ==null){
 			File mesquiteClass = new File(System.getProperty("user.dir") + MesquiteFile.fileSeparator + "mesquite" + MesquiteFile.fileSeparator + "Mesquite.class");
@@ -358,18 +391,14 @@ public class Mesquite extends MesquiteTrunk
 		setModuleWindow(logWindow);
 		if (verboseStartup) System.out.println("main init 13");
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) {
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquiteBeta.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImageFromResource("images/mesquiteBeta.gif");
 		}
 		else
-			mesquiteTrunk.logo = MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/mesquite.gif");
+			mesquiteTrunk.logo = MesquiteImage.getImageFromResource("images/mesquite.gif");
 
-		BufferedImage equiv = null;
-		try {
-			equiv = ImageIO.read(new File(MesquiteModule.getRootPath() + "images/equivocal.gif"));
-		} catch (IOException e) {
-			MesquiteMessage.println(" IOException trying to read equivocal texture ");
-		}
-		GraphicsUtil.missingDataTexture = new TexturePaint(equiv, new Rectangle(0, 0, 16, 16));
+		Image equiv = null;
+		equiv = MesquiteImage.getImageFromResource("images/equivocal.gif");
+		GraphicsUtil.missingDataTexture = new TexturePaint((BufferedImage) equiv, new Rectangle(0, 0, 16, 16));
 
 		if (verboseStartup) System.out.println("main init 14");
 		MediaTracker mt = new MediaTracker(logWindow.getOuterContentsArea());
@@ -1160,13 +1189,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteButton.onImage[i]=  MesquiteImage.getImage(MesquiteModule.getRootPath() + "images/colors/" + i + "blank-on.gif");  
 		}
 		 */
-		InfoBar.triangleImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/infoBarTriangle.gif");  
-		InfoBar.triangleImageDown=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/triangleDown.gif");  
-		InfoBar.releaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/release.gif");  
-		InfoBar.prereleaseImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/prerelease.gif");  
-		ExplanationArea.plusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationPlus.gif");  
-		ExplanationArea.minusImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinus.gif");  
-		ExplanationArea.minusOffImage=  MesquiteImage.getImage(MesquiteModule.getRootPath() +"images/explanationMinusOff.gif");  
+		InfoBar.triangleImage=  MesquiteImage.getImageFromResource("images/infoBarTriangle.gif");
+		InfoBar.triangleImageDown=  MesquiteImage.getImageFromResource("images/triangleDown.gif");
+		InfoBar.releaseImage=  MesquiteImage.getImageFromResource("images/release.gif");
+		InfoBar.prereleaseImage=  MesquiteImage.getImageFromResource("images/prerelease.gif");
+		ExplanationArea.plusImage=  MesquiteImage.getImageFromResource("images/explanationPlus.gif");
+		ExplanationArea.minusImage=  MesquiteImage.getImageFromResource("images/explanationMinus.gif");
+		ExplanationArea.minusOffImage=  MesquiteImage.getImageFromResource("images/explanationMinusOff.gif");
 	}
 	/*.................................................................................................................*/
 	public String getName() {

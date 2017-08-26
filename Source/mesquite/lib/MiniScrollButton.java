@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls
@@ -38,18 +37,18 @@ public class MiniScrollButton extends MousePanel {
 	String itemName="";
 	
 	static {
-		leftArrow = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "leftarrow.gif");
-		leftArrowPressed = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "leftarrowPressed.gif");
-		leftArrowDisabled = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "leftarrowDisabled.gif");
-		rightArrow = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "rightarrow.gif");
-		rightArrowPressed = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "rightarrowPressed.gif");
-		rightArrowDisabled = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "rightarrowDisabled.gif");
-		upArrow = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "uparrow.gif");
-		upArrowPressed = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "uparrowPressed.gif");
-		upArrowDisabled = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "uparrowDisabled.gif");
-		downArrow = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "downarrow.gif");
-		downArrowPressed = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "downarrowPressed.gif");
-		downArrowDisabled = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "downarrowDisabled.gif");
+		leftArrow = MesquiteImage.getImageFromResource("images/leftarrow.gif");
+		leftArrowPressed = MesquiteImage.getImageFromResource("images/leftarrowPressed.gif");
+		leftArrowDisabled = MesquiteImage.getImageFromResource("images/leftarrowDisabled.gif");
+		rightArrow = MesquiteImage.getImageFromResource("images/rightarrow.gif");
+		rightArrowPressed = MesquiteImage.getImageFromResource("images/rightarrowPressed.gif");
+		rightArrowDisabled = MesquiteImage.getImageFromResource("images/rightarrowDisabled.gif");
+		upArrow = MesquiteImage.getImageFromResource("images/uparrow.gif");
+		upArrowPressed = MesquiteImage.getImageFromResource("images/uparrowPressed.gif");
+		upArrowDisabled = MesquiteImage.getImageFromResource("images/uparrowDisabled.gif");
+		downArrow = MesquiteImage.getImageFromResource("images/downarrow.gif");
+		downArrowPressed = MesquiteImage.getImageFromResource("images/downarrowPressed.gif");
+		downArrowDisabled = MesquiteImage.getImageFromResource("images/downarrowDisabled.gif");
 	}
 	public MiniScrollButton (MiniScroll miniScroll, int orientation, String itemName) {
 		this.orientation = orientation;

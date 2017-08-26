@@ -200,11 +200,11 @@ class SplashPanel extends MesquitePanel {
 	}
 	public int addSplashImage(MesquiteModuleInfo mmi){ //returns scroll setting
 		if (mmi !=null) {
-			Image im = MesquiteImage.getImage(mmi.getDirectoryPath() + "splash.gif", false);
+			Image im = MesquiteImage.getImageFromResource(mmi.getRelativePackagePath() + "/splash.gif");
 			if (im==null)
-				im = MesquiteImage.getImage(mmi.getDirectoryPath() + "splash.jpg", false);
+				im = MesquiteImage.getImageFromResource(mmi.getRelativePackagePath() + "/splash.jpg");
 			if (im==null)
-				im = MesquiteImage.getImage(mmi.getDirectoryPath() + "splash.jpeg", false);
+				im = MesquiteImage.getImageFromResource(mmi.getRelativePackagePath() + "/splash.jpeg");
 			if (im!=null){
 				MediaTracker mt = new MediaTracker(this);
 				mt.addImage(im, 0);

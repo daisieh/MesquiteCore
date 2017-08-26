@@ -14,12 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
 import mesquite.lib.duties.*;
 
+import java.io.File;
 import java.util.*;
-import java.net.*;
 
 /* ======================================================================== */
 /** Holds information re a Mesquite module. Since modules are not instantiated until
@@ -85,20 +83,20 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 	/** Associated macro records.*/
 	Vector macros; 
 	Vector employeeNeedsVector;  //a vector of registered employee needs, used for documentation/searches of how to do analyses, but perhaps eventually also used in hiring
-	
-	public MesquiteModuleInfo (Class c, MesquiteModule mb, CommandChecker checker, String directoryPath) {  
+
+	public MesquiteModuleInfo(Class c, MesquiteModule mb, CommandChecker checker) {
 		checker =CommandChecker.accumulate(mb, checker);
 		mb.moduleInfo = this;
- 		this.manualPath = mb.getManualPath();
-  		if (directoryPath!=null)
-  			this.directoryPath = new String(directoryPath); //must come first so subsequent can call module's path method
+		this.mbClass = c;
+		this.manualPath = mb.getManualPath();
+ 		this.directoryPath = MesquiteModule.getRootPath() + File.separatorChar + c.getPackage().getName().replace(".", String.valueOf(File.separatorChar)) + File.separatorChar;
+ 		this.directoryPath = this.directoryPath.replaceAll(String.valueOf(File.separatorChar) + String.valueOf(File.separatorChar), String.valueOf(File.separatorChar));
 		this.splashExists = (mb instanceof PackageIntroInterface && (( PackageIntroInterface)mb).hasSplash());
 		if (mb instanceof PackageIntroInterface)
 			this.splashURL = (( PackageIntroInterface)mb).getSplashURL();
  		this.commands = checker.getAccumulatedCommands();
  		this.explanations = checker.getAccumulatedExplanations();
  		this.menus =checker.getAccumulatedMenus();
-		this.mbClass = c;
 		isPrimaryChoice = mb.requestPrimaryChoice();
 		this.hireSubchoice = mb.getHireSubchoice();
 		this.dontHireSubchoice = mb.getDontHireSubchoice();
@@ -369,6 +367,10 @@ public class MesquiteModuleInfo implements Listable, CompatibilityChecker, Funct
 		else
 			return s + MesquiteFile.fileSeparator;
    	}
+
+   	public String getRelativePackagePath() {
+		return mbClass.getPackage().getName().replaceAll("\\.","/");
+	}
 
  	/** returns the class of the module*/
  	public Class getModuleClass() { 

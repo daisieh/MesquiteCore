@@ -19,13 +19,9 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -253,15 +249,12 @@ public class MousePanel extends Panel implements Commandable, FileDirtier, Mouse
 		try { //just in case Java2 not available
 			Image im =  disabledCursorImage;  
 			if (im == null){
-				String s=MesquiteModule.getRootImageDirectoryPath();
 				Dimension best = Toolkit.getDefaultToolkit().getBestCursorSize(16, 16);
-				if ((best.width>16 || best.height>16) && MesquiteFile.fileExists(MesquiteModule.getSizedRootImageFilePath(best.width, imageFileName))){
-					im = MesquiteImage.getImage((MesquiteModule.getSizedRootImageFilePath(best.width, imageFileName)));
-					if (im == null && s!=null)
-						im = MesquiteImage.getImage(s + imageFileName);
+				if ((best.width>16 || best.height>16)){
+					im = MesquiteImage.getImageFromResource(MesquiteModule.getSizedRootImageResource(best.width, imageFileName));
+				} else {
+					im = MesquiteImage.getImageFromResource("images/" + imageFileName);
 				}
-				else if (s!=null)
-					im = MesquiteImage.getImage(s + imageFileName);
 				//setCursorImage(im);
 			}
 			Point p = new Point(x, y);

@@ -17,7 +17,6 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 /* ======================================================================== */
 
 public class HelpSearchStrip extends MousePanel implements Commandable {
@@ -48,9 +47,9 @@ public class HelpSearchStrip extends MousePanel implements Commandable {
 		searchBox.setFont(smallFont);
 		searchBox.addKeyListener(new KIListener(this));
 		if (andImage==null && MesquiteModule.getRootPath()!=null){ //done here instead of static in case root path not yet defined when static run
-			andImage=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "and.gif");  
-			orImage=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "or.gif");  
-			dataImage=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "dataSearch.gif");  
+			andImage=  MesquiteImage.getImageFromResource("images/and.gif");
+			orImage=  MesquiteImage.getImageFromResource("images/or.gif");
+			dataImage=  MesquiteImage.getImageFromResource("images/dataSearch.gif");
 		}
 		setFont(smallFont);
 		setBackground(ColorTheme.getInterfaceBackground());

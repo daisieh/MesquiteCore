@@ -73,7 +73,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 
 	public BranchNotesToolExtra (ConstrainNodeAge ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
-		anchor = MesquiteImage.getImage(ownerModule.getPath() + "anchor.gif");
+		anchor = MesquiteImage.getImageFromResource(ownerModule.getPath() + "anchor.gif");
 		nodeAgeConstrModule = ownerModule;
 		nodeAgeConstrTool = new TreeTool(this, "NodeAgeConstraint", ownerModule.getPath(), "anchorTool.gif", 1,1,"Node Age Constraints", "This tool allows you to edit constraints on the ages of nodes of the tree.  Enter one number for fixed age; 0-max for maximum age; min+ for minimum; min-max for range."); 		branchCommand = MesquiteModule.makeCommand("editNodeAgeConstraint",  this);
 		nodeAgeConstrTool.setTouchedCommand(branchCommand);

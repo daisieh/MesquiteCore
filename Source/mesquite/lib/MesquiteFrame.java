@@ -18,9 +18,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.geom.*;
 import java.util.*;
-import javax.swing.*;
 
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
@@ -1277,13 +1275,13 @@ class FrameTabsPanel extends MousePanel {
 
 	static Image goaway, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
-		goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goaway.gif");
-		minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
-		mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
-		popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");
-		popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");
-		show = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "showTransparent.gif");
+		goaway = MesquiteImage.getImageFromResource("images/goawayTransparent.gif");
+		goawayMouseOver = MesquiteImage.getImageFromResource("images/windowIcons/goAway.gif");
+		minimize = MesquiteImage.getImageFromResource("images/minimizeTransparent.gif");
+		mediumize = MesquiteImage.getImageFromResource("images/mediumizeTransparent.gif");
+		popOut = MesquiteImage.getImageFromResource("images/decompactTransparent.gif");
+		popIn = MesquiteImage.getImageFromResource("images/compactTransparent.gif");
+		show = MesquiteImage.getImageFromResource("images/showTransparent.gif");
 	}
 	MesquitePopup popupForPopoutWindow=null;
 	MesquiteCommand popCommand, tileCommand, closeCommand;
@@ -1298,13 +1296,13 @@ class FrameTabsPanel extends MousePanel {
 		fonts[5] = new Font("SanSerif", Font.PLAIN, 7);
 		//	f.diagnose();
 		if (goaway == null){
-			goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
-			goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goaway.gif");
-			minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
-			mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
-			popOut = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "decompactTransparent.gif");
-			popIn = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "compactTransparent.gif");
-			show = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "showTransparent.gif");
+			goaway = MesquiteImage.getImageFromResource("images/goawayTransparent.gif");
+			goawayMouseOver = MesquiteImage.getImageFromResource("images/windowIcons/goAway.gif");
+			minimize = MesquiteImage.getImageFromResource("images/minimizeTransparent.gif");
+			mediumize = MesquiteImage.getImageFromResource("images/mediumizeTransparent.gif");
+			popOut = MesquiteImage.getImageFromResource("images/decompactTransparent.gif");
+			popIn = MesquiteImage.getImageFromResource("images/compactTransparent.gif");
+			show = MesquiteImage.getImageFromResource("images/showTransparent.gif");
 		}
 		closeCommand = new MesquiteCommand("closeWindow", this);
 		popCommand = new MesquiteCommand("popOut", this);

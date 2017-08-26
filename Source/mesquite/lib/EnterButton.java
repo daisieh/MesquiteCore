@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls
@@ -34,12 +33,12 @@ public class EnterButton extends MousePanel {
 	public static final int MIN_DIMENSION = 13;
 	
 	static {
-		enterVerticalDisabled = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "enterVertDisabled.gif");
-		enterHorizontalDisabled = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "enterHorizDisabled.gif");
-		enterVertical = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "enterVert.gif");
-		enterHorizontal = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "enterHoriz.gif");
-		enterVerticalPressed = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "enterVertPressed.gif");
-		enterHorizontalPressed = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "enterHorizPressed.gif");
+		enterVerticalDisabled = MesquiteImage.getImageFromResource("images/enterVertDisabled.gif");
+		enterHorizontalDisabled = MesquiteImage.getImageFromResource("images/enterHorizDisabled.gif");
+		enterVertical = MesquiteImage.getImageFromResource("images/enterVert.gif");
+		enterHorizontal = MesquiteImage.getImageFromResource("images/enterHoriz.gif");
+		enterVerticalPressed = MesquiteImage.getImageFromResource("images/enterVertPressed.gif");
+		enterHorizontalPressed = MesquiteImage.getImageFromResource("images/enterHorizPressed.gif");
 	}
 	public EnterButton (MiniControl miniControl, boolean vertical) {
 		this.miniControl = miniControl;

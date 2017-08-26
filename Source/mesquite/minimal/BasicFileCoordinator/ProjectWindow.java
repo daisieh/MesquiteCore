@@ -18,9 +18,6 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.event.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -283,7 +280,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		this.proj = proj;
 		setLayout(null);
 		setBackground(ColorTheme.getExtInterfaceBackground());
-		fileIm = 	MesquiteImage.getImage(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileSmall.gif");
+		fileIm = 	MesquiteImage.getImageFromResource(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileSmall.gif");
 		setSize(94, 500);
 
 	}
@@ -765,10 +762,10 @@ class ScrollPanel extends MousePanel {
 		searchStrip.setLocation(20, 0);
 		searchStrip.setVisible(true);
 		searchStrip.setText("");
-		search = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "search.gif");
-		up = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "uparrow.gif");
-		down = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath()+ "downarrow.gif");
-	//	query = MesquiteImage.getImage(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
+		search = MesquiteImage.getImageFromResource("images/search.gif");
+		up = MesquiteImage.getImageFromResource("images/uparrow.gif");
+		down = MesquiteImage.getImageFromResource("images/downarrow.gif");
+	//	query = MesquiteImage.getImageFromResource(p.bfc.getPath() + "projectHTML" + MesquiteFile.fileSeparator + "queryGray.gif");
 		setBackground(ColorTheme.getExtInterfaceBackground());
 	}
 	public void paint(Graphics g){
@@ -990,9 +987,9 @@ class FilePanel extends ElementPanel {
 		setShowTriangle(false);
 		this.mf = mf;
 		if (mf == bfc.getProject().getHomeFile())
-			im = 	MesquiteImage.getImage(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileSmall.gif");
+			im = 	MesquiteImage.getImageFromResource(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileSmall.gif");
 		else
-			im = 	MesquiteImage.getImage(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileLinkedSmall.gif");
+			im = 	MesquiteImage.getImageFromResource(bfc.getPath()+ "projectHTML" + MesquiteFile.fileSeparator + "fileLinkedSmall.gif");
 		//	Color cLight = ColorDistribution.projectLight[bfc.getProject().getProjectColor()];
 		//	Color cDark = ColorDistribution.projectDark[bfc.getProject().getProjectColor()];
 		//	setColors(cLight, cLight, cLight, cDark);

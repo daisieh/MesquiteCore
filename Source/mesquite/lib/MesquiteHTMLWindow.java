@@ -217,8 +217,8 @@ class MHTMLControl extends MesquitePanel {
 	MesquiteCommand goBackCommand = null;
 	public MHTMLControl (MesquiteHTMLWindow window){
 		if (	backImage==null){
-			backImage=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "back.gif");  
-			backDimImage=  MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "backDim.gif");  
+			backImage=  MesquiteImage.getImageFromResource("images/back.gif");
+			backDimImage=  MesquiteImage.getImageFromResource("images/backDim.gif");
 		}
 		this.window = window;
 		goBackCommand = new MesquiteCommand("goBack", window);

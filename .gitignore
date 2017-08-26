@@ -46,3 +46,4 @@ Thumbs.db
 /.classpath
 /.gitignore
 /target/
+dependency-reduced-pom.xml

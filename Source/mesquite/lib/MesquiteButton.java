@@ -14,8 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
+
 import mesquite.lib.simplicity.InterfaceManager;
 
 /* ��������������������������� commands ������������������������������� */
@@ -43,7 +42,7 @@ public class MesquiteButton extends MousePanel implements Explainable, ImageOwne
 		onImage=  new Image[ColorDistribution.numColorSchemes];  
 	}
 	public MesquiteButton (MesquiteModule ownerModule, MesquiteCommand command, String arguments, boolean initialState, String imagePath, int height, int width) {
-		this.image = MesquiteImage.getImage(imagePath);
+		this.image = MesquiteImage.getImageFromResource(imagePath);
 		this.ownerModule = ownerModule;
 		mt= new MediaTracker(ownerModule.containerOfModule().getOuterContentsArea());
 		mt.addImage(this.image, 0);
@@ -113,7 +112,7 @@ public class MesquiteButton extends MousePanel implements Explainable, ImageOwne
 		if (path == null)
 			optionImage = null;
 		else
-			optionImage = MesquiteImage.getImage(path);
+			optionImage = MesquiteImage.getImageFromResource(path);
 	}
 	public String getImagePath(){
 		if (tool!=null)
@@ -124,7 +123,7 @@ public class MesquiteButton extends MousePanel implements Explainable, ImageOwne
 		if (mt!=null)
 			mt.removeImage(image);
 
-		this.image = MesquiteImage.getImage(path);
+		this.image = MesquiteImage.getImageFromResource(path);
 		if (mt!=null)
 			mt.addImage(image, 4);
 		waitUntilImagesLoaded();
