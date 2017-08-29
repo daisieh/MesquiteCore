@@ -4,6 +4,13 @@
     <groupId>MesquiteCore</groupId>
     <artifactId>MesquiteCore</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <repositories>
+        <repository>
+            <id>m2.nexml.repos</id>
+            <name>NeXML Remote Repository</name>
+            <url>http://nexml.github.io/maven/repository</url>
+        </repository>
+    </repositories>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
         <dependency>
@@ -62,6 +69,17 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.21</version>
         </dependency>
+        <dependency>
+            <groupId>org.nexml</groupId>
+            <artifactId>mesquite_module</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nexml</groupId>
+            <artifactId>model</artifactId>
+            <version>1.6</version>
+        </dependency>
+
 
     </dependencies>
     <build>
