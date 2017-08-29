@@ -12,6 +12,16 @@
         </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.nexml</groupId>
+            <artifactId>mesquite_module</artifactId>
+            <version>1.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nexml</groupId>
+            <artifactId>model</artifactId>
+            <version>1.6-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -69,17 +79,6 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.21</version>
         </dependency>
-        <dependency>
-            <groupId>org.nexml</groupId>
-            <artifactId>mesquite_module</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.nexml</groupId>
-            <artifactId>model</artifactId>
-            <version>1.6</version>
-        </dependency>
-
 
     </dependencies>
     <build>
