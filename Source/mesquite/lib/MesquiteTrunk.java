@@ -69,7 +69,8 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		"io", 
 		"parsimony", 
 		"stochchar", 
-		"genesis"
+		"genesis",
+		"nexml"
 	};
 	/** List of standard packages.*/
 	public static String[] standardExtras = new String[]{
