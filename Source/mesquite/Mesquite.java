@@ -104,6 +104,17 @@ public class Mesquite extends MesquiteTrunk
 	HPanel browser;
 	ListableVector configurations;
 	private  FileOpener fileHandler;
+	private ArrayList<String> mesquiteJarEntries = new ArrayList<>();
+	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
+	private static ClassLoader mesquiteClassLoader = null;
+
+	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
+
+	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
+
+	public HashMap<String, ArrayList<String>> getMesquiteJarModules() {
+		return mesquiteJarModules;
+	}
 
 	/*.................................................................................................................*/
 	public void endJob() {
