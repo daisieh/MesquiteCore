@@ -104,15 +104,15 @@ public class Mesquite extends MesquiteTrunk
 	HPanel browser;
 	ListableVector configurations;
 	private  FileOpener fileHandler;
-	private ArrayList<String> mesquiteJarEntries = new ArrayList<>();
-	private HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
+	private static ArrayList<String> mesquiteJarEntries = new ArrayList<>();
+	private static HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
 	private static ClassLoader mesquiteClassLoader = null;
 
 	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
 
-	public ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
+	public static ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
 
-	public HashMap<String, ArrayList<String>> getMesquiteJarModules() {
+	public static HashMap<String, ArrayList<String>> getMesquiteJarModules() {
 		return mesquiteJarModules;
 	}
 
@@ -176,11 +176,16 @@ public class Mesquite extends MesquiteTrunk
 
 
 		String sep = MesquiteFile.fileSeparator;
+		mesquiteClassLoader = this.getClass().getClassLoader();
+		String loc = mesquiteClassLoader.getResource("mesquite/Mesquite.class").getPath();
 
-		//finding mesquite directory
-		ClassLoader cl = mesquite.Mesquite.class.getClassLoader();
-		String loc = cl.getResource("mesquite/Mesquite.class").getPath();
-
+		try {
+			URL classLocation = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+			File classFile = new File(classLocation.toURI());
+			DirectInit.loadJarModules(classFile);
+		} catch (Exception e) {
+			System.out.println("caught an exception " + e.getMessage());
+		}
 		String sepp = MesquiteFile.fileSeparator;
 		if (loc.indexOf(sepp)<0){
 			sepp = "/";
@@ -787,6 +792,7 @@ public class Mesquite extends MesquiteTrunk
 		setMesquiteDirectoryPath();
 	}
 	/*.................................................................................................................*/
+
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
 			preferencesSet = true; //done to see that prefs file found; if not ask for registration

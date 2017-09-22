@@ -14,9 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.trunk;
 
+import mesquite.Mesquite;
 import mesquite.lib.*;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /* called by Mesquite trunk early (after directories found, before modules loaded) for any init activities other than by modules */
 public class DirectInit {
@@ -42,6 +51,7 @@ public class DirectInit {
 						String path = jarsPath + "/" + jars[i];
 						buffer.append(" " + jars[i]);
 					ClassPathHacker.addFile(path);
+					loadJarModules(new File(path));
 					System.out.println("Jar file added to classpath: " + path);
 					}
 				}
@@ -50,6 +60,38 @@ public class DirectInit {
 		}
 		catch (Throwable t){
 			System.out.println("DirectInit error " + t);
+		}
+	}
+
+	public static void loadJarModules(File classFile) {
+		try {
+			JarFile classJar = new JarFile(classFile);
+
+			ArrayList<String> mesquiteJarEntries = Mesquite.getMesquiteJarEntries();
+			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+				JarEntry entry = entries.nextElement();
+//				System.out.println("looking at entry " + entry.getName());
+				if (entry.getName().contains("mesquite/")) {
+					mesquiteJarEntries.add(entry.getName());
+				}
+			}
+			HashMap<String, ArrayList<String>> mesquiteJarModules = Mesquite.getMesquiteJarModules();
+			for (String entry : mesquiteJarEntries) {
+				Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
+				Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
+				if (modulePackageMatcher.matches()) {
+					String packageName = modulePackageMatcher.group(1).replace("/",".");
+					if (!mesquiteJarModules.containsKey(packageName)) {
+						System.out.println("adding module " + packageName);
+						mesquiteJarModules.put(packageName, new ArrayList<String>());
+					}
+					if (!modulePackageMatcher.group(2).isEmpty()) {
+						mesquiteJarModules.get(packageName).add(modulePackageMatcher.group(0));
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("exception " + e.toString());
 		}
 	}
 	public static void loadJarsInDirectories(String path, StringBuffer buffer){ //path has no slash at the end of it
