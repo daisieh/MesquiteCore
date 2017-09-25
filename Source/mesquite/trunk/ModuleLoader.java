@@ -241,56 +241,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	int directoryNumber = 0;
 	int modulesLoaded = 0;
 	int numDirectoriesCurrent = 0;
-	void checkIfModulesChanged(String path, String fileName, StringArray dontLook, StringBuffer report){ //path has no slash at the end of it
-			String filePathName;
-			if (StringUtil.blank(fileName))
-				filePathName = path;  //
-			else
-				filePathName = path+ MesquiteFile.fileSeparator + fileName;
-			if (fileName!=null && fileName.endsWith(".class")) {
-				report.append(filePathName + StringUtil.lineEnding());
-				return;
-			}
-			File f = new File(filePathName);  //
-			if (!f.exists())
-				return;
-			else if (f.isDirectory()){  // is a directory; hence look inside at each item
-				report.append(fileName + "===========" + StringUtil.lineEnding());
-				String[] modulesList = f.list();
-				mesquite.numDirectories++;
-				for (int i=0; i<modulesList.length; i++)
-					if (modulesList[i]!=null && !modulesList[i].endsWith(".class") && !avoidedDirectory(modulesList[i]) && (dontLook==null || dontLook.indexOf(modulesList[i])<0)) {
-						checkIfModulesChanged(filePathName, modulesList[i], null, report);
-					}
-			}
-			else {
-				report.append(filePathName + StringUtil.lineEnding());
-			}
-	}
 	boolean avoidedDirectory(String name){ //added 11 Mar 02
 		return ("macros".equalsIgnoreCase(name) || "documentation".equalsIgnoreCase(name) || "docs".equalsIgnoreCase(name)  || "lib".equalsIgnoreCase(name)  || "duties".equalsIgnoreCase(name)  || "configs".equalsIgnoreCase(name));
-	}
-	void countModules(String path, String fileName, StringArray dontLook){ //path has no slash at the end of it
-			String filePathName;
-			if (StringUtil.blank(fileName))
-				filePathName = path;  //
-			else
-				filePathName = path+ MesquiteFile.fileSeparator + fileName;
-			if (fileName!=null && fileName.endsWith(".class"))
-				return;
-			File f = new File(filePathName);  //
-			if (!f.exists())
-				return;
-			else if (f.isDirectory()){  // is a directory; hence look inside at each item
-				String[] modulesList = f.list();
-				mesquite.numDirectories++;
-				if (mesquite.numDirectories % 10 == 0)
-					showMessage(true, "Counting modules (approximate): " + mesquite.numDirectories, 0, 0);
-				for (int i=0; i<modulesList.length; i++)
-					if (modulesList[i]!=null && !modulesList[i].endsWith(".class") && !avoidedDirectory(modulesList[i]) && (dontLook==null || dontLook.indexOf(modulesList[i])<0)) {
-						countModules(filePathName, modulesList[i], null);
-					}
-			}
 	}
 	/*.................................................................................................................*/
 	/** Put a message in the lower left corner of the About window; integers are for thermometer use; send unassingned for no thermometer  */
