@@ -90,7 +90,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite/");
 			targetDirectories = new StringArray(1);
 			targetDirectories.setValue(0, "mesquite.minimal");
-			getModulesFromJar(targetDirectories, true);
 
 			StringBuffer report =  new StringBuffer(5000);
 			MesquiteModule.mesquiteTrunk.logln(report.toString());
