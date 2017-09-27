@@ -585,13 +585,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		className = matcher.group(1) + "." + matcher.group(1);
 		try {
-			Class c = Class.forName(className);
 			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
+			Class c= Class.forName(className);
 			if (c != null && !c.getName().equals("mesquite.Mesquite")) {
 				MesquiteModule mb = mesquite.instantiateModule(c);
-				if (mb!=null && mb instanceof MesquiteModule) {
+				if (mb!=null) {
 					if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
-
 						MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();
 					}
 					String message = checkModuleForCompatibility(c);
@@ -614,9 +613,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 						modulesLoaded++;
 						//mesquite.logln("Loading: " + mb.getName(), MesquiteLong.unassigned, MesquiteLong.unassigned);
 					}
-					//					else if (message !=null) {
-//						MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current version of the Mesquite system.   Error message: " + message);
-//					}
+					else if (message !=null)
+						MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current version of the Mesquite system.   Error message: " + message);
 					//else
 					//	MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current Java VM, the operating system. or the current version of the Mesquite system. ");
 					EmployerEmployee.totalDisposed++;
