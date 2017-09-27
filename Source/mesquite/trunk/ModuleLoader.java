@@ -713,101 +713,99 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
    	 static boolean warnedError = false;
    	 CommandChecker moduleChecker = new CommandChecker();
 	/*.................................................................................................................*/
-	public void loadMesquiteModuleClassFiles(File thisFile, String packageName, boolean isBasicFileCoordinator) {
+	private void loadMesquiteModuleClassFiles(File thisFile, String packageName, boolean isBasicFileCoordinator) {
 		// if it's not a file, don't load:
 		if (!thisFile.isFile()) {
 			return;
 		}
+
+		// unless we're specifically loading the BasicFileCoordinator, don't load that.
 		if (("BasicFileCoordinator.class".equalsIgnoreCase(thisFile.getName())) && !isBasicFileCoordinator) {
 			return;
 		}
 
 		if (thisFile.getName().endsWith(".class")) {  //this is a class file, therefore try to load it
+			// if this file is a module, it will be a class contained in a directory of the same name:
 			String className = FilenameUtils.getBaseName(thisFile.getName());
+			Matcher matcher = Pattern.compile(File.separator + className + File.separator + className + "\\.class").matcher(thisFile.toString());
 			// Module is a class file within a directory of the same name:
-			if (!FilenameUtils.getFullPathNoEndSeparator(thisFile.getPath()).endsWith(className)) {
+			if (!matcher.find()) {
 				return;
 			}
 			String lastTried = null;
-			if (thisFile.isFile()) {
-				try {
-					Class c = null;
-					//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
-					lastTried = packageName + className;
-	//classTime.start();
-					c= Class.forName(packageName + className);
-	//classTime.end();
-					if (lastTried.equals("mesquite.Mesquite")){
-					}
-					else if (c == null)  {
-						mesquite.logln("NULL returned by module class loader");
-					}
-					else {
-	//instantiateTime.start();
-						MesquiteModule mb = mesquite.instantiateModule(c);
-						if (mb!=null && mb instanceof MesquiteModule) {
-							if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
-
-								MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();
-							}
-							String message = checkModuleForCompatibility(c);
-							if (message == null && mb.compatibleWithSystem() && mb.loadModule()) {
-								MesquiteModuleInfo mBI = new MesquiteModuleInfo(c, mb, moduleChecker, FilenameUtils.getFullPath(thisFile.getAbsolutePath()));
-								if (!mb.getName().equals("Mesquite") && mesquite.mesquiteModulesInfoVector.nameAlreadyInList(mb.getName()))
-									MesquiteTrunk.mesquiteTrunk.alert("Two modules have the same name (" + mb.getName() + ").  This may make one of the modules unavailable for use. (Module class: " + mb.getClass().getName() +
-											").\n\nThis problem can arise if a module has been moved, and you update your copy of Mesquite on a Windows machine by replacing folders without deleting the previous folder, or if you are programming and you haven't updated all projects.");
-								mesquite.mesquiteModulesInfoVector.addElement(mBI, false);
-									mesquite.mesquiteModulesInfoVector.recordDuty(mb);
-								mBI.setAsDefault(mesquite.mesquiteModulesInfoVector.isDefault(mb));
-								MesquiteTrunk.mesquiteTrunk.addSplash(mBI);
-								showMessage(false, configurationString);
-								if (mb.getExpectedPath() !=null){
-									File n = new File(mb.getExpectedPath());
-									if (!n.exists())
-										MesquiteMessage.warnProgrammer("...\n**************\nThe module " +mb.getName() + " (" + mb.getClass().getName() + ") expects a file or directory at " + mb.getExpectedPath() + " but it was not found. \n**************\n ...");
-								}
-								modulesLoaded++;
-								//mesquite.logln("Loading: " + mb.getName(), MesquiteLong.unassigned, MesquiteLong.unassigned);
-							}
-							else if (message !=null)
-								MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current version of the Mesquite system.   Error message: " + message);
-							//else
-							//	MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current Java VM, the operating system. or the current version of the Mesquite system. ");
-							EmployerEmployee.totalDisposed++;
-							mb = null;
+			try {
+				Class c = null;
+				//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
+				lastTried = packageName + className;
+//classTime.start();
+				c= Class.forName(packageName + className);
+//classTime.end();
+				if (!lastTried.equals("mesquite.Mesquite") && c == null)  {
+					mesquite.logln("NULL returned by module class loader");
+				} else {
+//instantiateTime.start();
+					MesquiteModule mb = mesquite.instantiateModule(c);
+					if (mb!=null) {
+						if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
+							MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();
 						}
-						c = null;
+						String message = checkModuleForCompatibility(c);
+						if (message == null && mb.compatibleWithSystem() && mb.loadModule()) {
+							MesquiteModuleInfo mBI = new MesquiteModuleInfo(c, mb, moduleChecker, FilenameUtils.getFullPath(thisFile.getAbsolutePath()));
+							if (!mb.getName().equals("Mesquite") && Mesquite.mesquiteModulesInfoVector.nameAlreadyInList(mb.getName()))
+								MesquiteTrunk.mesquiteTrunk.alert("Two modules have the same name (" + mb.getName() + ").  This may make one of the modules unavailable for use. (Module class: " + mb.getClass().getName() +
+										").\n\nThis problem can arise if a module has been moved, and you update your copy of Mesquite on a Windows machine by replacing folders without deleting the previous folder, or if you are programming and you haven't updated all projects.");
+							Mesquite.mesquiteModulesInfoVector.addElement(mBI, false);
+							Mesquite.mesquiteModulesInfoVector.recordDuty(mb);
+							mBI.setAsDefault(Mesquite.mesquiteModulesInfoVector.isDefault(mb));
+							MesquiteTrunk.mesquiteTrunk.addSplash(mBI);
+							showMessage(false, configurationString);
+							if (mb.getExpectedPath() !=null){
+								File n = new File(mb.getExpectedPath());
+								if (!n.exists())
+									MesquiteMessage.warnProgrammer("...\n**************\nThe module " +mb.getName() + " (" + mb.getClass().getName() + ") expects a file or directory at " + mb.getExpectedPath() + " but it was not found. \n**************\n ...");
+							}
+							modulesLoaded++;
+							//mesquite.logln("Loading: " + mb.getName(), MesquiteLong.unassigned, MesquiteLong.unassigned);
+						}
+						else if (message !=null)
+							MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current version of the Mesquite system.   Error message: " + message);
+						//else
+						//	MesquiteTrunk.mesquiteTrunk.alert("Incompatible module found: " + mb.getName() + ". The module may be out of date and no longer compatible with the current Java VM, the operating system. or the current version of the Mesquite system. ");
+						EmployerEmployee.totalDisposed++;
+						mb = null;
 					}
+					c = null;
 				}
-				catch (ClassNotFoundException e){
-					mesquite.logln("\n\nClassNotFoundException while loading: " + lastTried);
-					MesquiteFile.throwableToLog(this, e);
-					warnMissing(lastTried, e);
-				}
-				catch (NoClassDefFoundError e){
-					mesquite.logln("\n\nNoClassDefFoundError while loading: " + lastTried);
-					MesquiteFile.throwableToLog(this, e);
-					warnMissing(lastTried, e);
-				}
-				catch (NoSuchMethodError e){
-					mesquite.logln("\n\nNoSuchMethodError while loading: " + lastTried);
-					MesquiteFile.throwableToLog(this, e);
-					warnIncompatible(lastTried, e);
-				}
-				catch (AbstractMethodError e){
-					mesquite.logln("\n\nAbstractMethodError while loading: " + lastTried);
-					MesquiteFile.throwableToLog(this, e);
-					warnIncompatible(lastTried, e);
-				}
-				catch (Exception e){
-					mesquite.logln("\n\nException while loading: " + lastTried + "   exception: " + e.getClass());
-					MesquiteFile.throwableToLog(this, e);
-				}
-				catch (Error e){
-					mesquite.logln("\n\nError while loading: " + lastTried + "   error: " + e.getClass());
-					MesquiteFile.throwableToLog(this, e);
-					throw e;
-				}
+			}
+			catch (ClassNotFoundException e){
+				mesquite.logln("\n\nClassNotFoundException while loading: " + lastTried);
+				MesquiteFile.throwableToLog(this, e);
+				warnMissing(lastTried, e);
+			}
+			catch (NoClassDefFoundError e){
+				mesquite.logln("\n\nNoClassDefFoundError while loading: " + lastTried);
+				MesquiteFile.throwableToLog(this, e);
+				warnMissing(lastTried, e);
+			}
+			catch (NoSuchMethodError e){
+				mesquite.logln("\n\nNoSuchMethodError while loading: " + lastTried);
+				MesquiteFile.throwableToLog(this, e);
+				warnIncompatible(lastTried, e);
+			}
+			catch (AbstractMethodError e){
+				mesquite.logln("\n\nAbstractMethodError while loading: " + lastTried);
+				MesquiteFile.throwableToLog(this, e);
+				warnIncompatible(lastTried, e);
+			}
+			catch (Exception e){
+				mesquite.logln("\n\nException while loading: " + lastTried + "   exception: " + e.getClass());
+				MesquiteFile.throwableToLog(this, e);
+			}
+			catch (Error e){
+				mesquite.logln("\n\nError while loading: " + lastTried + "   error: " + e.getClass());
+				MesquiteFile.throwableToLog(this, e);
+				throw e;
 			}
 		}
 	}
