@@ -89,7 +89,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			else
 				directoryTotal =  mesquite.numDirectories;
 			showMessage(true, "Looking for modules", directoryTotal, 0);
-			loadMesquiteModuleClassFiles(f, "mesquite.minimal.BasicFileCoordinator.", true);
+			loadMesquiteModuleClassFiles(f, true);
 			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite/");
 			targetDirectories = new StringArray(1);
 			targetDirectories.setValue(0, "mesquite.minimal");
@@ -200,7 +200,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			} else if (fileName.endsWith("config/")) {
 				mesquite.logln("  loadConfigs " + fileName);
 			} else if (fileName.endsWith(".class")) {
-				fileName = fileName.replace('/', '.');
 				loadModuleClass(fileName);
 			}
 		}
@@ -372,7 +371,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		//this is a class file, therefore try to load it
 		if (f.isFile()) {
-			loadMesquiteModuleClassFiles(f, packageName, false);
+			loadMesquiteModuleClassFiles(f, false);
 			return;
 		}
 		
@@ -577,15 +576,14 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		}
 	}
 	private void loadModuleClass(String className) {
-		// A module file is a class file located directly inside a directory of the same name.
-		Pattern r = Pattern.compile("(.+\\.)(.+?)(\\.\\2)\\.class");
-		Matcher modulePattern = r.matcher(className);
-
-		// if it's not of this pattern, it's not a module. Return.
-		if (!modulePattern.matches())
+		// if this file is a module, it will be a class contained in a directory of the same name:
+		Matcher matcher = Pattern.compile(File.separator + "(.+?)" + File.separator + "(\\1)\\.class").matcher(className);
+		// Module is a class file within a directory of the same name:
+		if (!matcher.find()) {
 			return;
+		}
 
-		className = modulePattern.group(1) + modulePattern.group(2) + modulePattern.group(3);
+		className = matcher.group(1) + "." + matcher.group(1);
 		try {
 			Class c = Class.forName(className);
 			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
@@ -713,12 +711,11 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
    	 static boolean warnedError = false;
    	 CommandChecker moduleChecker = new CommandChecker();
 	/*.................................................................................................................*/
-	private void loadMesquiteModuleClassFiles(File thisFile, String packageName, boolean isBasicFileCoordinator) {
+	private void loadMesquiteModuleClassFiles(File thisFile, boolean isBasicFileCoordinator) {
 		// if it's not a file, don't load:
 		if (!thisFile.isFile()) {
 			return;
 		}
-
 		// unless we're specifically loading the BasicFileCoordinator, don't load that.
 		if (("BasicFileCoordinator.class".equalsIgnoreCase(thisFile.getName())) && !isBasicFileCoordinator) {
 			return;
@@ -727,11 +724,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (thisFile.getName().endsWith(".class")) {  //this is a class file, therefore try to load it
 			// if this file is a module, it will be a class contained in a directory of the same name:
 			String className = FilenameUtils.getBaseName(thisFile.getName());
-			Matcher matcher = Pattern.compile(File.separator + className + File.separator + className + "\\.class").matcher(thisFile.toString());
+			Matcher matcher = Pattern.compile(".*(mesquite" + File.separator + ".+" + File.separator + className + File.separator + ")" + className + "\\.class").matcher(thisFile.toString());
 			// Module is a class file within a directory of the same name:
-			if (!matcher.find()) {
+			if (!matcher.matches()) {
 				return;
 			}
+			String packageName = matcher.group(1).replaceAll(File.separator, ".");
 			String lastTried = null;
 			try {
 				Class c = null;
