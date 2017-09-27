@@ -367,7 +367,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		}
 	}
-	void getModules(String packageName, String path, String fileName, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll){ //path has no slash at the end of it
+	private void getModules(String packageName, String path, String fileName, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll){ //path has no slash at the end of it
 		String filePathName;
 		if (StringUtil.blank(fileName))
 			filePathName = path;  //
@@ -738,7 +738,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			String directoryName=StringUtil.getLastItem(pathname, MesquiteFile.fileSeparator);
 			if (classname==null || !classname.equalsIgnoreCase(directoryName)) //NOTE: module must be in directory of same name!!!
 				return;
-			mesquite.logln("package class loading " + packageName);
+//			mesquite.logln("package class loading " + packageName);
 			String lastTried = null;
 			if (thisFile.isFile()) {
 				try {
