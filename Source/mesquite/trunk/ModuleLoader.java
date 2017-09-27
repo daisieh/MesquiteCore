@@ -388,18 +388,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (verboseStartup) MesquiteMessage.println("    file  " + f + " exists? " + f.exists());
 		if (level ==2 ) {
 			loadPackageExplanation(filePathName, fileName, true);
-		}
-		numDirectoriesCurrent++;
-		String[] modulesList = f.list();
-	//	if (MesquiteTrunk.isJava2DAvailable()){
-			try{
-			Arrays.sort(modulesList);
-		}
-		catch (Throwable e){//to permit function under Java 1.1 (Arrays.sort is not defined)
-		}
-		int numItems = modulesList.length;
-		if (verboseStartup) MesquiteMessage.println("    into directory with  " + numItems + " items" );
-		if (level ==2) {
 			showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
 			mesquite.log(" " + fileName);
 			if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
@@ -408,9 +396,15 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				DirectInit.loadJars(filePathName + MesquiteFile.fileSeparator + "jars", buffer);
 				mesquite.logln(buffer.toString());
 			}
-		}
-		else
+		} else {
 			showMessage(true, ++directoryNumber);
+		}
+
+		numDirectoriesCurrent++;
+		String[] modulesList = f.list();
+		Arrays.sort(modulesList);
+
+		if (verboseStartup) MesquiteMessage.println("    into directory with  " + modulesList.length + " items" );
 		boolean macrosFound = false;
 		for (String module : modulesList) {
 			if (module != null && !avoidedDirectory(module)) {
