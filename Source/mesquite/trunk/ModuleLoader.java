@@ -380,73 +380,71 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (verboseStartup) MesquiteMessage.println(">level " + level + " " + filePathName);
 
 		//this is a class file, therefore try to load it
-		if (fileName!=null && (".class").equalsIgnoreCase(extension(fileName))) {
+		if (f.isFile()) {
 			loadMesquiteModuleClassFiles(f, path, packageName, fileName, false);
 			return;
 		}
 		
 		if (verboseStartup) MesquiteMessage.println("    file  " + f + " exists? " + f.exists());
-		else if (f.isDirectory()){  // is a directory; hence look inside at each item
-			if (level ==2 ) {
-				loadPackageExplanation(filePathName, fileName, true);
-			}
-			numDirectoriesCurrent++;
-			String[] modulesList = f.list();
-		//	if (MesquiteTrunk.isJava2DAvailable()){
-				try{
-				Arrays.sort(modulesList);
-			}
-			catch (Throwable e){//to permit function under Java 1.1 (Arrays.sort is not defined)
-			}
-			int numItems = modulesList.length;
-			if (verboseStartup) MesquiteMessage.println("    into directory with  " + numItems + " items" );
-			if (level ==2) {
-				showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
-				mesquite.log(" " + fileName);
-				if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
-					StringBuffer buffer =new StringBuffer();
-					buffer.append("\n");
-					DirectInit.loadJars(filePathName + MesquiteFile.fileSeparator + "jars", buffer);
-					mesquite.logln(buffer.toString());
-				}
-			}
-			else
-				showMessage(true, ++directoryNumber);
-			boolean macrosFound = false;
-			for (String module : modulesList) {
-				if (module != null && !avoidedDirectory(module)) {
-					String pathFM = packageName + fileName + "."+module;
-					if (targetDirectories !=null){
-						int targetNumber = targetDirectories.indexOf(pathFM);
-						if (targetNumber>=0 && targetNumber<packagesFound.length)
-							packagesFound[targetNumber] = true;
-					}
-					if ((targetDirectories==null || (targetDirectories.indexOf(pathFM)<0 && !targetOn) || (targetDirectories.indexOf(pathFM)>=0 && targetOn))) {
-						getModules(packageName + fileName + ".", filePathName, module, level, null, targetOn, loadingAll);
-					}
-					else if (level == 1) {
-						String notDonePath = filePathName+ MesquiteFile.fileSeparator + module;
-						File notDoneFile = new File(notDonePath);
-						if (notDoneFile.exists() && notDoneFile.isDirectory() && !loadingAll) { //if loading all will catch later
-							loadConfigs(filePathName+ MesquiteFile.fileSeparator + module+ MesquiteFile.fileSeparator + "configs", false);
-							//loadMacros(filePathName+ MesquiteFile.fileSeparator + module+ MesquiteFile.fileSeparator + "macros");
-							loadPackageExplanation(notDonePath, module, false);
-						}
-					}
-					else if (targetDirectories.indexOf(packageName + fileName + "."+module)<0 && targetOn){
-						mesquite.logln("Not loading package \"" + pathFM + "\" because not included in current configuration list");
-					}
-				}
-				else if ("macros".equalsIgnoreCase(module)){
-					macrosFound = true;
-				}
-				else if ("configs".equalsIgnoreCase(module) && (!loadingAll || targetOn)){
-					loadConfigs(filePathName+ MesquiteFile.fileSeparator + "configs", false);
-				}
-			}
-			if (macrosFound)
-				loadMacros(filePathName+ MesquiteFile.fileSeparator + "macros", false);
+		if (level ==2 ) {
+			loadPackageExplanation(filePathName, fileName, true);
 		}
+		numDirectoriesCurrent++;
+		String[] modulesList = f.list();
+	//	if (MesquiteTrunk.isJava2DAvailable()){
+			try{
+			Arrays.sort(modulesList);
+		}
+		catch (Throwable e){//to permit function under Java 1.1 (Arrays.sort is not defined)
+		}
+		int numItems = modulesList.length;
+		if (verboseStartup) MesquiteMessage.println("    into directory with  " + numItems + " items" );
+		if (level ==2) {
+			showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
+			mesquite.log(" " + fileName);
+			if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
+				StringBuffer buffer =new StringBuffer();
+				buffer.append("\n");
+				DirectInit.loadJars(filePathName + MesquiteFile.fileSeparator + "jars", buffer);
+				mesquite.logln(buffer.toString());
+			}
+		}
+		else
+			showMessage(true, ++directoryNumber);
+		boolean macrosFound = false;
+		for (String module : modulesList) {
+			if (module != null && !avoidedDirectory(module)) {
+				String pathFM = packageName + fileName + "."+module;
+				if (targetDirectories !=null){
+					int targetNumber = targetDirectories.indexOf(pathFM);
+					if (targetNumber>=0 && targetNumber<packagesFound.length)
+						packagesFound[targetNumber] = true;
+				}
+				if ((targetDirectories==null || (targetDirectories.indexOf(pathFM)<0 && !targetOn) || (targetDirectories.indexOf(pathFM)>=0 && targetOn))) {
+					getModules(packageName + fileName + ".", filePathName, module, level, null, targetOn, loadingAll);
+				}
+				else if (level == 1) {
+					String notDonePath = filePathName+ MesquiteFile.fileSeparator + module;
+					File notDoneFile = new File(notDonePath);
+					if (notDoneFile.exists() && notDoneFile.isDirectory() && !loadingAll) { //if loading all will catch later
+						loadConfigs(filePathName+ MesquiteFile.fileSeparator + module+ MesquiteFile.fileSeparator + "configs", false);
+						//loadMacros(filePathName+ MesquiteFile.fileSeparator + module+ MesquiteFile.fileSeparator + "macros");
+						loadPackageExplanation(notDonePath, module, false);
+					}
+				}
+				else if (targetDirectories.indexOf(packageName + fileName + "."+module)<0 && targetOn){
+					mesquite.logln("Not loading package \"" + pathFM + "\" because not included in current configuration list");
+				}
+			}
+			else if ("macros".equalsIgnoreCase(module)){
+				macrosFound = true;
+			}
+			else if ("configs".equalsIgnoreCase(module) && (!loadingAll || targetOn)){
+				loadConfigs(filePathName+ MesquiteFile.fileSeparator + "configs", false);
+			}
+		}
+		if (macrosFound)
+			loadMacros(filePathName+ MesquiteFile.fileSeparator + "macros", false);
 	}
 	private void loadMacrosFromJarResource(String macrosPath, boolean auto) {
 		String modulePath = "";
