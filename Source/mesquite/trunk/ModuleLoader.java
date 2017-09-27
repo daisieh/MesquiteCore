@@ -313,16 +313,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			
 		}
 	}
-	String extension(String name){
-		if (StringUtil.blank(name))
-			return "";
-		else {
-			int period = name.lastIndexOf('.');
-			if (period <0)
-				return "";
-			return name.substring(period, name.length());
-		}
-	}
 	String[] indent = {" ", "    ", "        ", "            ", "                ", "                   ", "                        "};
 	private void getModulesFromJar(StringArray targetDirectories, Boolean targetOn) {
 		// get a list of all packages in jar:
