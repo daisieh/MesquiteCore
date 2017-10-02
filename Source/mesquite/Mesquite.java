@@ -16,6 +16,7 @@ package mesquite;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.Paths;
 import java.util.*;
 import java.io.*;
 import java.net.*;
@@ -157,7 +158,7 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public void init()
 	{
-		boolean verboseStartup = false;
+		boolean verboseStartup = true;
 		long startingTime = System.currentTimeMillis();
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
@@ -180,19 +181,18 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 2");
 
 
-		String sep = MesquiteFile.fileSeparator;
 		mesquiteClassLoader = this.getClass().getClassLoader();
 		String loc = mesquiteClassLoader.getResource("mesquite/Mesquite.class").getPath();
 
 		try {
 			URL classLocation = this.getClass().getProtectionDomain().getCodeSource().getLocation();
 			File classFile = new File(classLocation.toURI());
-			DirectInit.loadJarModules(classFile);
+//			DirectInit.loadJarModules(classFile);
 		} catch (Exception e) {
 			System.out.println("caught an exception " + e.getMessage());
 		}
-		String sepp = MesquiteFile.fileSeparator;
-		if (loc.indexOf(sepp)<0){
+		String sepp = File.separator;
+		if (!loc.contains(sepp)){
 			sepp = "/";
 			if (loc.indexOf(sepp)<0)
 				System.out.println("Not a recognized separator in path to Mesquite class!");
@@ -253,12 +253,12 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 3");
 
 		/* EMBEDDED delete these if embedded */
-		userDirectory = new File(System.getProperty("user.home")+sep);  //used to be user.dir, but caused permission problems in linux
+		userDirectory = Paths.get(System.getProperty("user.home")).toFile();  //used to be user.dir, but caused permission problems in linux
 
-		String supportFilesPath = System.getProperty("user.home") + sep + "Mesquite_Support_Files";
+		String supportFilesPath = System.getProperty("user.home") + File.separator + "Mesquite_Support_Files";
 		supportFilesDirectory = new File(supportFilesPath);
 		if (!supportFilesDirectory.exists()){
-			String supportFilesPathALT = System.getProperty("user.home") + sep + ".Mesquite_Support_Files";
+			String supportFilesPathALT = System.getProperty("user.home") + File.separator + ".Mesquite_Support_Files";
 			File supportFilesDirectoryALT = new File(supportFilesPathALT);
 			if (supportFilesDirectoryALT.exists()){
 				supportFilesPath = supportFilesPathALT;
@@ -271,7 +271,7 @@ public class Mesquite extends MesquiteTrunk
 		boolean writabilityWarned = false;
 		if (!supportFilesWritable || !supportFilesDirectory.exists()){
 			String oldPath = supportFilesPath;
-			supportFilesPath = mesquiteDirectory.getPath() + sep + "Mesquite_Support_Files";
+			supportFilesPath = mesquiteDirectory.getPath() + File.separator + "Mesquite_Support_Files";
 			supportFilesDirectory = new File(supportFilesPath);
 			if (!supportFilesDirectory.exists())
 				supportFilesDirectory.mkdir();
@@ -290,9 +290,9 @@ public class Mesquite extends MesquiteTrunk
 
 
 
-		MesquiteModule.prefsDirectory = new File(supportFilesPath + sep + "Mesquite_Prefs"); //checking both possible names
-		File prefsFile = new File(prefsDirectory.toString() + sep + "Mesquite.pref");
-		File prefsFileXML = new File(prefsDirectory.toString() + sep + "Mesquite.xml");
+		MesquiteModule.prefsDirectory = new File(supportFilesPath + File.separator + "Mesquite_Prefs"); //checking both possible names
+		File prefsFile = new File(prefsDirectory.toString() + File.separator + "Mesquite.pref");
+		File prefsFileXML = new File(prefsDirectory.toString() + File.separator + "Mesquite.xml");
 
 
 		if (verboseStartup) System.out.println("main init 5");
@@ -323,7 +323,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 7");
 
 
-		String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
+		String logPath = supportFilesPath + File.separator + MesquiteTrunk.logFileName; 
 		File logFile = new File(logPath);
 
 		boolean logFileExistsButCantWrite = (logFile.exists() &&!logFile.canWrite());
@@ -341,15 +341,15 @@ public class Mesquite extends MesquiteTrunk
 
 		if (logFile.exists()) {
 			for (int i = MesquiteTrunk.numPrevLogs-1; i>0; i--) {
-				String iPath = supportFilesPath  + sep + MesquiteTrunk.logFileName + "_(Previous#" + i + ")";
-				String iPlusOnePath = supportFilesPath + sep + MesquiteTrunk.logFileName + "_(Previous#" + (i+1) + ")";
+				String iPath = supportFilesPath  + File.separator + MesquiteTrunk.logFileName + "_(Previous#" + i + ")";
+				String iPlusOnePath = supportFilesPath + File.separator + MesquiteTrunk.logFileName + "_(Previous#" + (i+1) + ")";
 				MesquiteFile.rename(iPath, iPlusOnePath);
 			}
-			MesquiteFile.rename(logPath, supportFilesPath + sep + MesquiteTrunk.logFileName + "_(Previous#1)");
+			MesquiteFile.rename(logPath, supportFilesPath + File.separator + MesquiteTrunk.logFileName + "_(Previous#1)");
 		}
 		if (verboseStartup) System.out.println("main init 10");
 		/*
-		 * 		String recentFilesPath = supportFilesPath + sep + MesquiteTrunk.recentFilesFileName; 
+		 * 		String recentFilesPath = supportFilesPath + File.separator + MesquiteTrunk.recentFilesFileName; 
 		File recentFilesFile = new File(recentFilesPath);
 		if (recentFilesFile.exists()) {
 		}
@@ -779,16 +779,16 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................EMBEDDED delete this if embedded *
 	private void findMesquiteDirectory(){
-		String sep = "" + MesquiteFile.fileSeparator;
+		String File.separator = "" + MesquiteFile.fileSeparator;
 		if (mesquiteDirectory!=null) {
-			String manualString = mesquiteDirectory + sep + "docs/mesquite" + sep + "manual.html";
+			String manualString = mesquiteDirectory + File.separator + "docs/mesquite" + File.separator + "manual.html";
 			File manualM = new File(manualString);
 			if (manualM.exists()) {
 				storedManualString = manualString;
 			}
 		}
 		else {
-			String manualString = mesquiteDirectory  + sep + "docs/mesquite" + sep + "manual.html";
+			String manualString = mesquiteDirectory  + File.separator + "docs/mesquite" + File.separator + "manual.html";
 			File manual = new File(manualString);
 
 			storedManualString = manualString; 

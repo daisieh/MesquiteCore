@@ -152,30 +152,21 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				targetDirectories.setValue(numStandard + numStandardExtra+4, "mesquite.macros");//TODO: avoid macros in all contexts!
 				targetDirectories.setValue(numStandard + numStandardExtra+5, "mesquite.configs");  //TODO: avoid configs in all contexts!
 				getModules("mesquite", Paths.get(MesquiteModule.getRootPath(), "mesquite"), 0, targetDirectories, false, true); //next, add to the target directories and do everything but them
-				try {
-					ClassPathHacker.addFile(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator  + "classes");
-					getModules("mesquite", Paths.get(MesquiteModule.supportFilesDirectory.getAbsolutePath(),"classes", "mesquite"), 0, null, false, true);  //do the directories in config
-					ClassPathHacker.addFile(MesquiteModule.getRootPath() +  "additionalMesquiteModules" );
-					getModules("mesquite", Paths.get(MesquiteModule.getRootPath(),"additionalMesquiteModules","mesquite"), 0, null, false, true);  //do the directories in config
-					
-					String classPathsFileMF = null; 
-					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
+				getModules("mesquite", Paths.get(MesquiteModule.supportFilesDirectory.getAbsolutePath(),"classes", "mesquite"), 0, null, false, true);  //do the directories in config
+				getModules("mesquite", Paths.get(MesquiteModule.getRootPath(),"additionalMesquiteModules","mesquite"), 0, null, false, true);  //do the directories in config
 
-						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
-					
-					}
-					if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
-						classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
-						addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
-					}
+				String classPathsFileMF = null;
+				if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + "classpaths.xml")){
+					classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.getRootPath() + "classpaths.xml");
+
+					addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
+
 				}
-				catch(java.io.IOException e){ 
-					System.out.println("IOE in loading extra classes in Mesquite_Support_Files");
+				if (MesquiteFile.fileExists(MesquiteModule.supportFilesDirectory  + MesquiteFile.fileSeparator  + "classpaths.xml")){
+					classPathsFileMF = MesquiteFile.getFileContentsAsString(MesquiteModule.supportFilesDirectory +  MesquiteFile.fileSeparator  + "classpaths.xml");
+					addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
 				}
-				catch(Throwable e){  //to permit function under Java 1.1
-				}
-				}
+			}
 			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
 			mesquite.mesquiteModulesInfoVector.accumulateAllVersions();
 			//timer.end();
@@ -191,16 +182,17 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			mesquite.numDirectories = numDirectoriesCurrent;
 			mesquite.logln("");
 		}
+		mesquite.logln("found modules in files: " + Mesquite.getMesquiteFileModules().keySet().toString());
 	}
 
-	private void loadJarModule(String fileName) throws Exception {
+	private void loadJarModule(String fileName) {
 		if (fileName.startsWith("mesquite")) {
 			if (fileName.endsWith("macros/")) {
 				loadMacrosFromJarResource(fileName, false);
 			} else if (fileName.endsWith("config/")) {
 				mesquite.logln("  loadConfigs " + fileName);
 			} else if (fileName.endsWith(".class")) {
-				loadModuleClass(fileName, null, false);
+				loadModuleClass(fileName, null);
 			}
 		}
 	}
@@ -219,16 +211,16 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		String tagContent = parser.getNextXMLTaggedContent(nextTag);
 		while (!StringUtil.blank(tagContent) || !StringUtil.blank(nextTag.getValue())) {
 				if (!StringUtil.blank(tagContent) && "classpath".equalsIgnoreCase(nextTag.getValue())) {
-					try{
+//					try{
 						String path = MesquiteFile.composePath(relativeTo, tagContent) ; //here you pass the ith thing in the list
 						DirectInit.loadJarsInDirectories(path, mesquite.jarFilesLoaded);
-						ClassPathHacker.addFile(path);	
+//						ClassPathHacker.addFile(path);
 
 						mesquite.logln("\n\nAdditional modules loaded from " + path);
 						getModules("mesquite", Paths.get(path,"mesquite"), 0, null, false, true);  //do the directories in config
-					}
-					catch(IOException e){
-					}
+//					}
+//					catch(IOException e){
+//					}
 				}
 				tagContent = parser.getNextXMLTaggedContent(nextTag);
 			}
@@ -357,6 +349,17 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		} catch (Exception e) {
 
+		}
+	}
+
+	private void loadModulePackageFromJar(String modulePackage) {
+		mesquite.log(" " + modulePackage.replace("mesquite.", ""));
+		// load explanation, if available:
+		loadPackageExplanation(modulePackage, true);
+		// load classes
+		ArrayList<String> jarEntriesToLoad = Mesquite.getMesquiteJarModules().get(modulePackage);
+		for (String module : jarEntriesToLoad) {
+			loadJarModule(module);
 		}
 	}
 	private void getModules(String packageName, Path filePath, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll){ //path has no slash at the end of it
@@ -577,7 +580,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			}
 		}
 	}
-	private void loadModuleClass(String rawPackageName, String directoryPath, Boolean isBasicFileCoordinator) {
+	private void loadModuleClass(String rawPackageName, String directoryPath) {
 		Matcher matcher = Pattern.compile(".*(mesquite\\..+\\.(.+?)\\.)(.+?)\\.class").matcher(rawPackageName);
 		// Module is a class file within a directory of the same name:
 		if (!matcher.matches() || !matcher.group(2).equals(matcher.group(3))) {
@@ -592,13 +595,9 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			directoryPath = Paths.get(MesquiteModule.getRootPath(), packageName.replaceAll("\\.", File.separator)).toString();
 		}
 
-		// unless we're specifically loading the BasicFileCoordinator, don't load that.
-		if (("BasicFileCoordinator".equalsIgnoreCase(className)) && !isBasicFileCoordinator) {
-			return;
-		}
-
 		try {
 			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
+			System.out.println("packageName = " + packageName);
 			Class c= Class.forName(packageName);
 			if (c != null && !c.getName().equals("mesquite.Mesquite")) {
 				MesquiteModule mb = mesquite.instantiateModule(c);
@@ -733,7 +732,23 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			return;
 		}
 
-		loadModuleClass(thisFile.toString().replaceAll(File.separator, "."), directoryPath, isBasicFileCoordinator);
+		// unless we're specifically loading the BasicFileCoordinator, don't load that.
+		if ((thisFile.getName().contains("BasicFileCoordinator.class")) && !isBasicFileCoordinator) {
+			return;
+		}
+		Matcher matcher = Pattern.compile(".*(mesquite\\..+)\\.(.+?)\\.(.+?)\\.class").matcher(thisFile.getPath().replaceAll(File.separator, "."));
+		// Module is a class file within a directory of the same name:
+		if (!matcher.matches() || !matcher.group(2).equals(matcher.group(3))) {
+			return;
+		}
+
+		String packageName = matcher.group(1).replaceAll(File.separator, ".");
+		if (!Mesquite.getMesquiteFileModules().containsKey(packageName)) {
+			System.out.println("adding module from file " + packageName + ", rawPackage name is " + thisFile.toString().replaceAll(File.separator, "."));
+			Mesquite.getMesquiteFileModules().put(packageName, new ArrayList<String>());
+		}
+		Mesquite.getMesquiteFileModules().get(packageName).add(directoryPath);
+		loadModuleClass(thisFile.toString().replaceAll(File.separator, "."), directoryPath);
 	}
 	void warnIncompatible(String lastTried, Throwable e){
 		if (!warnedError)
