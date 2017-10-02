@@ -59,6 +59,6 @@ then
 else
   chmod -R u+w  "$dir/com/"
   cp -r  "$dir/../Resources/com/"* "$dir/com/" >& /dev/null
-  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -cp "$dir:$dir/jars/*" mesquite.Mesquite $*
+  $java -Djava.library.path=lib -Djri.ignore.ule="yes" -cp "$dir:$dir/jars/*:$dir/additionalMesquiteModules:$HOME/Mesquite_Support_Files/classes" mesquite.Mesquite $*
 fi
 
