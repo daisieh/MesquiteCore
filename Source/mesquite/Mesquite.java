@@ -106,6 +106,7 @@ public class Mesquite extends MesquiteTrunk
 	private  FileOpener fileHandler;
 	private static ArrayList<String> mesquiteJarEntries = new ArrayList<>();
 	private static HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
+	private static HashMap<String, ArrayList<String>> mesquiteFileModules = new HashMap<>();
 	private static ClassLoader mesquiteClassLoader = null;
 
 	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
@@ -114,6 +115,10 @@ public class Mesquite extends MesquiteTrunk
 
 	public static HashMap<String, ArrayList<String>> getMesquiteJarModules() {
 		return mesquiteJarModules;
+	}
+
+	public static HashMap<String, ArrayList<String>> getMesquiteFileModules() {
+		return mesquiteFileModules;
 	}
 
 	/*.................................................................................................................*/
