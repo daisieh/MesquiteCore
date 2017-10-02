@@ -52,6 +52,18 @@ public class StringUtil {
 	public static String getUniqueObjectID(){
 		return "Mesquite"+ MesquiteTrunk.mesquiteTrunk.getVersion() + URL+startupTimeMillis;
 	}
+			/* ................................................................................................................. */
+	public static String getIntegerAsStringWithLeadingZeros(int number, int digitsDesired) {
+		String result = MesquiteInteger.toString(number);
+		int toAdd = digitsDesired-result.length();
+		if (number<0)
+			toAdd --;
+		if (toAdd>0)
+			for (int i=0; i<toAdd; i++)
+				result="0"+result;
+		return result;
+	}
+
 		/* ................................................................................................................. */
 	public static String[] getLines(String s) {
 		s = StringUtil.replace(s, "\r\n", "\r");
@@ -919,6 +931,8 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String removeFirstCharacterIfMatch(String token, char c) {
+		if (token == null)
+			return "";
 		String timmedString = token.trim();
 		if (token == null)
 			return "";
@@ -931,7 +945,6 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String removeLastCharacterIfMatch(String token, char c) {
-		String timmedString = token.trim();
 		if (token == null)
 			return "";
 		String trimmedString = token.trim();

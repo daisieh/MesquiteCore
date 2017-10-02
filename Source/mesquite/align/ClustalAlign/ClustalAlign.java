@@ -90,14 +90,14 @@ public class ClustalAlign extends ExternalSequenceAligner{
 	}
 	
 	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
-	if (!MesquiteTrunk.isWindows())
-		shellScript.append("  -infile=" + StringUtil.protectFilePathForUnix(inFilePath) + " -outfile=" + StringUtil.protectFilePathForUnix(outFilePath) + " -align -output=pir ");
-	else
-		shellScript.append(" \\ -infile=" + StringUtil.protectFilePathForWindows(inFilePath) + " -outfile=" + StringUtil.protectFilePathForWindows(outFilePath) + " -align -output=pir ");
-	if (data instanceof ProteinData)
-		shellScript.append("-type=protein ");
-	else
-		shellScript.append("-type=dna ");
+		shellScript.append("  -infile=" + StringUtil.protectFilePathForUnix(inFilePath) + " -align -output=pir ");
+		if (data instanceof ProteinData)
+			shellScript.append("-type=protein ");
+		else
+			shellScript.append("-type=dna ");
+		if (scriptBased)
+			shellScript.append("-outfile="+StringUtil.protectFilePathForUnix(outFilePath));
+
 	}
 
 	

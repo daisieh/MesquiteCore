@@ -36,24 +36,24 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.2.  http://mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2017. Mesquite: A modular system for evolutionary analysis.  Version 3.31.  http://mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.2+";
+		return "3.31";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 320;
+		return 331;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.2;
+		return 3.31;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "January 2017"; //"April 2007";
+		return "September 2017"; //"April 2007";
 	}
 	
 	/*.................................................................................................................*/
@@ -68,7 +68,7 @@ public class Mesquite extends MesquiteTrunk
 	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -570,6 +570,8 @@ public class Mesquite extends MesquiteTrunk
 					s += " version " + mmi.getPackageVersion();
 				if (mmi.getPackageBuildNumber() > 0)
 					s += " build " + mmi.getPackageBuildNumber();
+				if (StringUtil.notEmpty(mmi.getPackageDateReleased()))
+					s += ", " + mmi.getPackageDateReleased();
 				if (!StringUtil.blank(mmi.getPackageAuthors()))
 					s += " (by " + mmi.getPackageAuthors() + ")";
 				if (!StringUtil.blank(mmi.getPackageCitation()))
@@ -685,8 +687,8 @@ public class Mesquite extends MesquiteTrunk
 		/* */
 		addMenuItem(MesquiteTrunk.fileMenu, "Check Now for Notices/Installs...", new MesquiteCommand("checkNotices", this));
 		if (MesquiteTrunk.phoneHome){
-			PhoneHomeThread pht = new PhoneHomeThread();
-			pht.start();
+			phoneHomeThread = new PhoneHomeThread();
+			phoneHomeThread.start();
 		}
 		/**/
 
@@ -1791,7 +1793,7 @@ public class Mesquite extends MesquiteTrunk
 			logln("This will crash: " +mi.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Checks for notices or installs at the location specified", null, commandName, "checkNotices")) {
-			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")", noticeLocation);
+			noticeLocation = MesquiteString.queryString(containerOfModule(), "Notices Location", "Indicate URL to notices file to be checked.  (For instance, for Mesquite the default notices file is at " + getHomePhoneNumber() + ")\n\nNote: There may be a delay as Mesquite waits for the response from the server.", noticeLocation);
 			PhoneHomeUtil.checkForNotices(noticeLocation); 
 			PhoneHomeUtil.adHocRecord = null;
 			resetAllMenuBars();

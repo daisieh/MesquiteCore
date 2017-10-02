@@ -14,12 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 
+import java.io.IOException;
+import java.util.Vector;
+
+import org.apache.commons.httpclient.NameValuePair;
+
 import mesquite.lib.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 
 /* ======================================================================== */
 public class PhoneHomeThread extends Thread {
-
+	Vector beans = new Vector();
 	public PhoneHomeThread () {
 		setPriority(Thread.MIN_PRIORITY);
 	}
@@ -28,9 +33,22 @@ public class PhoneHomeThread extends Thread {
 		//Put here on a separate thread so Mesquite doesn't hang if website is unavailable
 		checkForMessagesFromAllHomes();
 
-
+		while (!MesquiteTrunk.mesquiteExiting) { 
+			try {
+				Thread.sleep(1000);
+				if (beans.size()>0){
+					NameValuePair[] b = (NameValuePair[])beans.elementAt(0);
+					beans.removeElementAt(0);
+					BaseHttpRequestMaker.sendInfoToServer(b, MesquiteModule.beansReportURL, null, 0);
+				}
+			}
+			catch (Throwable e){
+			}
+		}
 	}
-
+	public void postBean(NameValuePair[] pairs){
+		beans.addElement(pairs);
+	}
 	/*.................................................................................................................*/
 	public void checkForMessagesFromAllHomes(){
 		//MesquiteTrunk.incrementMenuResetSuppression();
@@ -68,6 +86,10 @@ public class PhoneHomeThread extends Thread {
 			if (!StringUtil.blank(mmi.getHomePhoneNumber())) {
 				try {
 					int rec = phoneRecords.indexOfByName("#" + mmi.getClassName()); 
+					if (MesquiteTrunk.debugMode){
+						MesquiteTrunk.mesquiteTrunk.logln("Checking server for notices regarding " + mmi.getPackageName());
+					}
+					
 					PhoneHomeRecord phoneHomeRecord;
 					if (!MesquiteInteger.isCombinable(rec) || rec<0) {// this module is not the phone records 
 						phoneHomeRecord = new PhoneHomeRecord("#"+mmi.getClassName());

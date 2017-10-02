@@ -215,7 +215,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	private boolean obtainFile(String arguments){
 		fileReady = false;
 		if (ended){
-			discreetAlert("WARNING:  Attempt to use module that has ended");
+			discreetAlert("WARNING:  Attempt to use module that has ended (ManyTreesFromFileLib)" + getEmployerPath());
 		}
 		FileCoordinator fCoord = getFileCoordinator();
 		if (fCoord == null)

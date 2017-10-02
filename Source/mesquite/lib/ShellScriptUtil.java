@@ -29,6 +29,7 @@ import java.io.*;
 public class ShellScriptUtil  {
 	static int sleepTime = 50;
 	public static int recoveryDelay = 0;
+	
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -43,6 +44,14 @@ public class ShellScriptUtil  {
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
 		else
 			return "echo \"" + contents + "\" > " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
+	}
+
+	/*.................................................................................................................*/
+	public static String getAppendStringAsFile(String path, String contents) {
+		if (MesquiteTrunk.isWindows())
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForWindows(path) + StringUtil.lineEnding();
+		else
+			return "echo \"" + contents + "\" >> " + StringUtil.protectFilePathForUnix(path) + StringUtil.lineEnding();
 	}
 
 	/*.................................................................................................................*
@@ -60,7 +69,7 @@ public class ShellScriptUtil  {
 	public static String getChangeDirectoryCommand(String directory){
 		String directoryString;
 		if (MesquiteTrunk.isWindows()) {
-			directoryString = StringUtil.protectFilePathForWindows(directory);
+			directoryString = "/d "+StringUtil.protectFilePathForWindows(directory);
 		} else {
 			directoryString = StringUtil.protectFilePathForUnix(directory);
 		}
@@ -73,13 +82,26 @@ public class ShellScriptUtil  {
 		else
 			return "rm -f " + StringUtil.protectFilePathForUnix(filePath) +StringUtil.lineEnding();
 	}
-	/*.................................................................................................................*/
+	
+	/** This returns whether or not an exit command for shell scripts is available
+	 * in the OS.  This is used to close terminal windows by user choice.  However, because visible terminals are
+	 * only used in Windows and Mac, and because the Mac's Terminal can't easily be closed,
+	 * this only returns true for Windows. 
+	 */
+	public static boolean exitCommandIsAvailableAndUseful(){
+		if (MesquiteTrunk.isWindows())
+			return true;
+		return false;
+	}
+	
+	/** This returns the exit command that might be used to quit a visible terminal window from within itself. 
+	 */
 	public static String getExitCommand(){
-		if (MesquiteTrunk.isWindows()){
-			return "";
+		if (MesquiteTrunk.isMacOSX()){
+			return "osascript -e 'quit app \"Terminal\"'";  // doesn't fully work as will prompt user
 		}
 		else
-			return "exit " +StringUtil.lineEnding();
+			return "exit ";
 	}
 	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){
@@ -131,8 +153,10 @@ public class ShellScriptUtil  {
 		return null;
 	}
 
+
 	/*.................................................................................................................*/
-	public static Process executeScript(String scriptPath){ 
+	@Deprecated
+	public  static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
 	/*.................................................................................................................*/
@@ -148,17 +172,22 @@ public class ShellScriptUtil  {
 					scriptPath = scriptPath.replaceAll("//", "/");
 					pathArray = new String[] {scriptPath};
 				}
+				proc = Runtime.getRuntime().exec(pathArray);
 			}
 			else if (MesquiteTrunk.isLinux()) {
 				// remove double slashes or things won't execute properly
 				scriptPath = scriptPath.replaceAll("//", "/");
 				pathArray = new String[] {scriptPath};
-				//proc = Runtime.getRuntime().exec(pathArray);
-			} else {
+				proc = Runtime.getRuntime().exec(pathArray);
+			} else {  // Windows
 				scriptPath = "\"" + scriptPath + "\"";
-				pathArray = new String[] {"cmd", "/c", scriptPath};
+				if (visibleTerminal)
+					proc = Runtime.getRuntime().exec("cmd /c start \"\" " + scriptPath);
+				else {
+					pathArray = new String[] {"cmd", "/c", scriptPath};
+					proc = Runtime.getRuntime().exec(pathArray);
+				}
 			}
-			proc = Runtime.getRuntime().exec(pathArray);
 		}  catch (IOException e) {
 			MesquiteMessage.println("Script execution failed. " + e.getMessage());
 			return null;
