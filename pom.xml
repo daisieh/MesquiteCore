@@ -126,6 +126,33 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>sh.tak.appbundler</groupId>-->
+                <!--<artifactId>appbundle-maven-plugin</artifactId>-->
+                <!--<version>1.2.0</version>-->
+                <!--<configuration>-->
+                    <!--<mainClass>mesquite.Mesquite</mainClass>-->
+                    <!--<jrePath>/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk</jrePath>-->
+                    <!--<workingDirectory>$APP_ROOT/../../</workingDirectory>-->
+                    <!--&lt;!&ndash;<additionalResources>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<fileSet>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<directory>${project.basedir}/Resources/images</directory>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<includes>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<include>*</include>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</includes>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</fileSet>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</additionalResources>&ndash;&gt;-->
+                    <!--<additionalClasspath>:{$user.home}/Mesquite_Support_Files</additionalClasspath>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>bundle</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 </project>
