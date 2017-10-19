@@ -53,7 +53,7 @@ public class DirectInit {
 						String path = jarsPath + "/" + jars[i];
 						buffer.append(" " + jars[i]);
 //					ClassPathHacker.addFile(path);
-//					loadJarModules(new File(path));
+					loadJarModules(new File(path));
 					System.out.println("Jar file added to classpath: " + path);
 					}
 				}
@@ -68,48 +68,47 @@ public class DirectInit {
 	public static void loadJarModules(File classFile) {
 		try {
 			JarFile classJar = new JarFile(classFile);
-//			ArrayList<String> mesquiteJarEntries = Mesquite.getMesquiteJarEntries();
-//			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
-//				JarEntry entry = entries.nextElement();
-////				System.out.println("looking at entry " + entry.getName());
-//				if (entry.getName().contains("mesquite/")) {
-//					mesquiteJarEntries.add(entry.getName());
-//				}
-//			}
-//			HashMap<String, ArrayList<String>> mesquiteJarModules = Mesquite.getMesquiteJarModules();
-//			for (String entry : mesquiteJarEntries) {
-//				Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
-//				Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
-//				if (modulePackageMatcher.matches()) {
-//					String packageName = modulePackageMatcher.group(1).replace("/",".");
-//					if (!mesquiteJarModules.containsKey(packageName)) {
-//						System.out.println("adding module " + packageName);
-//						mesquiteJarModules.put(packageName, new ArrayList<String>());
-//					}
-//					if (!modulePackageMatcher.group(2).isEmpty()) {
-//						mesquiteJarModules.get(packageName).add(modulePackageMatcher.group(0));
-//					}
-//				}
-//			}
-			System.out.println("hello");
-			Enumeration<JarEntry> e = classJar.entries();
-
-			URL[] urls = { new URL("jar:file:" + classFile.getAbsolutePath() +"!/") };
-			System.out.println("URL is " + urls[0].getPath());
-			URLClassLoader cl = URLClassLoader.newInstance(urls);
-
-			while (e.hasMoreElements()) {
-				JarEntry je = e.nextElement();
-				if(je.isDirectory() || !je.getName().endsWith(".class")){
-					continue;
+			ArrayList<String> mesquiteJarEntries = Mesquite.getMesquiteJarEntries();
+			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
+				JarEntry entry = entries.nextElement();
+//				System.out.println("looking at entry " + entry.getName());
+				if (entry.getName().contains("mesquite/")) {
+					mesquiteJarEntries.add(entry.getName());
 				}
-				// -6 because of .class
-				String className = je.getName().substring(0,je.getName().length()-6);
-				className = className.replace('/', '.');
-				System.out.println("className = " + className);
-				Class c = cl.loadClass(className);
-				System.out.println("class = " + c.getName());
 			}
+			for (String entry : mesquiteJarEntries) {
+				Pattern modulePackagePattern = Pattern.compile("(mesquite/.+?)/(.*)");
+				Matcher modulePackageMatcher = modulePackagePattern.matcher(entry);
+				if (modulePackageMatcher.matches()) {
+					String packageName = modulePackageMatcher.group(1).replace("/",".");
+					if (!Mesquite.getMesquiteJarModules().containsKey(packageName)) {
+						System.out.println("adding module " + packageName);
+						Mesquite.getMesquiteJarModules().put(packageName, new ArrayList<String>());
+					}
+					if (!modulePackageMatcher.group(2).isEmpty()) {
+						Mesquite.getMesquiteJarModules().get(packageName).add(modulePackageMatcher.group(0));
+					}
+				}
+			}
+//			System.out.println("hello");
+//			Enumeration<JarEntry> e = classJar.entries();
+//
+//			URL[] urls = { new URL("jar:file:" + classFile.getAbsolutePath() +"!/") };
+//			System.out.println("URL is " + urls[0].getPath());
+//			URLClassLoader cl = URLClassLoader.newInstance(urls);
+//
+//			while (e.hasMoreElements()) {
+//				JarEntry je = e.nextElement();
+//				if(je.isDirectory() || !je.getName().endsWith(".class")){
+//					continue;
+//				}
+//				// -6 because of .class
+//				String className = je.getName().substring(0,je.getName().length()-6);
+//				className = className.replace('/', '.');
+//				System.out.println("className = " + className);
+//				Class c = cl.loadClass(className);
+//				System.out.println("class = " + c.getName());
+//			}
 		} catch (Exception e) {
 			System.out.println("exception " + e.toString());
 		}

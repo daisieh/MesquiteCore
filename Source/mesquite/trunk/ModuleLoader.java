@@ -79,6 +79,11 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					mesquite.logln("Preferences request startup configuration file.  Mesquite will start with a selected set of modules.");
 				}
 			}
+
+			StringBuffer buffer = new StringBuffer();
+			DirectInit.loadJars(MesquiteModule.getRootPath(), buffer);
+			mesquite.logln("found modules in jars: " + Mesquite.getMesquiteJarModules().keySet().toString());
+
 			String path =MesquiteModule.getRootPath() + "mesquite" + MesquiteFile.fileSeparator + "minimal" + MesquiteFile.fileSeparator + "BasicFileCoordinator";
 			File f = new File(path+ MesquiteFile.fileSeparator + "BasicFileCoordinator.class");  //Modules/
 			numDirectoriesCurrent = 0;
@@ -307,10 +312,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	String[] indent = {" ", "    ", "        ", "            ", "                ", "                   ", "                        "};
 	private void getModulesFromJar(StringArray targetDirectories, Boolean targetOn) {
 		// get a list of all packages in jar:
-		HashMap<String, ArrayList<String>> moduleList = Mesquite.getMesquiteJarModules();
-		for (String s : moduleList.keySet()) {
-			MesquiteMessage.println("modules include " + s + " in " + moduleList.get(s).toString());
-		}
 		try {
 			// next, look for everything in the jar that corresponds to each package in targetDirectories:
 
@@ -323,12 +324,12 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				for (int i = 0; i < targetDirectories.getSize(); i++) {
 					String packageToLoad = targetDirectories.getValue(i);
 					MesquiteMessage.println("loading package " + packageToLoad);
-					if (moduleList.containsKey(packageToLoad)) {
+					if (Mesquite.getMesquiteJarModules().containsKey(packageToLoad)) {
 						modulePackagesToLoad.add(packageToLoad);
 					}
 				}
 			} else {
-				for (String entry : moduleList.keySet()) {
+				for (String entry : Mesquite.getMesquiteJarModules().keySet()) {
 					if (!targetDirectories.exists(entry)) {
 						modulePackagesToLoad.add(entry);
 					}
