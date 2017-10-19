@@ -336,17 +336,10 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				}
 			}
 
-			// load each modulePackage: classes, explanation, macros, configs
-			for (String modulePackage : modulePackagesToLoad) {
-				mesquite.log(" " + modulePackage.replace("mesquite.", ""));
-				// load explanation, if available:
-				loadPackageExplanation(modulePackage, true);
-				// load classes
-				ArrayList<String> jarEntriesToLoad = moduleList.get(modulePackage);
-				for (String module : jarEntriesToLoad) {
-					loadJarModule(module);
-				}
-			}
+//			// load each modulePackage: classes, explanation, macros, configs
+//			for (String modulePackage : modulePackagesToLoad) {
+//				loadModulePackageFromJar(modulePackage);
+//			}
 
 		} catch (Exception e) {
 
@@ -365,9 +358,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 	}
 	private void getModules(String packageName, Path filePath, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll){ //path has no slash at the end of it
 		File f = filePath.toFile();
-		if (!f.exists())
-			return;
-
 		String fName = FilenameUtils.getBaseName(f.getName());
 
 		String filePathName = filePath.toString();
@@ -375,8 +365,14 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (verboseStartup) MesquiteMessage.println(">level " + level + " " + filePath.toString());
 
 		//this is a class file, therefore try to load it
+		if (loadMesquiteModuleClassFiles(f, false)) {
+			return;
+		}
+
+		if (!f.exists())
+			return;
+
 		if (f.isFile()) {
-			loadMesquiteModuleClassFiles(f, false);
 			return;
 		}
 		
@@ -724,23 +720,18 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
    	 static boolean warnedError = false;
    	 CommandChecker moduleChecker = new CommandChecker();
 	/*.................................................................................................................*/
-	private void loadMesquiteModuleClassFiles(File thisFile, boolean isBasicFileCoordinator) {
+	private boolean loadMesquiteModuleClassFiles(File thisFile, boolean isBasicFileCoordinator) {
 		// if this file is a module, it will be a class contained in a directory of the same name:
 		String directoryPath = FilenameUtils.getFullPath(thisFile.getAbsolutePath());
 
-		// if it's not a file, don't load:
-		if (!thisFile.isFile()) {
-			return;
-		}
-
 		// unless we're specifically loading the BasicFileCoordinator, don't load that.
 		if ((thisFile.getName().contains("BasicFileCoordinator.class")) && !isBasicFileCoordinator) {
-			return;
+			return false;
 		}
 		Matcher matcher = Pattern.compile(".*(mesquite\\..+)\\.(.+?)\\.(.+?)\\.class").matcher(thisFile.getPath().replaceAll(File.separator, "."));
 		// Module is a class file within a directory of the same name:
 		if (!matcher.matches() || !matcher.group(2).equals(matcher.group(3))) {
-			return;
+			return false;
 		}
 
 		String packageName = matcher.group(1).replaceAll(File.separator, ".");
@@ -748,8 +739,21 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			System.out.println("adding module from file " + packageName + ", rawPackage name is " + thisFile.toString().replaceAll(File.separator, "."));
 			Mesquite.getMesquiteFileModules().put(packageName, new ArrayList<String>());
 		}
-		Mesquite.getMesquiteFileModules().get(packageName).add(directoryPath);
+
+		// look for this package in the jar first:
+		mesquite.logln("loading package " + packageName);
+		if (Mesquite.getMesquiteJarModules().get(packageName) != null) {
+			mesquite.logln("package " + packageName + " is in the jar");
+		}
+
+		// if it's not a file, don't load:
+		if (!thisFile.isFile()) {
+			return false;
+		}
+
+//		Mesquite.getMesquiteFileModules().get(packageName).add(directoryPath);
 		loadModuleClass(thisFile.toString().replaceAll(File.separator, "."), directoryPath);
+		return true;
 	}
 	void warnIncompatible(String lastTried, Throwable e){
 		if (!warnedError)
