@@ -105,14 +105,12 @@ public class Mesquite extends MesquiteTrunk
 	HPanel browser;
 	ListableVector configurations;
 	private  FileOpener fileHandler;
-	private static ArrayList<String> mesquiteJarEntries = new ArrayList<>();
 	private static HashMap<String, ArrayList<String>> mesquiteJarModules = new HashMap<>();
 	private static HashMap<String, ArrayList<String>> mesquiteFileModules = new HashMap<>();
+	private TreeSet<String> loadedModules = new TreeSet<>();
 	private static ClassLoader mesquiteClassLoader = null;
 
 	public static ClassLoader getMesquiteClassLoader() { return mesquiteClassLoader; }
-
-	public static ArrayList<String> getMesquiteJarEntries() { return mesquiteJarEntries; }
 
 	public static HashMap<String, ArrayList<String>> getMesquiteJarModules() {
 		return mesquiteJarModules;
@@ -120,6 +118,13 @@ public class Mesquite extends MesquiteTrunk
 
 	public static HashMap<String, ArrayList<String>> getMesquiteFileModules() {
 		return mesquiteFileModules;
+	}
+	public void addLoadedModule(String module) {
+		loadedModules.add(module);
+	}
+
+	public boolean moduleIsLoaded(String module) {
+		return loadedModules.contains(module);
 	}
 
 	/*.................................................................................................................*/

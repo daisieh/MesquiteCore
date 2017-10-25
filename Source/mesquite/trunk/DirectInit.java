@@ -68,7 +68,7 @@ public class DirectInit {
 	public static void loadJarModules(File classFile) {
 		try {
 			JarFile classJar = new JarFile(classFile);
-			ArrayList<String> mesquiteJarEntries = Mesquite.getMesquiteJarEntries();
+			ArrayList<String> mesquiteJarEntries = new ArrayList<>();
 			for (Enumeration<JarEntry> entries = classJar.entries(); entries.hasMoreElements(); ) {
 				JarEntry entry = entries.nextElement();
 //				System.out.println("looking at entry " + entry.getName());
