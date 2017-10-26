@@ -84,8 +84,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			DirectInit.loadJars(MesquiteModule.getRootPath(), buffer);
 			mesquite.logln("found modules in jars: " + Mesquite.getMesquiteJarModules().keySet().toString());
 
-			String path =MesquiteModule.getRootPath() + "mesquite" + MesquiteFile.fileSeparator + "minimal" + MesquiteFile.fileSeparator + "BasicFileCoordinator";
-			File f = new File(path+ MesquiteFile.fileSeparator + "BasicFileCoordinator.class");  //Modules/
 			numDirectoriesCurrent = 0;
 			if (!MesquiteInteger.isCombinable(mesquite.numDirectories))
 				mesquite.numDirectories = 0;
@@ -94,7 +92,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			else
 				directoryTotal =  mesquite.numDirectories;
 			showMessage(true, "Looking for modules", directoryTotal, 0);
-			loadMesquiteModuleClassFiles(f, true);
 			mesquite.logln("Modules loading from directory " + MesquiteModule.getRootPath() + "mesquite/");
 			targetDirectories = new StringArray(1);
 			targetDirectories.setValue(0, "mesquite.minimal");
@@ -365,7 +362,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		if (verboseStartup) MesquiteMessage.println(">level " + level + " " + filePath.toString());
 
 		//this is a class file, therefore try to load it
-		if (loadMesquiteModuleClassFiles(f, false)) {
+		if (loadMesquiteModuleClassFiles(f)) {
 			return;
 		}
 
@@ -720,14 +717,10 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
    	 static boolean warnedError = false;
    	 CommandChecker moduleChecker = new CommandChecker();
 	/*.................................................................................................................*/
-	private boolean loadMesquiteModuleClassFiles(File thisFile, boolean isBasicFileCoordinator) {
+	private boolean loadMesquiteModuleClassFiles(File thisFile) {
 		// if this file is a module, it will be a class contained in a directory of the same name:
 		String directoryPath = FilenameUtils.getFullPath(thisFile.getAbsolutePath());
 
-		// unless we're specifically loading the BasicFileCoordinator, don't load that.
-		if ((thisFile.getName().contains("BasicFileCoordinator.class")) && !isBasicFileCoordinator) {
-			return false;
-		}
 		Matcher matcher = Pattern.compile(".*(mesquite\\..+)\\.(.+?)\\.(.+?)\\.class").matcher(thisFile.getPath().replaceAll(File.separator, "."));
 		// Module is a class file within a directory of the same name:
 		if (!matcher.matches() || !matcher.group(2).equals(matcher.group(3))) {
