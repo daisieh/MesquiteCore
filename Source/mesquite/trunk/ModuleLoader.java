@@ -194,7 +194,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			} else if (fileName.endsWith("config/")) {
 				mesquite.logln("  loadConfigs " + fileName);
 			} else if (fileName.endsWith(".class")) {
-				loadModuleClass(fileName, null);
+				mesquite.logln("\tloading module class from jar: " + fileName);
+				loadModuleClass(fileName.replaceAll(File.separator, "."), null);
 			}
 		}
 	}
@@ -616,7 +617,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 		try {
 			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
-			System.out.println("packageName = " + packageName);
 			Class c= Class.forName(packageName);
 			if (c != null && !c.getName().equals("mesquite.Mesquite")) {
 				MesquiteModule mb = mesquite.instantiateModule(c);
@@ -753,15 +753,11 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		}
 
 		String packageName = matcher.group(1).replaceAll(File.separator, ".");
-		if (!Mesquite.getMesquiteFileModules().containsKey(packageName)) {
-			System.out.println("adding module from file " + packageName + ", rawPackage name is " + thisFile.toString().replaceAll(File.separator, "."));
-			Mesquite.getMesquiteFileModules().put(packageName, new ArrayList<String>());
+		if (mesquite.moduleIsLoaded(packageName)) {
+			return true;
 		}
-
-		// look for this package in the jar first:
-		mesquite.logln("loading package " + packageName);
-		if (Mesquite.getMesquiteJarModules().get(packageName) != null) {
-			mesquite.logln("package " + packageName + " is in the jar");
+		if (!Mesquite.getMesquiteFileModules().containsKey(packageName)) {
+			Mesquite.getMesquiteFileModules().put(packageName, new ArrayList<String>());
 		}
 
 		// if it's not a file, don't load:
@@ -769,7 +765,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			return false;
 		}
 
-//		Mesquite.getMesquiteFileModules().get(packageName).add(directoryPath);
 		loadModuleClass(thisFile.toString().replaceAll(File.separator, "."), directoryPath);
 		return true;
 	}
