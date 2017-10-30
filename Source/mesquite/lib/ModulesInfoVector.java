@@ -401,6 +401,20 @@ public class ModulesInfoVector extends ListableVector {
 		}
 		return null;
 	}
+	public MesquiteModuleInfo findModule(String packageName) {
+		if (StringUtil.blank(packageName))
+			return null;
+
+		for (int i=0; i<size(); i++) {
+			MesquiteModuleInfo mbi = (MesquiteModuleInfo)elementAt(i);
+			String packageMBI = StringUtil.getAllButLastItem(StringUtil.getAllButLastItem(mbi.getModuleClass().getName(), "."), ".");
+			boolean correctPackage = packageName.equals(packageMBI);
+			if (correctPackage) {
+				return mbi;
+			}
+		}
+		return null;
+	}
 	/*........................................................................*/
 	/** returns mbi's index among the default modules named in the string array; if not present, returns -1 */ 
 	private int whichDefault(String[] defaults, MesquiteModuleInfo mbi){ //finds out if mbi is in defaults list

@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -125,6 +126,12 @@ public class Mesquite extends MesquiteTrunk
 
 	public boolean moduleIsLoaded(String module) {
 		return loadedModules.contains(module);
+	}
+
+	public List<String> getLoadedModules() {
+		ArrayList<String> result = new ArrayList<String>();
+		result.addAll(loadedModules);
+		return result;
 	}
 
 	/*.................................................................................................................*/

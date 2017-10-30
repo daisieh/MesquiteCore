@@ -14,6 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -169,14 +171,23 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					addModulesAtPaths(MesquiteModule.supportFilesDirectory + MesquiteFile.fileSeparator , classPathsFileMF);
 				}
 			}
-			mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
-			mesquite.mesquiteModulesInfoVector.accumulateAllVersions();
+			Mesquite.mesquiteModulesInfoVector.filterAllDutyDefaults();
+			Mesquite.mesquiteModulesInfoVector.accumulateAllVersions();
 			//timer.end();
 			//CommandChecker checker = new CommandChecker();
 			//checker.composeDocumentation();
-			
+
+			// load the macros for loaded modules:
+			for (String modName : mesquite.getLoadedModules()) {
+				mesquite.logln("is module " + modName + " in vector? " + Mesquite.mesquiteModulesInfoVector.nameAlreadyInList(modName));
+				MesquiteModuleInfo mesquiteModuleInfo = Mesquite.mesquiteModulesInfoVector.findModule(modName);
+				if (mesquiteModuleInfo != null) {
+					loadMacros(mesquiteModuleInfo.getDirectoryPath(), false);
+				}
+			}
+
 			// get special macros from user prefs directory
-			loadMacros(MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator +"macros", true);
+			loadMacros(MesquiteModule.prefsDirectory.getAbsolutePath(), true);
 			loadConfigs(MesquiteModule.prefsDirectory+ MesquiteFile.fileSeparator +"configs", true);
 
 			hideMessage(true);
@@ -184,23 +195,17 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			mesquite.numDirectories = numDirectoriesCurrent;
 			mesquite.logln("");
 		}
-		mesquite.logln("found modules in files: " + Mesquite.getMesquiteFileModules().keySet().toString());
 	}
 
 	private void loadJarModule(String fileName) {
 		if (fileName.startsWith("mesquite")) {
-			if (fileName.endsWith("macros/")) {
-				loadMacrosFromJarResource(fileName, false);
-			} else if (fileName.endsWith("config/")) {
-				mesquite.logln("  loadConfigs " + fileName);
-			} else if (fileName.endsWith(".class")) {
-				mesquite.logln("\tloading module class from jar: " + fileName);
+			if (fileName.endsWith(".class")) {
 				loadModuleClass(fileName.replaceAll(File.separator, "."), null);
 			}
 		}
 	}
 
-	void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
+	private void addModulesAtPaths(String relativeTo, String xmlPathsFileContents){
 		if (xmlPathsFileContents == null)return;
 
 		Parser parser = new Parser();
@@ -346,13 +351,13 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 
 	private void loadModulePackageFromJar(String modulePackage) {
 		mesquite.log(" " + modulePackage.replace("mesquite.", ""));
-		// load explanation, if available:
-		loadPackageExplanation(modulePackage, true);
 		// load classes
 		ArrayList<String> jarEntriesToLoad = Mesquite.getMesquiteJarModules().get(modulePackage);
 		for (String module : jarEntriesToLoad) {
 			loadJarModule(module);
 		}
+		// load explanation, if available:
+		loadPackageExplanation(modulePackage, true);
 	}
 
 	private void getModulesWrapper(Path filePath, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll) {
@@ -362,7 +367,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 				if (!mesquite.moduleIsLoaded(targetDirectories.getValue(i))) {
 					loadModulePackageFromJar(targetDirectories.getValue(i));
 					packagesFound[i] = true;
-					mesquite.logln("loading package from jar: " + targetDirectories.getValue(i));
 					mesquite.addLoadedModule(targetDirectories.getValue(i));
 				}
 			}
@@ -413,7 +417,6 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		Arrays.sort(modulesList);
 
 		if (verboseStartup) MesquiteMessage.println("    into directory with  " + modulesList.length + " items" );
-		boolean macrosFound = false;
 
 		// look at modules inside
 		for (String module : modulesList) {
@@ -449,15 +452,10 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					mesquite.logln("Not loading package \"" + pathFM + "\" because not included in current configuration list");
 				}
 			}
-			else if ("macros".equalsIgnoreCase(module)){
-				macrosFound = true;
-			}
 			else if ("configs".equalsIgnoreCase(module) && (!loadingAll || targetOn)){
 				loadConfigs(filePath.resolve("configs").toString(), false);
 			}
 		}
-		if (macrosFound)
-			loadMacros(filePath.resolve("macros").toString(), false);
 	}
 
 	private void loadMacrosFromJarResource(String macrosPath, boolean auto) {
@@ -486,7 +484,7 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 			explanation = "";
 		if (name == null || ";".equals(name))
 			name = macroName;
-		MesquiteModuleInfo mmi = mesquite.mesquiteModulesInfoVector.findModule(MesquiteModule.class, "#" + target);
+		MesquiteModuleInfo mmi = Mesquite.mesquiteModulesInfoVector.findModule(MesquiteModule.class, "#" + target);
 		if (mmi !=null) {
 			MesquiteMacro cfr = new MesquiteMacro(name, explanation, fullPath, mmi);
 			cfr.setAutoSave(auto);
@@ -569,13 +567,17 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					}
 		}
 	}
-	private void loadMacros(String path, boolean auto){  
-		MesquiteInteger io = new MesquiteInteger(0);
-		File macrosDirectory = new File(path);  
-		if (macrosDirectory.exists() && macrosDirectory.isDirectory()) {
-			String[] v = macrosDirectory.list();
-			for (int i=0; i<v.length; i++) {
-				String fullPath = path + MesquiteFile.fileSeparator + v[i];
+	private void loadMacros(String path, boolean auto) {
+		mesquite.logln("loadMacros from " + path);
+		File macrosDirectory = Paths.get(path,"macros").toFile();
+		if (!macrosDirectory.exists()) {
+			// look in parent?
+			macrosDirectory = Paths.get(Paths.get(path).toFile().getParent(),"macros").toFile();
+		}
+		if (macrosDirectory.exists() && macrosDirectory.isDirectory() && macrosDirectory.list() != null) {
+			mesquite.logln("loading macros from " + macrosDirectory.getAbsolutePath());
+			for (String v : macrosDirectory.list()) {
+				String fullPath = path + MesquiteFile.fileSeparator + v;
 				File cFile = new File(fullPath);
 				if (cFile.exists() && !cFile.isDirectory()) {
 					String firstLine = MesquiteFile.getFileFirstContents(fullPath);
@@ -587,8 +589,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 					if (explanation== null || ";".equals(explanation))
 						explanation = "";
 					if (name == null || ";".equals(name))
-						name = v[i];
-					MesquiteModuleInfo mmi = mesquite.mesquiteModulesInfoVector.findModule(MesquiteModule.class, "#" + target);
+						name = v;
+					MesquiteModuleInfo mmi = Mesquite.mesquiteModulesInfoVector.findModule(MesquiteModule.class, "#" + target);
 					if (mmi !=null) {
 						MesquiteMacro cfr = new MesquiteMacro(name, explanation, fullPath, mmi);
 						cfr.setAutoSave(auto);
@@ -610,15 +612,21 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		String className = matcher.group(2);
 		String packageName = matcher.group(1).replaceAll(File.separator, ".") + className;
 
-		// directoryPath is either a real directory or it's in the main jar:
-		if (directoryPath == null || !Paths.get(directoryPath).toFile().exists()) {
-			directoryPath = Paths.get(MesquiteModule.getRootPath(), packageName.replaceAll("\\.", File.separator)).toString();
-		}
 
 		try {
 			//note: as of  21 april 2000 this simpler "Class.forName" was used instead of the more complex local ClassLoader
 			Class c= Class.forName(packageName);
 			if (c != null && !c.getName().equals("mesquite.Mesquite")) {
+				URL classURL = c.getResource( c.getSimpleName() + ".class");
+				if (classURL.toString().startsWith("jar:")) {
+					// this is a jar: store the jar's location as directoryPath
+					directoryPath = classURL.toString().replaceFirst("\\.jar!.+", ".jar");
+					mesquite.logln("this is from a jar: " + directoryPath + ", " + c.getSimpleName());
+				} else {
+					Path path = Paths.get(classURL.getPath());
+					directoryPath = path.getParent().toAbsolutePath().toString();
+					mesquite.logln("this is from a file: " + directoryPath + ", " + c.getSimpleName());
+				}
 				MesquiteModule mb = mesquite.instantiateModule(c);
 				if (mb!=null) {
 					if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
@@ -637,7 +645,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 						showMessage(false, configurationString);
 						if (mb.getExpectedPath() !=null) {
 							// first, look for the expected file. If it doesn't exist, look for the resource in jars.
-							if (!new File(mb.getExpectedPath()).exists()) {
+							File file = new File(mb.getExpectedPath());
+							if (!file.exists()) {
 								if (Mesquite.getMesquiteClassLoader().getResource(mb.getExpectedPath()) == null) {
 									MesquiteMessage.warnProgrammer("...\n**************\nThe module " + mb.getName() + " (" + mb.getClass().getName() + ") expects a file or directory at " + mb.getExpectedPath() + " but it was not found. \n**************\n ...");
 								}
@@ -755,9 +764,8 @@ MesquiteTimer loadTimer, fileTimer, listTimer,instantiateTime,compTime,mmiTime,o
 		String packageName = matcher.group(1).replaceAll(File.separator, ".");
 		if (mesquite.moduleIsLoaded(packageName)) {
 			return true;
-		}
-		if (!Mesquite.getMesquiteFileModules().containsKey(packageName)) {
-			Mesquite.getMesquiteFileModules().put(packageName, new ArrayList<String>());
+		} else {
+			mesquite.addLoadedModule(packageName);
 		}
 
 		// if it's not a file, don't load:
