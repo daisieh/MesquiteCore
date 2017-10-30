@@ -17,7 +17,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import com.apple.mrj.*;
+import mesquite.Mesquite;
 import javax.swing.*;
 
 /* ======================================================================== */
@@ -2683,32 +2683,46 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return "";
 		try {
 			File fin = new File(relativePath);
-			FileInputStream fis = new FileInputStream(fin);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis, "UTF-8"));  // why not ISO-8859-1? or something newer???
-			int length = (int)fin.length();  //2. 71 restricting to maxCharacters
-			if (maxCharacters>=0 && length>maxCharacters)
-				length = maxCharacters;
-			char[] chrArr = new char[length];
-			int count=0;
-			MesquiteTimer timer = new MesquiteTimer();
-			timer.start();
-			while(in.ready()==false) {
-				if (timer.timeSinceVeryStart()>2000) {
-					if (warnIfProblem)
-						MesquiteMessage.warnProgrammer("File could not be read (6) : " + relativePath);
-					return null;
+			if (fin.isFile()) {
+				FileInputStream fis = new FileInputStream(fin);
+				BufferedReader in = new BufferedReader(new InputStreamReader(fis, "UTF-8"));  // why not ISO-8859-1? or something newer???
+				int length = (int) fin.length();  //2. 71 restricting to maxCharacters
+				if (maxCharacters >= 0 && length > maxCharacters)
+					length = maxCharacters;
+				char[] chrArr = new char[length];
+				int count = 0;
+				MesquiteTimer timer = new MesquiteTimer();
+				timer.start();
+				while (in.ready() == false) {
+					if (timer.timeSinceVeryStart() > 2000) {
+						if (warnIfProblem)
+							MesquiteMessage.warnProgrammer("File could not be read (6) : " + relativePath);
+						return null;
+					}
 				}
+				in.read(chrArr);
+				in.close();
+				return new String(chrArr);
+			} else { // jar resource
+				String str = "";
+				InputStream in = Mesquite.getMesquiteClassLoader().getResourceAsStream(relativePath);
+				if (in != null) {
+					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+					String line = reader.readLine();
+					while (line != null) {
+						str += line + "\n";
+						line = reader.readLine();
+					}
+				}
+				return str;
 			}
-			in.read(chrArr);
-			in.close();
-			return new String(chrArr);
 		}
 		catch( FileNotFoundException e ) {
 			if (warnIfProblem)
 				MesquiteMessage.warnProgrammer("File Busy or Not Found (6) : " + relativePath);
 			//MesquiteMessage.printStackTrace();
 			return null;
-		} 
+		}
 		catch( IOException e ) {
 			if (warnIfProblem)
 				MesquiteMessage.warnProgrammer("IO Exception found (6) : " + relativePath + "   " + e.getMessage());
