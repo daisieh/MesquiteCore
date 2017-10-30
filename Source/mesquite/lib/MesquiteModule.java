@@ -15,14 +15,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib;
 
 import java.awt.*;
+import java.net.URL;
 import java.util.*;
-import java.util.List;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.lang3.StringEscapeUtils;
 import mesquite.lib.duties.*;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 import edu.stanford.ejalbert.*;  //for Browserlauncher
@@ -2747,6 +2748,25 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Called during Mesquite startup when the list of available modules is being constructed.*/
 	public void mesquiteStartup(){
+	}
+
+	public static InputStream loadResourceFromPackageClass(Class thisClass, String resourceName) {
+		String className = thisClass.getSimpleName();
+		URL classURL = thisClass.getResource( className + ".class");
+		String jarURL = classURL.toString().replaceFirst("\\.jar!.+", ".jar").replaceFirst("^.*?" + File.separator, File.separator);
+		try {
+			JarFile thisJar = new JarFile(jarURL);
+			ZipEntry thisEntry = thisJar.getEntry(resourceName);
+			if (thisEntry != null) {
+				return thisJar.getInputStream(thisEntry);
+			} else {
+				MesquiteTrunk.mesquiteTrunk.logln("thisEntry was null");
+			}
+		} catch (Exception e) {
+
+		}
+
+		return null;
 	}
 }
 
