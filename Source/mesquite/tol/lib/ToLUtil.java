@@ -19,7 +19,6 @@ import java.util.List;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTree;
-import mesquite.lib.Taxa;
 
 import org.dom4j.*;
 
@@ -178,7 +177,6 @@ public class ToLUtil {
 	public static void buildTree(boolean isRoot, Element element, MesquiteTree tree, int node, String[] names, MesquiteInteger c) {
 		if (ToLUtil.countTerminals(element, "  ") == 1 && ToLUtil.isNode(element)) {
 			tree.setTaxonNumber(node, c.getValue(), false); //StringArray.indexOf(names, element.getAttributeValue("NAME")), false);
-			Taxa taxa = tree.getTaxa();
 			c.increment();
 		}
 		else {
